@@ -1,7 +1,7 @@
 <!-- pages/login.vue -->
 <script setup>
 import { ref, computed } from 'vue'
-import { login } from '@/composables/auth'
+const { login } = useAuth();
 const email = ref('')
 const password = ref('')
 const remember = ref(false)
