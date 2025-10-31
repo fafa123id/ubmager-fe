@@ -1,112 +1,122 @@
+// composables/useAuth.ts
 export const useAuth = () => {
-  const { $api } = useNuxtApp(); // Ambil instance $api dari plugin-mu
-  const user = useState("user", () => null);
+  const { $api } = useNuxtApp(); // Ambil $api dari plugin
+  const user = useState('user', () => null); // State user global
 
-  // Kita simpan token di cookie bernama 'auth_token'
-  const token = useCookie("auth_token", {
+  // Cookie untuk menyimpan token
+  const token = useCookie('auth_token', { 
+    maxAge: 60 * 15, // 15 menit (sesuaikan dengan backend, tapi ini hanya untuk client)
+    path: '/',
+  });
+
+  const refreshToken = useCookie('auth_refresh_token', {
     maxAge: 60 * 60 * 24 * 7, // 7 hari
-    path: "/",
+    path: '/',
   });
 
   /**
-   * Helper untuk set header Authorization di instance Axios
+   * Helper untuk set header di $api
    */
-  function setAuthHeader(apiInstance, authToken) {
+  function setAuthHeader(authToken) {
     if (authToken) {
-      apiInstance.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${authToken}`;
+      $api.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
     } else {
-      delete apiInstance.defaults.headers.common["Authorization"];
+      delete $api.defaults.headers.common['Authorization'];
     }
   }
 
   /**
-   * Coba fetch user (jika token ada)
+   * (A) Fungsi Login
+   */
+  async function login(email, password) {
+    // Hapus token lama jika ada
+    logout(false); // Panggil logout tapi jangan panggil API
+
+    try {
+      const response = await $api.post('/api/login', { email: email, password: password });
+
+      // Simpan kedua token dari respons Passport
+      token.value = response.data.access_token;
+      refreshToken.value = response.data.refresh_token;
+
+      // Set header untuk request selanjutnya
+      setAuthHeader(token.value);
+
+      // Ambil data user
+      await fetchUser();
+      
+      return Promise.resolve();
+
+    } catch (error) {
+      console.error('Login failed:', error);
+      logout(false); // Bersihkan sisa token jika login gagal
+      return Promise.reject(error);
+    }
+  }
+
+  /**
+   * (B) Fungsi Logout
+   */
+  async function logout(callApi = true) {
+    if (callApi && token.value) {
+      try {
+        // Beri tahu backend untuk revoke token
+        await $api.post('/api/logout');
+      } catch (error) {
+        console.warn('Failed to logout from API, logging out locally:', error);
+      }
+    }
+
+    // Bersihkan state di frontend
+    user.value = null;
+    token.value = null;
+    refreshToken.value = null;
+    setAuthHeader(null);
+  }
+
+  /**
+   * (C) Fungsi Fetch User
    */
   async function fetchUser() {
     if (!token.value) {
       user.value = null;
-      return;
+      return; // Tidak ada token, tidak perlu fetch
     }
 
-    // Pastikan header diset sebelum fetch
-    setAuthHeader($api, token.value);
+    // Set header (penting jika ini page load baru)
+    setAuthHeader(token.value);
 
     try {
-      const response = await $api.get("/api/user");
+      const response = await $api.get('/api/user');
       user.value = response.data;
     } catch (error) {
-      console.error("Gagal fetch user:", error);
-      // Token mungkin expired, hapus saja
-      token.value = null;
-      user.value = null;
-      setAuthHeader($api, null);
+      console.error('Failed to fetch user:', error);
+      // Jika error (mungkin 401), interceptor akan coba refresh.
+      // Jika refresh gagal, token akan dihapus oleh interceptor.
+      // Kita cek lagi di sini.
+      if (!token.value) {
+        user.value = null;
+      }
     }
   }
 
   /**
-   * Login
-   */
-  async function login({ email, password }) {
-    // 1. Hapus state lama (jika ada)
-    user.value = null;
-    token.value = null;
-    setAuthHeader($api, null);
-
-    try {
-      // 2. Panggil /api/login baru kita
-      const response = await $api.post("/api/login", {
-        email: email,
-        password: password,
-      });
-
-      // 3. Respons-nya akan berisi 'access_token' dari Passport
-      const accessToken = response.data.access_token;
-
-      // 4. Simpan token di cookie
-      token.value = accessToken;
-
-      // 5. Set header untuk request selanjutnya & fetch user
-      setAuthHeader($api, accessToken);
-      await fetchUser();
-    } catch (error) {
-      console.error("Login gagal:", error);
-      user.value = null;
-      token.value = null;
-      setAuthHeader($api, null);
-    }
-  }
-
-  /**
-   * Logout
-   */
-  async function logout() {
-    if (!token.value) return; // Sudah logout
-
-    try {
-      // Panggil /api/logout (yg butuh header)
-      await $api.post("/api/logout");
-    } catch (error) {
-      console.error("Logout di server gagal:", error);
-      // Tidak apa-apa, kita paksa logout di frontend
-    } finally {
-      // Hapus data di sisi client
-      user.value = null;
-      token.value = null;
-      setAuthHeader($api, null);
-    }
-  }
-
-  /**
-   * Fungsi ini harus dipanggil saat app Nuxt pertama kali load
-   * (Misal di app.vue atau plugin)
+   * (D) Fungsi Inisialisasi Auth
+   * Panggil ini saat aplikasi Nuxt pertama kali dimuat.
    */
   async function initAuth() {
     if (token.value) {
-      await fetchUser();
+      await fetchUser(); // Coba fetch user jika token ada
+    } else {
+      user.value = null; // Pastikan user null jika tidak ada token
     }
   }
 
-  return { user, login, logout, fetchUser, initAuth };
+  return {
+    user,
+    login,
+    logout,
+    fetchUser,
+    initAuth,
+  };
 };
