@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useAuth } from '~/composables/useAuth';
+
 const isOpen = ref(false);
 const links = [
   { to: "/", label: "Beranda" },
@@ -7,6 +9,7 @@ const links = [
   { to: "/kontak", label: "Kontak" },
 ];
 const route = useRoute();
+const { user, logout } = useAuth();
 const isActive = (to: string) => route.path === to;
 </script>
 
@@ -43,7 +46,7 @@ const isActive = (to: string) => route.path === to;
         </ul>
 
         <!-- CTA -->
-        <div class="hidden items-center gap-2 md:flex">
+        <div v-if="!user" class="hidden items-center gap-2 md:flex">
           <NuxtLink
             to="/masuk"
             class="group inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
@@ -59,7 +62,22 @@ const isActive = (to: string) => route.path === to;
             Masuk
           </NuxtLink>
         </div>
-
+        <div v-else class="hidden items-center gap-2 md:flex">
+          <button
+            @click="logout"
+            class="group inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+          >
+            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor">
+              <path
+                d="M10.828 11H3a1 1 0 1 0 0 2h7.828l-3.536 3.536a1 1 0 0 0 1.414 1.414l5.243-5.243a1 1 0 0 0 0-1.414L8.707 6.05a1 1 0 1 0-1.414 1.414L10.828 11Z"
+              />
+              <path
+                d="M21 4a1 1 0 0 0-1-1h-7a1 1 0 1 0 0 2h6v14h-6a1 1 0 1 0 0 2h7a1 1 0 0 0 1-1V4Z"
+              />
+            </svg>
+            Logout
+          </button>
+        </div>
         <!-- Mobile toggle -->
         <button
           class="md:hidden inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 p-2 text-slate-100 transition hover:bg-white/10"
@@ -89,12 +107,20 @@ const isActive = (to: string) => route.path === to;
           </NuxtLink>
 
           <NuxtLink
+            v-if="!user"
             to="/masuk"
             class="mt-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-white/10 px-4 py-3 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/15"
             @click="isOpen = false"
           >
             Masuk
           </NuxtLink>
+          <button
+            v-else
+            @click="logout; isOpen = false"
+            class="mt-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-white/10 px-4 py-3 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/15"
+          >
+            Logout
+          </button>
         </div>
       </transition>
     </div>
