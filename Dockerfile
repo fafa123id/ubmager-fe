@@ -1,31 +1,24 @@
 
-FROM node:20-alpine AS builder
+FROM node:20-alpine AS build
 WORKDIR /app
-
-RUN corepack enable
 
 COPY package*.json ./
 
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+RUN npm ci --no-audit --no-fund
 
 COPY . .
 
-
 RUN npm run build
-
 
 FROM node:20-alpine AS runtime
 WORKDIR /app
-ENV NODE_ENV=production
-ENV PORT=3000
+
+ENV NODE_ENV=production \
+    NUXT_HOST=0.0.0.0 \
+    NUXT_PORT=3000
+
+COPY --from=build /app/.output ./.output
+
 EXPOSE 3000
 
-COPY --from=builder /app/.output /app/.output
-
-COPY --from=builder /app/package*.json /app/
-
-
-HEALTHCHECK --interval=30s --timeout=5s --retries=5 CMD wget -qO- http://127.0.0.1:3000/ || exit 1
-
-# Jalankan server Nitro
 CMD ["node", ".output/server/index.mjs"]
