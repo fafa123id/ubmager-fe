@@ -3,7 +3,7 @@ export const useAuth = () => {
   const user = useState('user', () => null)
 
   async function fetchUser() {
-    try { user.value = await $fetch('/user', { baseURL: 'https://api.ubmager.bornhub.cloud', credentials: 'include' }) }
+    try { user.value = await $fetch('api/user', { baseURL: 'https://api.ubmager.bornhub.cloud', credentials: 'include' }) }
     catch { user.value = null }
   }
 
@@ -11,7 +11,7 @@ export const useAuth = () => {
 
     await $fetch('/sanctum/csrf-cookie', { baseURL: 'https://api.ubmager.bornhub.cloud', credentials: 'include' })
     // 2) kirim kredensial (Axios/$fetch akan kirim X-XSRF-TOKEN otomatis jika pakai Axios; untuk $fetch, set header manual jika perlu)
-    await $fetch('/login', {
+    await $fetch('api/login', {
       baseURL: 'https://api.bornhub.cloud',
       method: 'POST',
       body: { email, password },
@@ -22,7 +22,7 @@ export const useAuth = () => {
   }
 
   async function logout() {
-    await $fetch('/logout', { baseURL: 'https://api.ubmager.bornhub.cloud', method: 'POST', credentials: 'include' })
+    await $fetch('api/logout', { baseURL: 'https://api.ubmager.bornhub.cloud', method: 'POST', credentials: 'include' })
     user.value = null
   }
 
