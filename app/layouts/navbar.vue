@@ -116,7 +116,7 @@ const isActive = (to: string) => route.path === to;
           </NuxtLink>
           <button
             v-else
-            @click="logout; isOpen = false"
+            @click="logout(); isOpen = false"
             class="mt-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-white/10 px-4 py-3 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/15"
           >
             Logout
