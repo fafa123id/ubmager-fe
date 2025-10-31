@@ -4,40 +4,24 @@ export const useAuth = () => {
 
   async function fetchUser() {
     try {
-      user.value = await $fetch("api/user", {
-        baseURL: "https://api.ubmager.bornhub.cloud",
-        credentials: "include",
-      });
+      user.value = await axios.get("api/user");
     } catch {
       user.value = null;
     }
   }
 
   async function login({ email, password }) {
-    await $fetch("/sanctum/csrf-cookie", {
-      baseURL: "https://api.ubmager.bornhub.cloud",
-      credentials: "include",
-    });
+    await axios.get("sanctum/csrf-cookie"); // Dapatkan cookie CSRF terlebih dahulu
 
-    await $fetch("api/login", {
-      baseURL: "https://api.ubmager.bornhub.cloud",
-      method: "POST",
-      body: {
-        email,
-        password,
-      },
-      credentials: "include",
-      headers: { "X-XSRF-TOKEN": useCookie("XSRF-TOKEN").value }, // jika perlu
+    await axios.post('/api/login', {
+      email: this.email,
+      password: this.password
     });
     await fetchUser();
   }
 
   async function logout() {
-    await $fetch("api/logout", {
-      baseURL: "https://api.ubmager.bornhub.cloud",
-      method: "POST",
-      credentials: "include",
-    });
+    await axios.post('/api/logout');
     user.value = null;
   }
 
