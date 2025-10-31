@@ -70,7 +70,7 @@ const submit = async () => {
 
     <!-- Navbar mini (opsional, match style) -->
     <header
-      class="reveal reveal-init sticky top-0 z-10 border-b border-white/10 bg-slate-950/40 backdrop-blur"
+      class="sticky top-0 z-10 border-b border-white/10 bg-slate-950/40 backdrop-blur"
     >
       <div
         class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8"
@@ -100,7 +100,7 @@ const submit = async () => {
 
     <!-- Card Login -->
     <section
-      class="reveal reveal-init mx-auto grid max-w-7xl place-items-center px-4 py-12 sm:px-6 lg:px-8"
+      class=" mx-auto grid max-w-7xl place-items-center px-4 py-12 sm:px-6 lg:px-8"
     >
       <div
         class="w-full max-w-md rounded-3xl border border-white/10 bg-slate-900/60 p-6 shadow-2xl backdrop-blur-xl"
@@ -303,25 +303,3 @@ const submit = async () => {
   </main>
 </template>
 
-<style>
-/* Reveal (sekali), pakai plugin mu: .reveal-init -> .reveal-in */
-.reveal-init {
-  opacity: 0;
-  transform: translateY(14px) scale(0.98);
-}
-.reveal-in {
-  opacity: 1;
-  transform: none;
-  transition: opacity 0.5s ease, transform 0.5s ease;
-  transition-delay: var(--rv-delay, 0ms);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .reveal-init,
-  .reveal-in {
-    transition: none !important;
-    transform: none !important;
-    opacity: 1 !important;
-  }
-}
-</style>
