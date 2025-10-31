@@ -46,7 +46,7 @@ const submit = async () => {
 </script>
 
 <template>
-  <main class="relative min-h-dvh text-slate-100">
+  <main class="relative overflow-hidden min-h-dvh text-slate-100">
     <!-- BG gelap elegan (konsisten) -->
     <div
       class="absolute inset-0 -z-20 bg-[radial-gradient(60%_60%_at_50%_10%,#0f172a_0%,#0b1220_50%,#0a0f1a_100%)]"
@@ -67,36 +67,6 @@ const submit = async () => {
     <div
       class="pointer-events-none absolute -bottom-24 -right-16 h-72 w-72 rounded-full bg-indigo-500/15 blur-3xl"
     ></div>
-
-    <!-- Navbar mini (opsional, match style) -->
-    <header
-      class="sticky top-0 z-10 border-b border-white/10 bg-slate-950/40 backdrop-blur"
-    >
-      <div
-        class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8"
-      >
-        <NuxtLink to="/" class="inline-flex items-center gap-2">
-          <span
-            class="h-8 w-8 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 ring-1 ring-white/20"
-          ></span>
-          <span class="text-sm font-semibold tracking-wide">UBMager</span>
-        </NuxtLink>
-        <div class="flex items-center gap-2">
-          <NuxtLink
-            to="/"
-            class="cursor-pointer rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-200 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
-          >
-            Beranda
-          </NuxtLink>
-          <NuxtLink
-            to="/register"
-            class="cursor-pointer rounded-lg bg-white/10 px-3 py-1.5 text-xs font-semibold text-white ring-1 ring-white/15 hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
-          >
-            Daftar
-          </NuxtLink>
-        </div>
-      </div>
-    </header>
 
     <!-- Card Login -->
     <section
