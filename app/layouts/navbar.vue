@@ -48,7 +48,7 @@ const isActive = (to: string) => route.path === to;
         <!-- CTA -->
         <div v-if="!user" class="hidden items-center gap-2 md:flex">
           <NuxtLink
-            to="/masuk"
+            to="/auth/login"
             class="group inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
           >
             <svg viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor">
@@ -108,7 +108,7 @@ const isActive = (to: string) => route.path === to;
 
           <NuxtLink
             v-if="!user"
-            to="/masuk"
+            to="/auth/login"
             class="mt-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-white/10 px-4 py-3 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/15"
             @click="isOpen = false"
           >
