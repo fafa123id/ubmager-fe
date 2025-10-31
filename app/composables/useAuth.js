@@ -4,14 +4,14 @@ export const useAuth = () => {
 
   async function fetchUser() {
     try {
-      user.value = await axios.get("api/user");
+      user.value = await axios.get("/api/user");
     } catch {
       user.value = null;
     }
   }
 
   async function login({ email, password }) {
-    await axios.get("sanctum/csrf-cookie"); // Dapatkan cookie CSRF terlebih dahulu
+    await axios.get("/sanctum/csrf-cookie"); // Dapatkan cookie CSRF terlebih dahulu
 
     await axios.post('/api/login', {
       email: email,
