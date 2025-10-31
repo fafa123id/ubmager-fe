@@ -7,9 +7,15 @@ export default defineNuxtConfig({
   },
   ssr: true,
   nitro: {
-    preset: "node",
+    externals: { inline: [] },
+    preset: "node-server",
   },
   app: {
+    pageTransition: {
+      name: "fade",
+      mode: "out-in", // biar halaman lama keluar dulu, baru masuk yang baru
+    },
+    layoutTransition: { name: "layout", mode: "out-in" },
     head: {
       title: "UBMager Frontend",
       meta: [{ name: "description", content: "Frontend SSR untuk UBMager" }],
