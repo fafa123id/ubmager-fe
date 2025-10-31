@@ -30,8 +30,6 @@ export const useAuth = () => {
       headers: { "X-XSRF-TOKEN": useCookie("XSRF-TOKEN").value }, // jika perlu
     });
     await fetchUser();
-    const target = next || getQuery().next || "/";
-    return hardRefresh(target);
   }
 
   async function logout() {
@@ -42,7 +40,7 @@ export const useAuth = () => {
     });
     user.value = null;
     await refreshNuxtData();
-    return hardRefresh("/login");
+    hardRefresh("/login");
   }
 
   return { user, fetchUser, login, logout };

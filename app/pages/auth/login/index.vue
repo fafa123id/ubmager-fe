@@ -35,7 +35,10 @@ const submit = async () => {
 
     successMsg.value = "Berhasil masuk. Mengarahkan...";
     // arahkan ke dashboard / home
-    setTimeout(() => navigateTo("/"), 600);
+    setTimeout(() => {
+      const target = next || getQuery().next || "/";
+      return hardRefresh(target);
+    }, 600);
   } catch (e) {
     // tampilkan pesan ringkas
     errorMsg.value = e?.data?.message || "Email atau kata sandi salah.";
@@ -70,7 +73,7 @@ const submit = async () => {
 
     <!-- Card Login -->
     <section
-      class=" mx-auto grid max-w-7xl place-items-center px-4 py-12 sm:px-6 lg:px-8"
+      class="mx-auto grid max-w-7xl place-items-center px-4 py-12 sm:px-6 lg:px-8"
     >
       <div
         class="w-full max-w-md rounded-3xl border border-white/10 bg-slate-900/60 p-6 shadow-2xl backdrop-blur-xl"
@@ -272,4 +275,3 @@ const submit = async () => {
     </section>
   </main>
 </template>
-
