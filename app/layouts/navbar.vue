@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { useAuth } from '~/composables/useAuth';
 
 const isOpen = ref(false);
@@ -10,7 +10,7 @@ const links = [
 ];
 const route = useRoute();
 const { user, logout } = useAuth();
-const isActive = (to: string) => route.path === to;
+const isActive = (to) => route.path === to;
 </script>
 
 <template>
