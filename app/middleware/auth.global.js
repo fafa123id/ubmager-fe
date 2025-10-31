@@ -10,7 +10,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   // Belum login
   if (requiresAuth && !user.value) {
-    return navigateTo(`/login?next=${encodeURIComponent(to.fullPath)}`)
+    return navigateTo(`/auth/login?next=${encodeURIComponent(to.fullPath)}`)
   }
 
 })
