@@ -1,9 +1,18 @@
-import axios from 'axios';
 // plugins/api.ts
+import axios from 'axios';
+
 export default defineNuxtPlugin(() => {
-  // Set base URL untuk API Anda
-  axios.defaults.baseURL = 'https://api.ubmager.bornhub.cloud'; // Ganti dengan URL BE Anda
-  
-  // PENTING: Ini memberitahu browser untuk mengirim cookie
-  axios.defaults.withCredentials = true;
+  // Buat instance axios yang sudah terkonfigurasi
+  const api = axios.create({
+    baseURL: 'https://api.ubmager.bornhub.cloud',
+    withCredentials: true,
+  });
+
+  // Sediakan instance itu ke aplikasi Nuxt
+  // Sekarang kamu bisa akses via useNuxtApp().$api
+  return {
+    provide: {
+      api: api,
+    },
+  };
 });

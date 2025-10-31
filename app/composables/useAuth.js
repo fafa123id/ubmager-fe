@@ -1,27 +1,27 @@
 // composables/useAuth.ts
 export const useAuth = () => {
   const user = useState("user", () => null);
-
+  const { $api } = useNuxtApp();
   async function fetchUser() {
     try {
-      user.value = await axios.get("/api/user");
+      user.value = await $api.get("/api/user");
     } catch {
       user.value = null;
     }
   }
 
   async function login({ email, password }) {
-    await axios.get("/sanctum/csrf-cookie"); // Dapatkan cookie CSRF terlebih dahulu
+    await $api.get("/sanctum/csrf-cookie"); // Dapatkan cookie CSRF terlebih dahulu
 
-    await axios.post('/api/login', {
+    await $api.post("/api/login", {
       email: email,
-      password: password
+      password: password,
     });
     await fetchUser();
   }
 
   async function logout() {
-    await axios.post('/api/logout');
+    await $api.post("/api/logout");
     user.value = null;
   }
 
