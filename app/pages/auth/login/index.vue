@@ -36,8 +36,7 @@ const submit = async () => {
     successMsg.value = "Berhasil masuk. Mengarahkan...";
     // arahkan ke dashboard / home
     setTimeout(() => {
-      const target = "/";
-      return hardRefresh(target);
+      navigateTo("/");
     }, 600);
   } catch (e) {
     // tampilkan pesan ringkas

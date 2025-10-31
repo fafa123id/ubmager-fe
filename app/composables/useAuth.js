@@ -39,8 +39,6 @@ export const useAuth = () => {
       credentials: "include",
     });
     user.value = null;
-    await refreshNuxtData();
-    hardRefresh("/login");
   }
 
   return { user, fetchUser, login, logout };
