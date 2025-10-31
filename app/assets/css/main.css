@@ -1,1 +1,11 @@
 @import "tailwindcss";
+@layer base {
+  button {
+    @apply cursor-pointer;
+  }
+}
+.reveal-init { opacity: 0; transform: translateY(14px) scale(.98); }
+.reveal-in   { opacity: 1; transform: none; transition: opacity .5s ease, transform .5s ease; transition-delay: var(--rv-delay, 0ms); }
+@media (prefers-reduced-motion: reduce) {
+  .reveal-init, .reveal-in { transition: none !important; transform: none !important; opacity: 1 !important; }
+}
