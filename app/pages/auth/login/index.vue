@@ -36,7 +36,7 @@ const submit = async () => {
     successMsg.value = "Berhasil masuk. Mengarahkan...";
     // arahkan ke dashboard / home
     setTimeout(() => {
-      const target = getQuery().next || "/";
+      const target = "/";
       return hardRefresh(target);
     }, 600);
   } catch (e) {
