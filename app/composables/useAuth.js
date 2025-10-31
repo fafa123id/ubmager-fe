@@ -13,7 +13,7 @@ export const useAuth = () => {
     }
   }
 
-  async function login(email, password) {
+  async function login({ email, password }) {
     await $fetch("/sanctum/csrf-cookie", {
       baseURL: "https://api.ubmager.bornhub.cloud",
       credentials: "include",
