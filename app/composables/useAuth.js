@@ -18,14 +18,14 @@ export const useAuth = () => {
       baseURL: "https://api.ubmager.bornhub.cloud",
       credentials: "include",
     });
-  
+
     await $fetch("api/login", {
       baseURL: "https://api.ubmager.bornhub.cloud",
       method: "POST",
-      body: JSON.stringify({
+      body: {
         email,
         password,
-      }),
+      },
       credentials: "include",
       headers: { "X-XSRF-TOKEN": useCookie("XSRF-TOKEN").value }, // jika perlu
     });
