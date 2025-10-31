@@ -22,7 +22,7 @@ pipeline {
         stage('Build and Deploy Application') {
             steps {
                 echo '--- Menghentikan container yang jalan ---'
-                sh 'docker compose down -v --remove-orphans'
+                sh 'docker compose down --remove-orphans'
                 echo '--- MEMBANGUN IMAGE APLIKASI BARU ---'
                 sh 'docker compose build'
 
