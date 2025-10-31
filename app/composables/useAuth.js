@@ -28,7 +28,7 @@ export const useAuth = () => {
   /**
    * (A) Fungsi Login
    */
-  async function login(email, password) {
+  async function login({ email, password }) {
     // Hapus token lama jika ada
     logout(false); // Panggil logout tapi jangan panggil API
 
