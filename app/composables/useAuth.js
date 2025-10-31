@@ -14,8 +14,8 @@ export const useAuth = () => {
     await axios.get("sanctum/csrf-cookie"); // Dapatkan cookie CSRF terlebih dahulu
 
     await axios.post('/api/login', {
-      email: this.email,
-      password: this.password
+      email: email,
+      password: password
     });
     await fetchUser();
   }
