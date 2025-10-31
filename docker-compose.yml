@@ -35,7 +35,7 @@ services:
       - LETSENCRYPT_HOST=ubmager.bornhub.cloud
       - LETSENCRYPT_EMAIL=ahmadfauzanroziqin@gmail.com
     networks:
-      - web
+      - shared-network
 networks:
   shared-network:
     external: true
