@@ -30,7 +30,7 @@ export const useAuth = () => {
    */
   async function login({ email, password }) {
     // Hapus token lama jika ada
-    logout(false); // Panggil logout tapi jangan panggil API
+   clearTokens(); 
 
     try {
       const response = await $api.post("/api/login", {
@@ -51,16 +51,22 @@ export const useAuth = () => {
       return Promise.resolve();
     } catch (error) {
       console.error("Login failed:", error);
-      logout(false); // Bersihkan sisa token jika login gagal
+      clearTokens(); // Bersihkan sisa token jika login gagal
       return Promise.reject(error);
     }
   }
-
+  function clearTokens() {
+    // Bersihkan state di frontend
+    user.value = null;
+    token.value = null;
+    refreshToken.value = null;
+    setAuthHeader(null);
+  }
   /**
    * (B) Fungsi Logout
    */
-  async function logout(callApi = true) {
-    if (callApi && token.value) {
+  async function logout() {
+    if (token.value) {
       try {
         // Beri tahu backend untuk revoke token
         await $api.post("/api/logout");
@@ -68,13 +74,8 @@ export const useAuth = () => {
         console.warn("Failed to logout from API, logging out locally:", error);
       }
     }
-
-    // Bersihkan state di frontend
-    user.value = null;
-    token.value = null;
-    refreshToken.value = null;
-    setAuthHeader(null);
-    window.location.reload(true);
+    clearTokens();
+    window.location.reload();
   }
 
   /**
