@@ -104,9 +104,9 @@ export const useAuth = () => {
    * (D) Fungsi Inisialisasi Auth
    * Panggil ini saat aplikasi Nuxt pertama kali dimuat.
    */
-  async function initAuth() {
+  async function checkAuth() {
     if (token.value) {
-      await fetchUser(); // Coba fetch user jika token ada
+      await $api.get('/api/check-auth'); // Coba fetch user jika token ada
     } else {
       user.value = null; // Pastikan user null jika tidak ada token
     }
@@ -117,6 +117,6 @@ export const useAuth = () => {
     login,
     logout,
     fetchUser,
-    initAuth,
+    checkAuth,
   };
 };
