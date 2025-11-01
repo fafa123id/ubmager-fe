@@ -1,10 +1,10 @@
 
-export const token = useCookie("auth_token", {
+const token = useCookie("auth_token", {
   maxAge: 60, // 15 menit (sesuaikan dengan backend, tapi ini hanya untuk client)
   path: "/",
 });
 
-export const refreshToken = useCookie("auth_refresh_token", {
+const refreshToken = useCookie("auth_refresh_token", {
   maxAge: 60 * 60 * 24 * 7, // 7 hari
   path: "/",
 });
