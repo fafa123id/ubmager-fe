@@ -3,7 +3,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const requiresAuth = to.meta.auth === true
   const { user, checkAuth } = useAuth()
 
-  await checkAuth();
+  try {
+    await checkAuth();
+  } catch (error) {
+  }
 
   // Belum login
   if (requiresAuth && !user.value) {
