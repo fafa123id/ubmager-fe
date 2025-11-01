@@ -1,29 +1,20 @@
 // plugins/api.ts
-import axios from "axios";
+import axios from 'axios';
 
-const token = useCookie("auth_token", {
-  maxAge: 60, // 15 menit (sesuaikan dengan backend, tapi ini hanya untuk client)
-  path: "/",
-});
-
-const refreshToken = useCookie("auth_refresh_token", {
-  maxAge: 60 * 60 * 24 * 7, // 7 hari
-  path: "/",
-});
-const runtimeConfig = useRuntimeConfig();
 export default defineNuxtPlugin(() => {
-  
+  const runtimeConfig = useRuntimeConfig();
+  const {token, refreshToken} = useAuth();
   // Ambil Client ID/Secret dari .env
   const passportClientId = runtimeConfig.public.passportClientId;
   const passportClientSecret = runtimeConfig.public.passportClientSecret;
 
   // 1. Buat instance Axios
   const api = axios.create({
-    baseURL: "https://api.ubmager.bornhub.cloud", // URL Backend kamu
+    baseURL: 'https://api.ubmager.bornhub.cloud', // URL Backend kamu
     headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    }
   });
 
   // 2. Setup Interceptor (Pencegat Respons)
@@ -34,11 +25,10 @@ export default defineNuxtPlugin(() => {
     },
     async (error) => {
       const originalRequest = error.config;
+      
+      // Cek jika error 401 dan BUKAN request refresh token itu sendiri
+      if (error.response.status === 401 && originalRequest.url !== '/oauth/token') {
 
-      if (
-        error.response.status === 401 &&
-        originalRequest.url !== "/oauth/token"
-      ) {
         if (!refreshToken.value) {
           // Tidak ada refresh token, gagal.
           // (Opsional: panggil logout di sini)
@@ -47,14 +37,14 @@ export default defineNuxtPlugin(() => {
 
         try {
           // 3. Ini adalah percobaan refresh
-          console.log("Access token expired. Refreshing token...");
-
-          const response = await api.post("/oauth/token", {
-            grant_type: "refresh_token",
+          console.log('Access token expired. Refreshing token...');
+          
+          const response = await api.post('/oauth/token', {
+            grant_type: 'refresh_token',
             refresh_token: refreshToken.value,
             client_id: passportClientId,
             client_secret: passportClientSecret,
-            scope: "",
+            scope: '',
           });
 
           // 4. Dapat token baru, simpan!
@@ -65,30 +55,29 @@ export default defineNuxtPlugin(() => {
           refreshToken.value = newRefreshToken;
 
           // 5. Update header default Axios dan header request asli
-          api.defaults.headers.common[
-            "Authorization"
-          ] = `Bearer ${newAccessToken}`;
-          originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+          api.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
+          originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
 
           // 6. Ulangi request asli yang gagal
           return api(originalRequest);
+
         } catch (refreshError) {
           // Gagal refresh (mungkin refresh token juga expired)
-          console.error("Failed to refresh token:", refreshError);
-
+          console.error('Failed to refresh token:', refreshError);
+          
           // Hapus cookie dan paksa logout
           token.value = null;
           refreshToken.value = null;
-          delete api.defaults.headers.common["Authorization"];
+          delete api.defaults.headers.common['Authorization'];
 
           // (Opsional: redirect ke login)
           // const router = useRouter();
-          navigateTo("/");
-
+          // router.push('/login');
+          
           return Promise.reject(refreshError);
         }
       }
-
+      
       // Jika error bukan 401, lempar saja
       return Promise.reject(error);
     }
