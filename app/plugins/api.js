@@ -68,8 +68,8 @@ export default defineNuxtPlugin(() => {
           console.error("Failed to refresh token:", refreshError);
 
           // Hapus cookie dan paksa logout
-          token = null;
-          refreshToken = null;
+          token.value = null;
+          refreshToken.value = null;
           delete api.defaults.headers.common["Authorization"];
 
           // (Opsional: redirect ke login)
