@@ -1,20 +1,18 @@
-
-const token = useCookie("auth_token", {
-  maxAge: 60, // 15 menit (sesuaikan dengan backend, tapi ini hanya untuk client)
-  path: "/",
-});
-
-const refreshToken = useCookie("auth_refresh_token", {
-  maxAge: 60 * 60 * 24 * 7, // 7 hari
-  path: "/",
-});
 // composables/useAuth.ts
 export const useAuth = () => {
   const { $api } = useNuxtApp(); // Ambil $api dari plugin
   const user = useState("user", () => null); // State user global
 
   // Cookie untuk menyimpan token
+  const token = useCookie("auth_token", {
+    maxAge: 60, // 15 menit (sesuaikan dengan backend, tapi ini hanya untuk client)
+    path: "/",
+  });
 
+  const refreshToken = useCookie("auth_refresh_token", {
+    maxAge: 60 * 60 * 24 * 7, // 7 hari
+    path: "/",
+  });
   /**
    * Helper untuk set header di $api
    */
@@ -144,5 +142,7 @@ export const useAuth = () => {
     login,
     logout,
     fetchUser,
+    token,
+    refreshToken,
   };
 };
