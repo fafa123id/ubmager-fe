@@ -10,9 +10,9 @@ const refreshToken = useCookie("auth_refresh_token", {
   maxAge: 60 * 60 * 24 * 7, // 7 hari
   path: "/",
 });
-
+const runtimeConfig = useRuntimeConfig();
 export default defineNuxtPlugin(() => {
-  const runtimeConfig = useRuntimeConfig();
+  
   // Ambil Client ID/Secret dari .env
   const passportClientId = runtimeConfig.public.passportClientId;
   const passportClientSecret = runtimeConfig.public.passportClientSecret;
