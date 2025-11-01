@@ -4,7 +4,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const { user, fetchUser } = useAuth()
 
   // Jika state belum ada (mis. first client nav), coba fetch
-  if (process.client && user.value === null) {
+  if (user.value === null) {
     await fetchUser().catch(() => {})
   }
 
