@@ -74,6 +74,7 @@ export const useAuth = () => {
     token.value = null;
     refreshToken.value = null;
     setAuthHeader(null);
+    window.location.reload(true);
   }
 
   /**
