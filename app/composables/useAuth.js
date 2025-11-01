@@ -5,7 +5,7 @@ export const useAuth = () => {
 
   // Cookie untuk menyimpan token
   const token = useCookie("auth_token", {
-    maxAge: 60 * 15, // 15 menit (sesuaikan dengan backend, tapi ini hanya untuk client)
+    maxAge: 60, // 15 menit (sesuaikan dengan backend, tapi ini hanya untuk client)
     path: "/",
   });
 
