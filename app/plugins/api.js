@@ -45,7 +45,7 @@ export default defineNuxtPlugin(() => {
             refresh_token: refreshTokenCookie.value,
             client_id: passportClientId,
             client_secret: passportClientSecret,
-            scope: '*',
+            scope: '',
           });
 
           // 4. Dapat token baru, simpan!
