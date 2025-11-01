@@ -75,7 +75,7 @@ export const useAuth = () => {
       }
     }
     clearTokens();
-    window.location.reload();
+    navigateTo("/");
   }
 
   /**
