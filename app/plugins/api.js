@@ -4,8 +4,6 @@ import { refreshToken, token } from "~/composables/useAuth";
 
 export default defineNuxtPlugin(() => {
   const runtimeConfig = useRuntimeConfig();
-  const token = token;
-  const refreshToken = refreshToken;
   // Ambil Client ID/Secret dari .env
   const passportClientId = runtimeConfig.public.passportClientId;
   const passportClientSecret = runtimeConfig.public.passportClientSecret;
