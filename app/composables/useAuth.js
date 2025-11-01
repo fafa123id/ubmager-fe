@@ -1,4 +1,4 @@
-import { access } from "fs";
+
 export const token = useCookie("auth_token", {
   maxAge: 60, // 15 menit (sesuaikan dengan backend, tapi ini hanya untuk client)
   path: "/",
