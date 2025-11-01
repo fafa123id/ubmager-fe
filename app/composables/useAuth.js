@@ -1,18 +1,19 @@
+import { access } from "fs";
+export const token = useCookie("auth_token", {
+  maxAge: 60, // 15 menit (sesuaikan dengan backend, tapi ini hanya untuk client)
+  path: "/",
+});
+
+export const refreshToken = useCookie("auth_refresh_token", {
+  maxAge: 60 * 60 * 24 * 7, // 7 hari
+  path: "/",
+});
 // composables/useAuth.ts
 export const useAuth = () => {
   const { $api } = useNuxtApp(); // Ambil $api dari plugin
   const user = useState("user", () => null); // State user global
 
   // Cookie untuk menyimpan token
-  const token = useCookie("auth_token", {
-    maxAge: 60, // 15 menit (sesuaikan dengan backend, tapi ini hanya untuk client)
-    path: "/",
-  });
-
-  const refreshToken = useCookie("auth_refresh_token", {
-    maxAge: 60 * 60 * 24 * 7, // 7 hari
-    path: "/",
-  });
 
   /**
    * Helper untuk set header di $api
@@ -30,7 +31,7 @@ export const useAuth = () => {
    */
   async function login({ email, password }) {
     // Hapus token lama jika ada
-   clearTokens(); 
+    clearTokens();
 
     try {
       const response = await $api.post("/api/login", {
@@ -104,12 +105,41 @@ export const useAuth = () => {
     }
   }
 
+  async function checkAuth() {
+    if (refreshToken.value) {
+      return false;
+    }
+    if (!token.value) {
+      try {
+        const runtimeConfig = useRuntimeConfig();
+        const passportClientId = runtimeConfig.public.passportClientId;
+        const passportClientSecret = runtimeConfig.public.passportClientSecret;
+        // Coba refresh token
+        const response = await $api.post("/oauth/token", {
+          grant_type: "refresh_token",
+          refresh_token: refreshToken.value,
+          client_id: passportClientId,
+          client_secret: passportClientSecret,
+          scope: "",
+        });
+        token.value = response.data.access_token;
+        refreshToken.value = response.data.refresh_token;
+      } catch (error) {
+        console.error("Failed to refresh token:", error);
+        clearTokens();
+        return false;
+      }
+    }
+    return true;
+  }
+
   /**
    * (D) Fungsi Inisialisasi Auth
    * Panggil ini saat aplikasi Nuxt pertama kali dimuat.
    */
 
   return {
+    checkAuth,
     user,
     login,
     logout,
