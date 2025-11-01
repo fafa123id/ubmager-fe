@@ -1,5 +1,6 @@
 <!-- pages/login.vue -->
 <script setup>
+definePageMeta({ auth: true, redirectIfAuth: "/" });
 import { ref, computed } from "vue";
 const { login } = useAuth();
 const email = ref("");
