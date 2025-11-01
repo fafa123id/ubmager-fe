@@ -1,10 +1,10 @@
 // middleware/auth.global.ts
 export default defineNuxtRouteMiddleware(async (to) => {
   const requiresAuth = to.meta.auth === "guest";
-  const { user, checkAuth } = useAuth();
+  const { user, fetchUser} = useAuth();
 
   try {
-    await checkAuth();
+    await fetchUser();
   } catch (error) {}
 
   // Sudah Login
