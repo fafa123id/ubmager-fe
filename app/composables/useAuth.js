@@ -85,7 +85,7 @@ export const useAuth = () => {
     _clearAuth();
 
     if (options.navigate) {
-      await navigateTo("/auth/login", { external: true });
+      await navigateTo("/", { external: true });
     }
   };
 
