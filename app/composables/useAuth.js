@@ -1,24 +1,26 @@
-import { defineNuxtPlugin } from '#app'; 
+import { defineNuxtPlugin } from "#app";
 
 export const useAuth = () => {
   const nuxtApp = useNuxtApp();
   const runtimeConfig = useRuntimeConfig();
 
-  const token = useCookie('auth_token', {
-    maxAge: 60 * 60, 
-    sameSite: 'lax',
+  const token = useCookie("auth_token", {
+    maxAge: 60 * 60,
+    sameSite: "lax",
   });
 
-  const refreshToken = useCookie('auth_refresh_token', {
-    maxAge: 60 * 60 * 24 * 30, 
-    sameSite: 'lax',
+  const refreshToken = useCookie("auth_refresh_token", {
+    maxAge: 60 * 60 * 24 * 30,
+    sameSite: "lax",
   });
 
-  const user = useState('auth_user', () => null);
+  const user = useState("auth_user", () => null);
 
   const _setAuthHeader = (accessToken) => {
     if (nuxtApp.$api && accessToken) {
-      nuxtApp.$api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      nuxtApp.$api.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${accessToken}`;
     }
   };
 
@@ -26,35 +28,31 @@ export const useAuth = () => {
     token.value = null;
     refreshToken.value = null;
     user.value = null;
-    if (nuxtApp.$api) { 
-      delete nuxtApp.$api.defaults.headers.common['Authorization'];
+    if (nuxtApp.$api) {
+      delete nuxtApp.$api.defaults.headers.common["Authorization"];
     }
   };
 
   const fetchUser = async () => {
     if (!token.value) {
-      return; 
+      return;
     }
-    
-    _setAuthHeader(token.value); 
+
+    _setAuthHeader(token.value);
 
     try {
-      const response = await nuxtApp.$api.get('/api/user');
+      const response = await nuxtApp.$api.get("/api/user");
       user.value = response.data;
     } catch (error) {
-      console.error('Gagal mengambil data user:', error);
+      console.error("Gagal mengambil data user:", error);
     }
   };
 
-  const login = async ({email, password}) => {
+  const login = async ({ email, password }) => {
     try {
-      const response = await nuxtApp.$api.post('/oauth/token', {
-        grant_type: 'password',
-        client_id: runtimeConfig.public.passportClientId,
-        client_secret: runtimeConfig.public.passportClientSecret,
-        username: email,
-        password: password,
-        scope: '',
+      const response = await nuxtApp.$api.post("/api/login", {
+        email,
+        password,
       });
 
       token.value = response.data.access_token;
@@ -63,10 +61,10 @@ export const useAuth = () => {
       _setAuthHeader(token.value);
 
       await fetchUser();
-      
+
       return true;
     } catch (error) {
-      console.error('Login gagal:', error);
+      console.error("Login gagal:", error);
       _clearAuth();
       return false;
     }
@@ -75,16 +73,19 @@ export const useAuth = () => {
   const logout = async (options = { navigate: true }) => {
     try {
       if (nuxtApp.$api) {
-          await nuxtApp.$api.post('/api/logout');
+        await nuxtApp.$api.post("/api/logout");
       }
     } catch (error) {
-      console.warn("Panggilan API logout gagal, tetap membersihkan sisi klien.", error);
+      console.warn(
+        "Panggilan API logout gagal, tetap membersihkan sisi klien.",
+        error
+      );
     }
 
     _clearAuth();
 
     if (options.navigate) {
-      await navigateTo('/auth/login', { external: true });
+      await navigateTo("/auth/login", { external: true });
     }
   };
 
@@ -109,6 +110,6 @@ export const useAuth = () => {
     logout,
     checkAuth,
     fetchUser,
-    _setAuthHeader, 
+    _setAuthHeader,
   };
 };
