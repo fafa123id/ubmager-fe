@@ -1,148 +1,114 @@
-// composables/useAuth.ts
+import { defineNuxtPlugin } from '#app'; 
+
 export const useAuth = () => {
-  const { $api } = useNuxtApp(); // Ambil $api dari plugin
-  const user = useState("user", () => null); // State user global
+  const nuxtApp = useNuxtApp();
+  const runtimeConfig = useRuntimeConfig();
 
-  // Cookie untuk menyimpan token
-  const token = useCookie("auth_token", {
-    maxAge: 60, // 15 menit (sesuaikan dengan backend, tapi ini hanya untuk client)
-    path: "/",
+  const token = useCookie('auth_token', {
+    maxAge: 60 * 60, 
+    sameSite: 'lax',
   });
 
-  const refreshToken = useCookie("auth_refresh_token", {
-    maxAge: 60 * 60 * 24 * 7, // 7 hari
-    path: "/",
+  const refreshToken = useCookie('auth_refresh_token', {
+    maxAge: 60 * 60 * 24 * 30, 
+    sameSite: 'lax',
   });
-  /**
-   * Helper untuk set header di $api
-   */
-  function setAuthHeader(authToken) {
-    if (authToken) {
-      $api.defaults.headers.common["Authorization"] = `Bearer ${authToken}`;
-    } else {
-      delete $api.defaults.headers.common["Authorization"];
+
+  const user = useState('auth_user', () => null);
+
+  const _setAuthHeader = (accessToken) => {
+    if (nuxtApp.$api && accessToken) {
+      nuxtApp.$api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
     }
-  }
+  };
 
-  /**
-   * (A) Fungsi Login
-   */
-  async function login({ email, password }) {
-    // Hapus token lama jika ada
-    clearTokens();
+  const _clearAuth = () => {
+    token.value = null;
+    refreshToken.value = null;
+    user.value = null;
+    if (nuxtApp.$api) { 
+      delete nuxtApp.$api.defaults.headers.common['Authorization'];
+    }
+  };
+
+  const fetchUser = async () => {
+    if (!token.value) {
+      return; 
+    }
+    
+    _setAuthHeader(token.value); 
 
     try {
-      const response = await $api.post("/api/login", {
-        email: email,
+      const response = await nuxtApp.$api.get('/api/v1/user');
+      user.value = response.data;
+    } catch (error) {
+      console.error('Gagal mengambil data user:', error);
+    }
+  };
+
+  const login = async (email, password) => {
+    try {
+      const response = await nuxtApp.$api.post('/oauth/token', {
+        grant_type: 'password',
+        client_id: runtimeConfig.public.passportClientId,
+        client_secret: runtimeConfig.public.passportClientSecret,
+        username: email,
         password: password,
+        scope: '',
       });
 
-      // Simpan kedua token dari respons Passport
       token.value = response.data.access_token;
       refreshToken.value = response.data.refresh_token;
 
-      // Set header untuk request selanjutnya
-      setAuthHeader(token.value);
+      _setAuthHeader(token.value);
 
-      // Ambil data user
       await fetchUser();
-
-      return Promise.resolve();
+      
+      return true;
     } catch (error) {
-      console.error("Login failed:", error);
-      clearTokens(); // Bersihkan sisa token jika login gagal
-      return Promise.reject(error);
-    }
-  }
-  function clearTokens() {
-    // Bersihkan state di frontend
-    user.value = null;
-    token.value = null;
-    refreshToken.value = null;
-    setAuthHeader(null);
-  }
-  /**
-   * (B) Fungsi Logout
-   */
-  async function logout() {
-    if (token.value) {
-      try {
-        // Beri tahu backend untuk revoke token
-        await $api.post("/api/logout");
-      } catch (error) {
-        console.warn("Failed to logout from API, logging out locally:", error);
-      }
-    }
-    clearTokens();
-    navigateTo("/");
-  }
-
-  /**
-   * (C) Fungsi Fetch User
-   */
-  async function fetchUser() {
-    if (!token.value) {
-      user.value = null;
-      return; // Tidak ada token, tidak perlu fetch
-    }
-
-    // Set header (penting jika ini page load baru)
-    setAuthHeader(token.value);
-
-    try {
-      const response = await $api.get("/api/user");
-      user.value = response.data;
-    } catch (error) {
-      console.error("Failed to fetch user:", error);
-      // Jika error (mungkin 401), interceptor akan coba refresh.
-      // Jika refresh gagal, token akan dihapus oleh interceptor.
-      // Kita cek lagi di sini.
-      if (!token.value) {
-        user.value = null;
-      }
-    }
-  }
-
-  async function checkAuth() {
-    if (refreshToken.value) {
+      console.error('Login gagal:', error);
+      _clearAuth();
       return false;
     }
-    if (!token.value) {
-      try {
-        const runtimeConfig = useRuntimeConfig();
-        const passportClientId = runtimeConfig.public.passportClientId;
-        const passportClientSecret = runtimeConfig.public.passportClientSecret;
-        // Coba refresh token
-        const response = await $api.post("/oauth/token", {
-          grant_type: "refresh_token",
-          refresh_token: refreshToken.value,
-          client_id: passportClientId,
-          client_secret: passportClientSecret,
-          scope: "",
-        });
-        token.value = response.data.access_token;
-        refreshToken.value = response.data.refresh_token;
-      } catch (error) {
-        console.error("Failed to refresh token:", error);
-        clearTokens();
-        return false;
-      }
-    }
-    return true;
-  }
+  };
 
-  /**
-   * (D) Fungsi Inisialisasi Auth
-   * Panggil ini saat aplikasi Nuxt pertama kali dimuat.
-   */
+  const logout = async (options = { navigate: true }) => {
+    try {
+      if (nuxtApp.$api) {
+          await nuxtApp.$api.post('/api/v1/logout');
+      }
+    } catch (error) {
+      console.warn("Panggilan API logout gagal, tetap membersihkan sisi klien.", error);
+    }
+
+    _clearAuth();
+
+    if (options.navigate) {
+      await navigateTo('/auth/login', { external: true });
+    }
+  };
+
+  const checkAuth = async () => {
+    if (user.value) {
+      return true;
+    }
+
+    if (token.value) {
+      await fetchUser();
+      return !!user.value;
+    }
+
+    return false;
+  };
 
   return {
-    checkAuth,
+    token,
+    refreshToken,
     user,
     login,
     logout,
+    checkAuth,
     fetchUser,
-    token,
-    refreshToken,
+    _setAuthHeader, 
   };
 };
