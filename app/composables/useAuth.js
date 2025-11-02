@@ -76,16 +76,13 @@ export const useAuth = () => {
         await nuxtApp.$api.post("/api/logout");
       }
     } catch (error) {
-      console.warn(
-        "Panggilan API logout gagal, tetap membersihkan sisi klien.",
-        error
-      );
+      console.error("Logout gagal:", error);
     }
 
     _clearAuth();
 
     if (options.navigate) {
-      await navigateTo("/", { external: true });
+      await navigateTo("/");
     }
   };
 
