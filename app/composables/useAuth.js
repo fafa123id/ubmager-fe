@@ -46,7 +46,7 @@ export const useAuth = () => {
     }
   };
 
-  const login = async (email, password) => {
+  const login = async ({email, password}) => {
     try {
       const response = await nuxtApp.$api.post('/oauth/token', {
         grant_type: 'password',
