@@ -39,7 +39,7 @@ export const useAuth = () => {
     _setAuthHeader(token.value); 
 
     try {
-      const response = await nuxtApp.$api.get('/api/v1/user');
+      const response = await nuxtApp.$api.get('/api/user');
       user.value = response.data;
     } catch (error) {
       console.error('Gagal mengambil data user:', error);
@@ -75,7 +75,7 @@ export const useAuth = () => {
   const logout = async (options = { navigate: true }) => {
     try {
       if (nuxtApp.$api) {
-          await nuxtApp.$api.post('/api/v1/logout');
+          await nuxtApp.$api.post('/api/logout');
       }
     } catch (error) {
       console.warn("Panggilan API logout gagal, tetap membersihkan sisi klien.", error);
