@@ -31,11 +31,9 @@ export default defineNuxtPlugin((nuxtApp) => {
         
         originalRequest._retry = true; 
 
-        const { token, refreshToken, logout } = useAuth(); 
+        const { token, refreshToken } = useAuth(); 
 
         if (!refreshToken.value) {
-          console.log('Interceptor: Tidak ada refresh token, logout.');
-          await logout(); 
           return Promise.reject(error);
         }
 
