@@ -35,9 +35,9 @@ const submit = async () => {
     });
 
     successMsg.value = "Berhasil masuk. Mengarahkan...";
-    // arahkan ke dashboard / home
+    const next = useRoute().query.next || "/";
     setTimeout(() => {
-      navigateTo("/");
+      navigateTo(next);
     }, 600);
   } catch (e) {
     // tampilkan pesan ringkas
