@@ -5,7 +5,7 @@ definePageMeta({
 });
 import { ref, computed, onMounted } from "vue";
 
-watch
+watch;
 const ENDPOINTS = {
   me: "/api/user",
   updateProfile: "/api/user",
@@ -59,12 +59,11 @@ const user = ref({
 
 /* ----- Lifecycle: Fetch profile ----- */
 const fetchProfile = async () => {
+  const { fetchUser } = useAuth();
   loading.value = true;
   errorMsg.value = "";
   try {
-    const { data } = await (
-      await $api.get(ENDPOINTS.me, { withCredentials: true })
-    ).data;
+    const { data } = await fetchUser();
     Object.assign(user.value, {
       isVerified: data?.is_verified ?? false,
       id: data?.id || null,
