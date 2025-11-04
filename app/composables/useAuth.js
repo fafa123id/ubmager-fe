@@ -43,6 +43,7 @@ export const useAuth = () => {
     try {
       const response = await nuxtApp.$api.get("/api/user");
       user.value = response.data;
+      return user.value;
     } catch (error) {
       console.error("Gagal mengambil data user:", error);
     }
