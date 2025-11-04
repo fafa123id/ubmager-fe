@@ -80,6 +80,11 @@ const isActive = (to) => route.path === to;
           <NuxtLink
             to="/profile"
             class="group inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+            :class="
+              isActive('/profile')
+                ? 'bg-gradient-to-br from-sky-500/15 to-indigo-600/15 ring-1 ring-white/10'
+                : 'bg-white/5 hover:bg-white/10 ring-1 ring-white/5'
+            "
           >
             <img
               :src="user.data.image"
@@ -129,10 +134,7 @@ const isActive = (to) => route.path === to;
           </NuxtLink>
 
           <!-- Logout + Avatar -->
-          <div
-            v-else
-            class="mt-1 flex items-center gap-3 rounded-2xl bg-white/5 px-3 py-2 ring-1 ring-white/10 backdrop-blur-sm transition hover:bg-white/10"
-          >
+          <div v-else class="mt-1 flex items-center gap-3 rounded-2xl">
             <!-- Tombol Logout -->
             <button
               @click="
@@ -148,6 +150,11 @@ const isActive = (to) => route.path === to;
             <NuxtLink
               to="/profile"
               class="inline-flex items-center justify-center rounded-xl bg-white/5 p-1.5 ring-1 ring-white/10 transition hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+              :class="
+                isActive('/profile')
+                  ? 'bg-gradient-to-br from-sky-500/15 to-indigo-600/15 ring-1 ring-white/10'
+                  : 'bg-white/5 hover:bg-white/10 ring-1 ring-white/5'
+              "
             >
               <img
                 :src="user?.data?.image || '/default-avatar.png'"
