@@ -5,7 +5,7 @@ definePageMeta({
 });
 import { ref, computed, onMounted } from "vue";
 
-/* Endpoint API — sesuaikan bila berbeda */
+watch
 const ENDPOINTS = {
   me: "/api/user",
   updateProfile: "/api/user",
@@ -13,6 +13,7 @@ const ENDPOINTS = {
 };
 const verificationEmail = async () => {
   try {
+    useSwal().showLoading();
     await $api.post(
       "/api/verify-email/send",
       { email: user.value.email },
