@@ -6,18 +6,7 @@ const ctaScroll = (id) => {
 }
 
 const { user, logout } = useAuth();
-const testfetch = async () => {
-  const { $api } = useNuxtApp()
-  try {
-    const res = await $api('api/user', {
-      method: 'GET',
-      credentials: 'include',
-    })
-    console.log('User data:',  res)
-  } catch (error) {
-    console.error('Error fetching user data:', error)
-  }
-}
+
 const beMitra = async () => {
   if (!user.value) {
     useSwal().showError('Silakan masuk terlebih dahulu untuk mendaftar sebagai mitra.') 
@@ -34,7 +23,6 @@ const beMitra = async () => {
 
 <template>
   <main class="relative overflow-hidden text-slate-100">
-    <button @click="testfetch()">Fetch user</button>
     <!-- BG gelap elegan -->
     <div class="absolute inset-0 -z-20 bg-[radial-gradient(60%_60%_at_50%_10%,#0f172a_0%,#0b1220_50%,#0a0f1a_100%)]"></div>
     <div class="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(to_bottom,transparent,rgba(0,0,0,.25))]"></div>
