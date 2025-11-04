@@ -34,12 +34,6 @@ export const useAuth = () => {
   };
 
   const fetchUser = async () => {
-    if (!token.value) {
-      return;
-    }
-
-    _setAuthHeader(token.value);
-
     try {
       const response = await nuxtApp.$api.get("/api/user");
       user.value = response.data;
