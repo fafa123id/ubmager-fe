@@ -91,10 +91,10 @@ const onAvatarPick = async (e) => {
     console.log(res);
     const url =  res?.data?.image;
     user.value.image = url;
-    successMsg.value = "Avatar diperbarui.";
+    useSwal().showSuccess("Avatar diperbarui.");
     fetchProfile();
   } catch (err) {
-    errorMsg.value = err?.response?.data?.message || "Gagal mengunggah avatar.";
+    useSwal().showError(err?.response?.data?.message || "Gagal mengunggah avatar.");
   }
 };
 
@@ -112,10 +112,10 @@ const saveProfile = async () => {
       bio: user.value.bio,
     };
     await $api.put(`/api/user/${user.value.id}` , payload, { withCredentials: true });
-    successMsg.value = "Profil berhasil diperbarui.";
+    useSwal().showSuccess("Profil berhasil diperbarui.");
     fetchProfile();
-  } catch (e) { 
-    errorMsg.value = e?.response?.data?.message || "Gagal menyimpan profil.";
+  } catch (e) {
+    useSwal().showError(e?.response?.data?.message || "Gagal menyimpan profil.");
   } finally {
     saving.value = false;
   }
