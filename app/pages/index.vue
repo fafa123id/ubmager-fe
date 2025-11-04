@@ -20,12 +20,12 @@ const testfetch = async () => {
 }
 const beMitra = async () => {
   if (!user.value) {
-    useSwal().showError('Gagal', 'Silakan masuk terlebih dahulu untuk mendaftar sebagai mitra.') 
+    useSwal().showError('Silakan masuk terlebih dahulu untuk mendaftar sebagai mitra.') 
     navigateTo('/auth/login?next=/')
     return
   }
   if (!user.value.data.is_verified) {
-    useSwal().showError('Gagal', 'Kamu belum terverifikasi.') 
+    useSwal().showError('Kamu belum terverifikasi.') 
     return
   }
   window.open('https://forms.gle/UBMagerMitra', '_blank')
