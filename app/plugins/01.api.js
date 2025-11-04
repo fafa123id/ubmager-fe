@@ -3,7 +3,7 @@ import { useAuth } from '~/composables/useAuth';
 
 export default defineNuxtPlugin((nuxtApp) => {
   const runtimeConfig = useRuntimeConfig();
-
+  const {_clearAuth, logout} = useAuth();
   const passportClientId = runtimeConfig.public.passportClientId;
   const passportClientSecret = runtimeConfig.public.passportClientSecret;
 
@@ -34,6 +34,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         const { token, refreshToken } = useAuth(); 
 
         if (!refreshToken.value) {
+          _clearAuth();
           return Promise.reject(error);
         }
 
@@ -61,13 +62,9 @@ export default defineNuxtPlugin((nuxtApp) => {
 
         } catch (refreshError) {
           console.error('Interceptor: Gagal refresh token. Logout.', refreshError);
-          
-          await logout(); 
-          
           return Promise.reject(refreshError);
         }
       }
-      
       return Promise.reject(error);
     }
   );
