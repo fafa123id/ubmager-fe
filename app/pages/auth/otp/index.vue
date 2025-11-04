@@ -52,11 +52,11 @@ const submitVerify = async () => {
   successMsg.value = ''
   try {
     await $api.post('/api/verify-email', { email: email.value, otp: otp.value })
-    successMsg.value = 'Email berhasil diverifikasi.'
+    useSwal().showSuccess('Email berhasil diverifikasi.')
     sessionStorage.removeItem(STORAGE_KEY)
     setTimeout(() => router.push('/profile'), 700)
   } catch (e) {
-    errorMsg.value = e?.response?.data?.message || 'Kode OTP salah atau kadaluarsa.'
+    useSwal().showError(e?.response?.data?.message || 'Kode OTP salah atau kadaluarsa.')
   } finally {
     submitting.value = false
   }
@@ -73,9 +73,9 @@ const resendOtp = async () => {
     const raw = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || '{}')
     raw.lastResendAt = lastResendAt.value
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(raw))
-    successMsg.value = 'Kode OTP baru telah dikirim.'
+    useSwal().showSuccess('Kode OTP baru telah dikirim.')
   } catch (e) {
-    errorMsg.value = e?.response?.data?.message || 'Gagal mengirim OTP.'
+    useSwal().showError(e?.response?.data?.message || 'Gagal mengirim OTP.')
   } finally {
     sending.value = false
   }
