@@ -8,7 +8,7 @@ import { ref, computed, onMounted } from "vue";
 /* Endpoint API — sesuaikan bila berbeda */
 const ENDPOINTS = {
   me: "/api/user",
-  updateProfile: "/api/profile",
+  updateProfile: "/api/user",
   uploadAvatar: "/api/user",
 };
 
