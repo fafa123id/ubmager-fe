@@ -23,17 +23,10 @@ const submit = async () => {
 
   loading.value = true;
   try {
-    // ganti endpoint sesuai backend kamu
-    // contoh: /api/auth/login (cookie-based) atau token-based
-    console.log("Submitting login for", email.value);
-    console.log("Password:", password.value);
-    console.log(email);
-    console.log(password);
     await login({
       email: email.value,
       password: password.value,
     });
-
     successMsg.value = "Berhasil masuk. Mengarahkan...";
     const next = useRoute().query.next || "/";
     setTimeout(() => {
