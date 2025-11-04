@@ -95,7 +95,6 @@ export const useAuth = () => {
       await fetchUser();
       return !!user.value;
     }
-
     return false;
   };
 
@@ -107,6 +106,7 @@ export const useAuth = () => {
     logout,
     checkAuth,
     fetchUser,
+    _clearAuth,
     _setAuthHeader,
   };
 };
