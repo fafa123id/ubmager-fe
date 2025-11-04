@@ -41,7 +41,7 @@ export const useAuth = () => {
     if (!token.value) {
       if (refreshToken.value) {
         try {
-          const response = await api.post("/oauth/token", {
+          const response = await nuxtApp.$api.post("/oauth/token", {
             grant_type: "refresh_token",
             refresh_token: refreshToken.value,
             client_id: passportClientId,
