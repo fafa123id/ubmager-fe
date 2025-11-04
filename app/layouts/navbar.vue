@@ -1,5 +1,5 @@
 <script setup>
-import { useAuth } from '~/composables/useAuth';
+import { useAuth } from "~/composables/useAuth";
 
 const isOpen = ref(false);
 const links = [
@@ -77,6 +77,16 @@ const isActive = (to) => route.path === to;
             </svg>
             Logout
           </button>
+          <NuxtLink
+            to="/profile"
+            class="group inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+          >
+            <img
+              :src="user.data.image"
+              alt="Avatar"
+              class="h-8 w-8 rounded-full object-cover"
+            />
+          </NuxtLink>
         </div>
         <!-- Mobile toggle -->
         <button
@@ -89,38 +99,63 @@ const isActive = (to) => route.path === to;
       </nav>
 
       <!-- Mobile menu -->
+      <!-- Mobile menu -->
       <transition name="pop">
         <div v-if="isOpen" class="mt-3 grid gap-2 text-slate-100 md:hidden">
+          <!-- Link navigasi -->
           <NuxtLink
             v-for="l in links"
             :key="l.to"
             :to="l.to"
-            class="rounded-2xl px-4 py-3 text-sm font-medium hover:bg-white/10"
+            class="rounded-2xl px-4 py-3 text-sm font-medium transition"
             :class="
               isActive(l.to)
-                ? 'ring-1 ring-white/15 bg-gradient-to-br from-sky-500/15 to-indigo-600/15'
-                : ''
+                ? 'bg-gradient-to-br from-sky-500/15 to-indigo-600/15 ring-1 ring-white/10'
+                : 'bg-white/5 hover:bg-white/10 ring-1 ring-white/5'
             "
             @click="isOpen = false"
           >
             {{ l.label }}
           </NuxtLink>
 
+          <!-- Tombol login -->
           <NuxtLink
             v-if="!user"
             to="/auth/login"
-            class="mt-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-white/10 px-4 py-3 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/15"
+            class="mt-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-white/10 px-4 py-3 text-sm font-semibold text-white ring-1 ring-white/10 transition hover:bg-white/15"
             @click="isOpen = false"
           >
             Masuk
           </NuxtLink>
-          <button
+
+          <!-- Logout + Avatar -->
+          <div
             v-else
-            @click="logout(); isOpen = false"
-            class="mt-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-white/10 px-4 py-3 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/15"
+            class="mt-1 flex items-center gap-3 rounded-2xl bg-white/5 px-3 py-2 ring-1 ring-white/10 backdrop-blur-sm transition hover:bg-white/10"
           >
-            Logout
-          </button>
+            <!-- Tombol Logout -->
+            <button
+              @click="
+                logout();
+                isOpen = false;
+              "
+              class="flex-1 cursor-pointer rounded-xl bg-white/5 px-4 py-2 text-sm font-semibold text-white ring-1 ring-white/10 transition hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+            >
+              Logout
+            </button>
+
+            <!-- Avatar Profil -->
+            <NuxtLink
+              to="/profile"
+              class="inline-flex items-center justify-center rounded-xl bg-white/5 p-1.5 ring-1 ring-white/10 transition hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+            >
+              <img
+                :src="user?.data?.image || '/default-avatar.png'"
+                alt="Avatar"
+                class="h-9 w-9 rounded-full object-cover ring-1 ring-white/10"
+              />
+            </NuxtLink>
+          </div>
         </div>
       </transition>
     </div>
