@@ -11,7 +11,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     baseURL: 'https://api.ubmager.bornhub.cloud',
     headers: {
       'Accept': 'application/json',
-      'Content-Type': 'application/json',
+      'Content-Type': 'multipart/form-data',
     },
   });
 
@@ -35,6 +35,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
         if (!refreshToken.value) {
           _clearAuth();
+          navigateTo('/');
           return Promise.reject(error);
         }
 
