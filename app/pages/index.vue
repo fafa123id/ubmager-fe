@@ -1,8 +1,11 @@
 <script setup>
+
 const ctaScroll = (id) => {
   const el = document.getElementById(id)
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
+
+const { user, logout } = useAuth();
 const testfetch = async () => {
   const { $api } = useNuxtApp()
   try {
@@ -14,6 +17,18 @@ const testfetch = async () => {
   } catch (error) {
     console.error('Error fetching user data:', error)
   }
+}
+const beMitra = async () => {
+  if (!user.value) {
+    useSwal().showError('Gagal', 'Silakan masuk terlebih dahulu untuk mendaftar sebagai mitra.') 
+    navigateTo('/auth/login?next=/')
+    return
+  }
+  if (!user.value.data.is_verified) {
+    useSwal().showError('Gagal', 'Kamu belum terverifikasi.') 
+    return
+  }
+  window.open('https://forms.gle/UBMagerMitra', '_blank')
 }
 </script>
 
@@ -185,9 +200,9 @@ const testfetch = async () => {
             <h2 class="text-2xl font-bold tracking-tight">Tertarik Jadi Mitra?</h2>
             <p class="mt-1 max-w-2xl text-slate-300">Mulai jual produk atau jasa kamu di UBMager, dan jangkau komunitas kampus lebih luas.</p>
           </div>
-          <NuxtLink to="/mitra/daftar" class="cursor-pointer inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm font-semibold text-white ring-1 ring-white/15 transition-colors hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400">
+          <button @click="beMitra()" class="cursor-pointer inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm font-semibold text-white ring-1 ring-white/15 transition-colors hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400">
             Daftar Mitra
-          </NuxtLink>
+          </button>
         </div>
 
         <div class="grid gap-4 md:grid-cols-3">
