@@ -22,7 +22,7 @@ export const useSwal = () => {
     text = "Data Anda telah disimpan."
   ) {
     return Swal.fire({
-      title: title,
+      title: "Berhasil!",
       text: text,
       icon: "success",
       timer: 1000,
@@ -33,7 +33,7 @@ export const useSwal = () => {
     text = "Terjadi kesalahan. Silakan coba lagi."
   ) {
     return Swal.fire({
-      title: title,
+      title: "Gagal!",
       text: text,
       icon: "error",
       timer: 1000,
