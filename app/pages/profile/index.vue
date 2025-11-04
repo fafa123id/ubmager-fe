@@ -84,13 +84,15 @@ const onAvatarPick = async (e) => {
   successMsg.value = "";
 
   try {
-    const fd = new FormData();
-    fd.append("image", file);
-    const res = await $api.put(`/api/user/${user.value.id}`, fd);
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("_method", "PUT");
+    const res = await $api.post(`/api/user/${user.value.id}`, formData);
     console.log(res);
-    const url = res?.data?.url || res?.data?.avatarUrl || res?.data?.avatar_url;
-    user.value.avatarUrl = url || URL.createObjectURL(file); // fallback preview lokal
+    const url =  res?.data?.image;
+    user.value.image = url;
     successMsg.value = "Avatar diperbarui.";
+    fetchProfile();
   } catch (err) {
     errorMsg.value = err?.response?.data?.message || "Gagal mengunggah avatar.";
   }
