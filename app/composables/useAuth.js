@@ -66,7 +66,7 @@ export const useAuth = () => {
     } catch (error) {
       console.error("Login gagal:", error);
       _clearAuth();
-      return false;
+      return Promise.reject(error);
     }
   };
 
