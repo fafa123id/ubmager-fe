@@ -34,6 +34,35 @@ export const useAuth = () => {
   };
 
   const fetchUser = async () => {
+    const runtimeConfig = useRuntimeConfig();
+    const passportClientId = runtimeConfig.public.passportClientId;
+    const passportClientSecret = runtimeConfig.public.passportClientSecret;
+
+    if (!token.value) {
+      if (refreshToken.value) {
+        try {
+          const response = await api.post("/oauth/token", {
+            grant_type: "refresh_token",
+            refresh_token: refreshToken.value,
+            client_id: passportClientId,
+            client_secret: passportClientSecret,
+            scope: "",
+          });
+
+          const newAccessToken = response.data.access_token;
+          const newRefreshToken = response.data.refresh_token;
+          token.value = newAccessToken;
+          refreshToken.value = newRefreshToken;
+        } catch (error) {
+          console.error("Gagal memperbarui token:", error);
+          _clearAuth();
+          return null;
+        }
+      } else {
+        _clearAuth();
+        return null;
+      }
+    }
     try {
       const response = await nuxtApp.$api.get("/api/user");
       user.value = response.data;
