@@ -111,9 +111,10 @@ const saveProfile = async () => {
       phone: user.value.phone,
       bio: user.value.bio,
     };
-    await $api.put(ENDPOINTS.updateProfile, payload, { withCredentials: true });
+    await $api.put(`/api/user/${user.value.id}` , payload, { withCredentials: true });
     successMsg.value = "Profil berhasil diperbarui.";
-  } catch (e) {
+    fetchProfile();
+  } catch (e) { 
     errorMsg.value = e?.response?.data?.message || "Gagal menyimpan profil.";
   } finally {
     saving.value = false;
