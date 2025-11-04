@@ -19,7 +19,6 @@ export const useSwal = () => {
   }
 
   function showSuccess(
-    title = "Berhasil!",
     text = "Data Anda telah disimpan."
   ) {
     return Swal.fire({
@@ -31,7 +30,6 @@ export const useSwal = () => {
     });
   }
   function showError(
-    title = "Gagal!",
     text = "Terjadi kesalahan. Silakan coba lagi."
   ) {
     return Swal.fire({
