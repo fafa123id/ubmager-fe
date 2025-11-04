@@ -34,7 +34,6 @@ export default defineNuxtPlugin((nuxtApp) => {
 
         if (!refreshToken.value) {
           _clearAuth();
-          navigateTo('/');
           return Promise.reject(error);
         }
 
