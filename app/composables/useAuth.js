@@ -3,7 +3,6 @@ import { defineNuxtPlugin } from "#app";
 export const useAuth = () => {
   const nuxtApp = useNuxtApp();
   const runtimeConfig = useRuntimeConfig();
-
   const token = useCookie("auth_token", {
     maxAge: 60 * 60,
     sameSite: "lax",
@@ -34,7 +33,6 @@ export const useAuth = () => {
   };
 
   const fetchUser = async () => {
-    const runtimeConfig = useRuntimeConfig();
     const passportClientId = runtimeConfig.public.passportClientId;
     const passportClientSecret = runtimeConfig.public.passportClientSecret;
 
