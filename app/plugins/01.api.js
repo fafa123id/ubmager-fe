@@ -11,7 +11,6 @@ export default defineNuxtPlugin((nuxtApp) => {
     baseURL: 'https://api.ubmager.bornhub.cloud',
     headers: {
       'Accept': 'application/json',
-      'Content-Type': 'multipart/form-data',
     },
   });
 
