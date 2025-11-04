@@ -11,7 +11,32 @@ const ENDPOINTS = {
   updateProfile: "/api/user",
   uploadAvatar: "/api/user",
 };
+const verificationEmail = async () => {
+  try {
+    await $api.post(
+      "/api/verify-email/send",
+      { email: user.value.email },
+      { withCredentials: true }
+    );
+    useSwal().showSuccess("Email verifikasi telah dikirim.");
 
+    sessionStorage.setItem(
+      "otpFlow",
+      JSON.stringify({
+        email: user.value.email, // ⬅️ pakai .value
+        startedAt: Date.now(),
+        lastResendAt: Date.now(),
+        guard: "from-profile",
+      })
+    );
+
+    navigateTo("/auth/otp?email=" + encodeURIComponent(user.value.email));
+  } catch (e) {
+    useSwal().showError(
+      e?.response?.data?.message || "Gagal mengirim email verifikasi."
+    );
+  }
+};
 const { $api } = useNuxtApp();
 
 /* ----- State ----- */
@@ -22,6 +47,7 @@ const successMsg = ref("");
 
 const user = ref({
   id: null,
+  isVerified: false,
   name: "",
   username: "",
   email: "",
@@ -39,6 +65,7 @@ const fetchProfile = async () => {
       await $api.get(ENDPOINTS.me, { withCredentials: true })
     ).data;
     Object.assign(user.value, {
+      isVerified: data?.is_verified ?? false,
       id: data?.id || null,
       name: data?.name ?? "",
       username: data?.username ?? "",
@@ -89,12 +116,14 @@ const onAvatarPick = async (e) => {
     formData.append("_method", "PUT");
     const res = await $api.post(`/api/user/${user.value.id}`, formData);
     console.log(res);
-    const url =  res?.data?.image;
+    const url = res?.data?.image;
     user.value.image = url;
     useSwal().showSuccess("Avatar diperbarui.");
     fetchProfile();
   } catch (err) {
-    useSwal().showError(err?.response?.data?.message || "Gagal mengunggah avatar.");
+    useSwal().showError(
+      err?.response?.data?.message || "Gagal mengunggah avatar."
+    );
   }
 };
 
@@ -111,11 +140,15 @@ const saveProfile = async () => {
       phone: user.value.phone,
       bio: user.value.bio,
     };
-    await $api.put(`/api/user/${user.value.id}` , payload, { withCredentials: true });
+    await $api.put(`/api/user/${user.value.id}`, payload, {
+      withCredentials: true,
+    });
     useSwal().showSuccess("Profil berhasil diperbarui.");
     fetchProfile();
   } catch (e) {
-    useSwal().showError(e?.response?.data?.message || "Gagal menyimpan profil.");
+    useSwal().showError(
+      e?.response?.data?.message || "Gagal menyimpan profil."
+    );
   } finally {
     saving.value = false;
   }
@@ -358,6 +391,24 @@ const changePassword = () => navigateTo("/settings/password");
                 placeholder="nama@kampus.ac.id"
                 autocomplete="email"
               />
+              <p class="mt-1 text-xs text-slate-400">
+                {{
+                  user.isVerified
+                    ? "Email Anda sudah diverifikasi"
+                    : "Email Anda belum diverifikasi"
+                }}
+                <button
+                  type="button"
+                  v-if="!user.isVerified"
+                  class="text-sky-500 hover:underline"
+                  @click="verificationEmail"
+                >
+                  Verifikasi Email
+                </button>
+              </p>
+              <div>
+                <p></p>
+              </div>
             </div>
 
             <div class="sm:col-span-2">
