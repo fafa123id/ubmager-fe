@@ -96,6 +96,7 @@ export const useAuth = () => {
   const logout = async (options = { navigate: true }) => {
     try {
       if (nuxtApp.$api) {
+        _setAuthHeader(token.value);
         await nuxtApp.$api.post("/api/logout");
       }
     } catch (error) {
