@@ -20,7 +20,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const isAuthed = await checkAuth();
 
   if (!isAuthed) {
-    console.log('Middleware [auth]: Not authenticated. Redirecting to login.');
+    useSwal().showError('Gagal', 'Silakan masuk terlebih dahulu untuk mengakses halaman ini.');
     return navigateTo(`/auth/login?next=${encodeURIComponent(to.fullPath)}`);
   }
 });
