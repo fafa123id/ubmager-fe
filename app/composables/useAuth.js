@@ -93,7 +93,7 @@ export const useAuth = () => {
     }
   };
 
-  const logout = async (options = { navigate: true }) => {
+  const logout = async () => {
     try {
       if (nuxtApp.$api) {
         _setAuthHeader(token.value);
@@ -105,9 +105,7 @@ export const useAuth = () => {
 
     _clearAuth();
 
-    if (options.navigate) {
-      await navigateTo("/");
-    }
+    await navigateTo("/");
   };
 
   const checkAuth = async () => {
@@ -115,7 +113,7 @@ export const useAuth = () => {
       return true;
     }
 
-    if (token.value) {
+    if (refreshToken.value) {
       await fetchUser();
       return !!user.value;
     }
