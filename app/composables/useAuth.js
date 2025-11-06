@@ -71,10 +71,10 @@ export const useAuth = () => {
     }
   };
 
-  const login = async ({ email, password }) => {
+  const login = async ({ emailor_username, password }) => {
     try {
       const response = await nuxtApp.$api.post("/api/login", {
-        email,
+        emailor_username,
         password,
       });
 
@@ -107,6 +107,16 @@ export const useAuth = () => {
 
     await navigateTo("/");
   };
+  const register = async ({ name, email, password, password_confirmation, username, phone }) => {
+    try {
+      const response = await nuxtApp.$api.post("/api/register", {
+        name, email, password, password_confirmation, username, phone
+      });
+    } catch (error) {
+      console.error("Register gagal:", error);
+      return Promise.reject(error);
+      }
+  };
 
   const checkAuth = async () => {
     if (user.value) {
@@ -130,5 +140,6 @@ export const useAuth = () => {
     fetchUser,
     _clearAuth,
     _setAuthHeader,
+    register,
   };
 };
