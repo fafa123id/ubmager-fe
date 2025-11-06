@@ -48,7 +48,12 @@ export const useAuth = () => {
         emailor_username,
         password,
       });
-
+      const shortToken = useCookie("auth_token", {
+        maxAge: 60,
+        sameSite: "lax",
+      });
+      shortToken.value = response.data.access_token;
+      _setAuthHeader(response.data.access_token);
       await fetchUser();
       return true;
     } catch (error) {
