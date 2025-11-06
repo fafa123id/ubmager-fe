@@ -1,3 +1,4 @@
+<!-- app.vue -->
 <template>
   <div>
     <NuxtLayout />
@@ -6,14 +7,16 @@
   </div>
 </template>
 
-<script setup>
-import Navbar from './layouts/navbar.vue';
+<script setup lang="ts">
+import Navbar from './layouts/navbar.vue'
+import { onMounted } from 'vue'
 
-const { user, checkAuth } = useAuth();
+const { user, authReady, ensureAuth } = useAuth()
 
-if (process.client && !user.value) {
-  checkAuth().catch((error) => {
-    console.log('Background auth check failed:', error);
-  });
-}
+// Optional: bootstrap santai di client, tapi tidak perlu kalau middleware sdh cover
+onMounted(() => {
+  if (!user.value && !authReady.value) {
+    ensureAuth().catch(() => {})
+  }
+})
 </script>
