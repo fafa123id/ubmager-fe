@@ -8,7 +8,7 @@
 <script setup>
 const { fetchUser } = useAuth();
 import { onMounted } from 'vue';
-onMounted(() => {
-  fetchUser();
+onMounted(async () => {
+  await fetchUser();
 });
 </script>
