@@ -1,6 +1,6 @@
 <!-- pages/login.vue -->
 <script setup>
-definePageMeta({ auth: "guest" });
+definePageMeta({ middleware: ['guest'] });
 import { ref, computed } from "vue";
 const { login } = useAuth();
 const emailor_username = ref("");

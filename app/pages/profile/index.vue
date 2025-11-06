@@ -1,7 +1,7 @@
 <!-- pages/profile.vue -->
 <script setup>
 definePageMeta({
-  auth: true,
+  middleware: ['auth'],
 });
 import { ref, computed, onMounted } from "vue";
 watch;
