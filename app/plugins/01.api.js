@@ -2,10 +2,7 @@ import axios from 'axios';
 import { useAuth } from '~/composables/useAuth'; 
 
 export default defineNuxtPlugin((nuxtApp) => {
-  const runtimeConfig = useRuntimeConfig();
   const {_clearAuth, logout} = useAuth();
-  const passportClientId = runtimeConfig.public.passportClientId;
-  const passportClientSecret = runtimeConfig.public.passportClientSecret;
 
   const api = axios.create({
     baseURL: 'https://api.ubmager.bornhub.cloud',
@@ -40,12 +37,8 @@ export default defineNuxtPlugin((nuxtApp) => {
         try {
           console.log('Interceptor: Access token expired. Refreshing token...');
           
-          const response = await api.post('/oauth/token', {
-            grant_type: 'refresh_token',
+          const response = await api.post('/api/refresh', {
             refresh_token: refreshToken.value,
-            client_id: passportClientId,
-            client_secret: passportClientSecret,
-            scope: '',
           });
 
           const newAccessToken = response.data.access_token;
