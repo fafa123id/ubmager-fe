@@ -3,7 +3,7 @@ import { defineNuxtPlugin } from "#app";
 export const useAuth = () => {
   const nuxtApp = useNuxtApp();
   const token = useCookie("auth_token", {
-    maxAge: 60 * 60,
+    maxAge: 60,
     sameSite: "lax",
   });
   const PAT = useCookie("auth_pat", {
@@ -29,7 +29,12 @@ export const useAuth = () => {
       delete nuxtApp.$api.defaults.headers.common["Authorization"];
     }
   };
-  const GetUser = async () => {
+  const fetchUser = async () => {
+    if (PAT.value) {
+      _setAuthHeader(PAT.value);
+    } else if (token.value) {
+      _setAuthHeader(token.value);
+    }
     try {
       const response = await nuxtApp.$api.get("/api/user");
       user.value = response.data;
@@ -43,16 +48,6 @@ export const useAuth = () => {
 
       console.log("Access token kedaluwarsa, mencoba refresh...");
       return false;
-    }
-  };
-  const fetchUser = async () => {
-    if (PAT.value) {
-      _setAuthHeader(PAT.value);
-    } else if (token.value) {
-      _setAuthHeader(token.value);
-    }
-    if (await GetUser()) {
-      return user.value;
     }
   };
 
