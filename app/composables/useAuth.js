@@ -38,8 +38,13 @@ export const useAuth = () => {
         return null;
       }
 
-      console.log("Access token kedaluwarsa, mencoba refresh...");
-      return false;
+      const response = await nuxtApp.$api.post("/api/refresh");
+      const newAccessToken = response.data.access_token;
+      token().value = newAccessToken;
+      _setAuthHeader(newAccessToken);
+      const userResponse = await nuxtApp.$api.get("/api/user");
+      user.value = userResponse.data;
+      return user.value;
     }
   };
 
