@@ -3,7 +3,7 @@ import { access } from "fs";
 
 export const useAuth = () => {
   const nuxtApp = useNuxtApp();
-  const token = (maxAge = 60 ) =>
+  const token = (maxAge = 60) =>
     useCookie("auth_token", {
       maxAge: maxAge,
       sameSite: "lax",
@@ -28,6 +28,10 @@ export const useAuth = () => {
   };
 
   const fetchUser = async () => {
+    if (!useCookie("refresh_token").value) {
+      _clearAuth();
+      return null;
+    }
     if (token().value) {
       _setAuthHeader(token().value);
       try {
@@ -68,7 +72,7 @@ export const useAuth = () => {
         emailor_username,
         password,
       });
-      const accessToken = response.data.access_token
+      const accessToken = response.data.access_token;
       token().value = accessToken;
 
       _setAuthHeader(accessToken);
@@ -131,9 +135,13 @@ export const useAuth = () => {
       return true;
     }
 
-    const fetchedUser = await fetchUser();
+    if (useCookie("refresh_token").value) {
+      const fetchedUser = await fetchUser();
 
-    return !!fetchedUser;
+      return !!fetchedUser;
+    }
+
+    return false;
   };
 
   return {
