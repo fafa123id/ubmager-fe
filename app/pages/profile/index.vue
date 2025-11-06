@@ -489,7 +489,7 @@ const savePassword = async () => {
                 autocomplete="email"
               />
               <p class="mt-1 text-xs text-slate-400">
-                <span v-if="!emailUser.value.email">
+                <span v-if="!emailUser.email">
                   Email Anda belum diset, Set Sekarang!
                 </span>
 
