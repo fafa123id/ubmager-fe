@@ -27,14 +27,17 @@ export const useAuth = () => {
   };
 
   const fetchUser = async () => {
-    if (user.value) {
-      return user.value;
+    const headers = {};
+    if (process.server) {
+      const requestHeaders = useRequestHeaders(["cookie"]);
+      if (requestHeaders.cookie) {
+        headers.cookie = requestHeaders.cookie;
+      }
     }
-
     if (token.value) {
       _setAuthHeader(token.value);
       try {
-        const response = await nuxtApp.$api.get("/api/user");
+        const response = await nuxtApp.$api.get("/api/user", { headers });
         user.value = response.data;
         return user.value;
       } catch (error) {
@@ -49,13 +52,13 @@ export const useAuth = () => {
     }
 
     try {
-      const refreshResponse = await nuxtApp.$api.post("/api/refresh");
+      const refreshResponse = await nuxtApp.$api.post("/api/refresh", {}, { headers });
       const newAccessToken = refreshResponse.data.access_token;
 
       token.value = newAccessToken;
       _setAuthHeader(newAccessToken);
 
-      const userResponse = await nuxtApp.$api.get("/api/user");
+      const userResponse = await nuxtApp.$api.get("/api/user", { headers });
       user.value = userResponse.data;
       return user.value;
     } catch (error) {
@@ -129,15 +132,15 @@ export const useAuth = () => {
     }
   };
 
-const checkAuth = async () => {
-  if (user.value) {
-    return true;
-  }
+  const checkAuth = async () => {
+    if (user.value) {
+      return true;
+    }
 
-  const fetchedUser = await fetchUser();
+    const fetchedUser = await fetchUser();
 
-  return !!fetchedUser;
-};
+    return !!fetchedUser;
+  };
 
   return {
     token,
