@@ -181,6 +181,7 @@ const savePassword = async () => {
     });
     useSwal().showSuccess("Kata sandi berhasil diperbarui.");
     closeAndReset();
+    fetchProfile();
   } catch (e) {
     useSwal().showError(
       e?.response?.data?.message || "Gagal memperbarui kata sandi."
