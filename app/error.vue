@@ -1,5 +1,8 @@
-<script setup lang="ts">
-const props = defineProps<{ error: { statusCode?: number; statusMessage?: string } }>()
+<script setup>
+const props = defineProps({
+  error: Object
+})
+
 const is404 = props.error?.statusCode === 404
 const message = is404 ? 'Halaman tidak ditemukan' : (props.error?.statusMessage || 'Terjadi kesalahan')
 const handleBack = () => window.history.back();
