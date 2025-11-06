@@ -2,32 +2,16 @@ import { defineNuxtPlugin } from "#app";
 
 export const useAuth = () => {
   const nuxtApp = useNuxtApp();
-  const token = (maxage = 60) =>
-    useCookie("auth_token", {
-      maxAge: maxage,
-      sameSite: "lax",
-    });
+
   const user = useState("auth_user", () => null);
 
   const _clearAuth = () => {
-    token().value = null;
     user.value = null;
-    if (nuxtApp.$api) {
-      delete nuxtApp.$api.defaults.headers.common["Authorization"];
-    }
+
   };
-  const _setAuthHeader = (accessToken) => {
-    if (nuxtApp.$api && accessToken) {
-      nuxtApp.$api.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${accessToken}`;
-    }
-  };
+
   const fetchUser = async () => {
     try {
-      if (token().value) {
-        _setAuthHeader(token().value);
-      }
       const response = await nuxtApp.$api.get("/api/user");
       user.value = response.data;
       return user.value;
@@ -39,9 +23,7 @@ export const useAuth = () => {
       }
 
       const response = await nuxtApp.$api.post("/api/refresh");
-      const newAccessToken = response.data.access_token;
-      token().value = newAccessToken;
-      _setAuthHeader(newAccessToken);
+
       const userResponse = await nuxtApp.$api.get("/api/user");
       user.value = userResponse.data;
       return user.value;
@@ -54,8 +36,6 @@ export const useAuth = () => {
         emailor_username,
         password,
       });
-      token().value = response.data.access_token;
-      _setAuthHeader(response.data.access_token);
       await fetchUser();
       return true;
     } catch (error) {
@@ -65,18 +45,10 @@ export const useAuth = () => {
     }
   };
 
-  const loginWithToken = async (accessToken) => {
-    token(60 * 60 * 24 * 30).value = accessToken;
-    _setAuthHeader(accessToken);
-    await fetchUser();
-  };
 
   const logout = async () => {
     try {
       if (nuxtApp.$api) {
-        if (token().value) {
-          _setAuthHeader(token().value);
-        }
         await nuxtApp.$api.post("/api/logout");
       }
     } catch (error) {
@@ -121,15 +93,12 @@ export const useAuth = () => {
   };
 
   return {
-    token,
     user,
     login,
     logout,
     checkAuth,
     fetchUser,
     _clearAuth,
-    _setAuthHeader,
     register,
-    loginWithToken,
   };
 };
