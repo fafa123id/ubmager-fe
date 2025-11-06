@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useAuth } from '~/composables/useAuth'; 
 
 export default defineNuxtPlugin((nuxtApp) => {
-  const {_clearAuth, logout, token, PAT} = useAuth();
+  const {_clearAuth, logout, token} = useAuth();
 
   const api = axios.create({
     baseURL: 'https://api.ubmager.bornhub.cloud',
@@ -11,11 +11,10 @@ export default defineNuxtPlugin((nuxtApp) => {
     },
     withCredentials: true,
   });
-  if (PAT.value) {
-    api.defaults.headers.common['Authorization'] = `Bearer ${PAT.value}`;
-  }
-  else if (token.value) {
-    api.defaults.headers.common['Authorization'] = `Bearer ${token.value}`;
+
+  const initialToken = token();
+  if (initialToken.value) {
+    api.defaults.headers.common['Authorization'] = `Bearer ${initialToken.value}`;
   }
 
   api.interceptors.response.use(
@@ -38,7 +37,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
           const newAccessToken = response.data.access_token;
 
-          token.value = newAccessToken;
+          token().value = newAccessToken;
 
           api.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
           originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
