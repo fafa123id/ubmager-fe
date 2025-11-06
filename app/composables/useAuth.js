@@ -29,7 +29,7 @@ export const useAuth = () => {
   const fetchUser = async () => {
     if (!token.value) {
         try {
-          const response = await api.post("/api/refresh")
+          const response = await nuxtApp.$api.post("/api/refresh")
 
           const newAccessToken = response.data.access_token;
           token.value = newAccessToken;
