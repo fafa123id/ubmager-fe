@@ -93,9 +93,8 @@ export const useAuth = () => {
     }
   };
 
-  const loginWithToken = async (accessToken, refresh_Token) => {
+  const loginWithToken = async (accessToken) => {
     token.value = accessToken;
-    refreshToken.value = refresh_Token;
     _setAuthHeader(token.value);
     await fetchUser();
   };
