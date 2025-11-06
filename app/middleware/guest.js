@@ -1,5 +1,3 @@
-import { useAuth } from '~/composables/useAuth'; 
-
 export default defineNuxtRouteMiddleware(async (to) => {
   const { user, checkAuth } = useAuth();
   await checkAuth();

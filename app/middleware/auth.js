@@ -1,6 +1,4 @@
-import { useAuth } from '~/composables/useAuth'; 
-
-export default defineNuxtRouteMiddleware(async (to) => {
+export default defineNuxtRouteMiddleware( (to) => {
 
   if (to.path.startsWith('/auth')) {
     return;
