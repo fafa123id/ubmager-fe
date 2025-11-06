@@ -1,6 +1,5 @@
 <script setup>
 import { computed } from 'vue';
-import { Link } from '@inertiajs/vue3';
 import { twMerge } from 'tailwind-merge'; // <-- 1. Impor twMerge
 
 const props = defineProps({
@@ -25,12 +24,12 @@ const attrs = useAttrs();
 </script>
 
 <template>
-    <Link
+    <NuxtLink
         v-if="href"
-        :href="href"
+        :to="href"
         :class="computedClasses" >
         <slot />
-    </Link>
+    </NuxtLink>
 
     <button
         v-else
