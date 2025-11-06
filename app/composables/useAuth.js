@@ -93,6 +93,13 @@ export const useAuth = () => {
     }
   };
 
+  const loginWithToken = async (accessToken, refresh_Token) => {
+    token.value = accessToken;
+    refreshToken.value = refresh_Token;
+    _setAuthHeader(token.value);
+    await fetchUser();
+  };
+
   const logout = async () => {
     try {
       if (nuxtApp.$api) {
@@ -141,5 +148,6 @@ export const useAuth = () => {
     _clearAuth,
     _setAuthHeader,
     register,
+    loginWithToken,
   };
 };
