@@ -9,7 +9,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     console.log(
       "Middleware [guest]: User detected in state. Redirecting to home."
     );
-    navigateTo(next, { replace: true });
+    return navigateTo(next);
   }
 
   try {
@@ -19,7 +19,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
       console.log(
         "Middleware [guest]: User validated via token. Redirecting to home."
       );
-      return navigateTo(next, { replace: true });
+      return navigateTo(next);
     }
   } catch (error) {
     console.error("Middleware [guest]: Error checking auth:", error);
