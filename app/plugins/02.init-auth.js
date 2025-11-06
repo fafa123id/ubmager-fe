@@ -1,9 +1,9 @@
 // plugins/auth-loader.js
-
-import { useAuth } from "~/composables/useAuth";
-
 export default defineNuxtPlugin(async (nuxtApp) => {
   const { user, checkAuth } = useAuth();
+  
+  // ✅ Set flag loading TRUE di awal
+  const authInitialized = useState('auth_initialized', () => false);
 
   if (process.server || !user.value) {
     console.log("Auth Plugin: Menjalankan checkAuth saat inisialisasi...");
@@ -15,5 +15,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     }
   }
 
-  console.log("Auth Plugin: Selesai.");
+  // ✅ Set initialized TRUE setelah selesai
+  authInitialized.value = true;
+  console.log("Auth Plugin: Selesai. Auth initialized.");
 });
