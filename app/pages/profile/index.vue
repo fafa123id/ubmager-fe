@@ -4,7 +4,6 @@ definePageMeta({
   auth: true,
 });
 import { ref, computed, onMounted } from "vue";
-
 watch;
 const ENDPOINTS = {
   me: "/api/user",
@@ -155,10 +154,90 @@ const saveProfile = async () => {
 };
 
 const changePassword = () => navigateTo("/settings/password");
+const passwordInput = ref("");
+const passwordConfirmationInput = ref("");
+const showChangePasswordModal = ref(false);
+const closeAndReset = () => {
+  showChangePasswordModal.value = false;
+  passwordInput.value = "";
+  passwordConfirmationInput.value = "";
+};
+const savePassword = async () => {
+  if (
+    passwordInput.value.length < 6 ||
+    passwordInput.value !== passwordConfirmationInput.value
+  ) {
+    useSwal().showError(
+      "Password harus minimal 6 karakter dan sesuai dengan konfirmasi."
+    );
+    return;
+  }
+  try {
+    loading.value = true;
+    useSwal().showLoading();
+    await $api.post(`/api/set-password`, {
+      password: passwordInput.value,
+      password_confirmation: passwordConfirmationInput.value,
+    });
+    useSwal().showSuccess("Kata sandi berhasil diperbarui.");
+    closeAndReset();
+  } catch (e) {
+    useSwal().showError(
+      e?.response?.data?.message || "Gagal memperbarui kata sandi."
+    );
+  } finally {
+    loading.value = false;
+  }
+};
 </script>
 
 <template>
   <main class="relative min-h-dvh text-slate-100 overflow-hidden">
+    <MyModal
+      id="change-password-modal"
+      :show="showChangePasswordModal"
+      @close="closeAndReset"
+    >
+      <div class="p-6">
+        <form @submit.prevent="savePassword">
+          <h2 class="text-lg font-medium text-gray-900">
+            Masukkan Password Baru
+          </h2>
+          <div class="mt-6">
+            <label class="mb-1 block text-xs text-slate-300">Password</label>
+            <input
+              v-model="passwordInput"
+              type="password"
+              class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
+              :disabled="loading"
+              placeholder="Password"
+              autocomplete="current-password"
+            />
+            <label class="mb-1 block text-xs text-slate-300"
+              >Password Confirmation</label
+            >
+            <input
+              v-model="passwordConfirmationInput"
+              type="password"
+              class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
+              :disabled="loading"
+              placeholder="Password Confirmation"
+              autocomplete="current-password_confirmation"
+            />
+          </div>
+          <div class="mt-6 flex justify-end">
+            <SecondaryButton @click="closeAndReset"> Cancel </SecondaryButton>
+            <PrimaryButton
+              class="ms-3"
+              :class="{ 'opacity-25': loading }"
+              :disabled="loading"
+            >
+              Add
+            </PrimaryButton>
+          </div>
+        </form>
+      </div>
+    </MyModal>
     <!-- Background tema gelap-elegan -->
     <div
       class="absolute inset-0 -z-20 bg-[radial-gradient(60%_60%_at_50%_10%,#0f172a_0%,#0b1220_50%,#0a0f1a_100%)]"
@@ -184,7 +263,7 @@ const changePassword = () => navigateTo("/settings/password");
       class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200"
     >
       Anda belum mengatur kata sandi. Silakan atur kata sandi untuk keamanan
-      akun Anda.
+      akun Anda. <button @click="showChangePasswordModal = true" class="text-sky-500 hover:underline">Atur Kata Sandi</button>
     </p>
     <p
       v-if="user.phone === ''"
