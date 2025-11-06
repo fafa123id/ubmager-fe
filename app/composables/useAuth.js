@@ -8,11 +8,6 @@ export const useAuth = () => {
     sameSite: "lax",
   });
 
-  const refreshToken = useCookie("auth_refresh_token", {
-    maxAge: 60 * 60 * 24 * 30,
-    sameSite: "lax",
-  });
-
   const user = useState("auth_user", () => null);
 
   const _setAuthHeader = (accessToken) => {
@@ -25,7 +20,6 @@ export const useAuth = () => {
 
   const _clearAuth = () => {
     token.value = null;
-    refreshToken.value = null;
     user.value = null;
     if (nuxtApp.$api) {
       delete nuxtApp.$api.defaults.headers.common["Authorization"];
@@ -34,25 +28,17 @@ export const useAuth = () => {
 
   const fetchUser = async () => {
     if (!token.value) {
-      if (refreshToken.value) {
         try {
-          const response = await api.post("/api/refresh", {
-            refresh_token: refreshToken.value,
-          });
+          const response = await api.post("/api/refresh")
 
           const newAccessToken = response.data.access_token;
-          const newRefreshToken = response.data.refresh_token;
           token.value = newAccessToken;
-          refreshToken.value = newRefreshToken;
+
         } catch (error) {
           console.error("Gagal memperbarui token:", error);
           _clearAuth();
           return null;
         }
-      } else {
-        _clearAuth();
-        return null;
-      }
     }
     _setAuthHeader(token.value);
     try {
@@ -72,7 +58,6 @@ export const useAuth = () => {
       });
 
       token.value = response.data.access_token;
-      refreshToken.value = response.data.refresh_token;
 
       _setAuthHeader(token.value);
 
@@ -134,8 +119,7 @@ export const useAuth = () => {
       return true;
     }
 
-    if (refreshToken.value) {
-      await fetchUser();
+    if (await fetchUser()) {
       return !!user.value;
     }
     return false;
@@ -143,7 +127,6 @@ export const useAuth = () => {
 
   return {
     token,
-    refreshToken,
     user,
     login,
     logout,
