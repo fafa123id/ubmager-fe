@@ -3,7 +3,7 @@
 definePageMeta({ auth: "guest" });
 import { ref, computed } from "vue";
 const { login } = useAuth();
-const email = ref("");
+const emailor_username = ref("");
 const password = ref("");
 const remember = ref(false);
 const showPass = ref(false);
@@ -11,7 +11,7 @@ const loading = ref(false);
 const errorMsg = ref("");
 const successMsg = ref("");
 const canSubmit = computed(
-  () => email.value.trim() && password.value.length >= 6
+  () => emailor_username.value.trim() && password.value.length >= 6
 );
 
 const toggleShow = () => (showPass.value = !showPass.value);
@@ -24,7 +24,7 @@ const submit = async () => {
   loading.value = true;
   try {
     await login({
-      email: email.value,
+      emailor_username: emailor_username.value,
       password: password.value,
     });
     successMsg.value = "Berhasil masuk. Mengarahkan...";
@@ -84,17 +84,17 @@ const submit = async () => {
         <form @submit.prevent="submit" class="space-y-4">
           <!-- Email -->
           <div>
-            <label for="email" class="mb-1 block text-xs text-slate-300"
-              >Email</label
+            <label for="emailor_username" class="mb-1 block text-xs text-slate-300"
+              >Email atau Nama Pengguna</label
             >
             <input
-              id="email"
-              v-model="email"
-              type="email"
-              autocomplete="email"
+              id="emailor_username"
+              v-model="emailor_username"
+              type="text"
+              autocomplete="emailor_username"
               required
               class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent transition focus:ring-sky-400"
-              placeholder="nama@kampus.ac.id"
+              placeholder="nama@kampus.ac.id / nama_pengguna"
             />
           </div>
 
@@ -259,7 +259,7 @@ const submit = async () => {
         <p class="mt-6 text-center text-xs text-slate-400">
           Belum punya akun?
           <NuxtLink
-            to="/register"
+            to="/auth/register"
             class="font-semibold text-slate-200 underline-offset-4 hover:underline"
             >Daftar</NuxtLink
           >
