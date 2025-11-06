@@ -17,7 +17,10 @@ const successMsg = ref("");
 const canSubmit = computed(
   () => email.value.trim() && password.value.length >= 6
 );
-
+const loginWithGoogle = () => {
+  const apiBase = useRuntimeConfig().public.apiBase;
+  window.location.href = `${apiBase}/api/auth/google/redirect`;
+};
 const toggleShow = () => (showPass.value = !showPass.value);
 const toggleShowConfirm = () =>
   (showPassConfirm.value = !showPassConfirm.value);
@@ -365,10 +368,11 @@ const clearError = (fieldName) => {
         </div>
 
         <!-- OAuth placeholder -->
-        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <div class="flex flex-col w-full items-center">
           <button
             class="cursor-pointer inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-100 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
             type="button"
+            @click="loginWithGoogle"
           >
             <svg viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor">
               <path
@@ -377,17 +381,7 @@ const clearError = (fieldName) => {
             </svg>
             Google
           </button>
-          <button
-            class="cursor-pointer inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-100 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
-            type="button"
-          >
-            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor">
-              <path
-                d="M13 3c-4.97 0-9 4.03-9 9 0 3.99 2.61 7.36 6.22 8.54.46.08.63-.2.63-.45v-1.58c-2.53.55-3.06-1.07-3.06-1.07-.42-1.07-1.03-1.36-1.03-1.36-.84-.57.06-.56.06-.56.93.07 1.42.95 1.42.95.83 1.42 2.18 1.01 2.71.77.08-.6.33-1.01.6-1.24-2-.23-4.1-1-4.1-4.49 0-.99.36-1.79.95-2.42-.1-.23-.41-1.17.09-2.45 0 0 .77-.25 2.52.93.73-.2 1.51-.3 2.29-.3.78 0 1.56.1 2.29.3 1.75-1.18 2.52-.93 2.52-.93.5 1.28.19 2.22.09 2.45.59.63.95 1.43.95 2.42 0 3.5-2.11 4.25-4.12 4.48.34.29.64.86.64 1.73v2.56c0 .25.17.54.64.45A9.01 9.01 0 0 0 22 12c0-4.97-4.03-9-9-9Z"
-              />
-            </svg>
-            GitHub
-          </button>
+      
         </div>
 
         <!-- Footer kecil -->
