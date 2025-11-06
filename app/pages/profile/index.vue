@@ -45,6 +45,13 @@ const saving = ref(false);
 const errorMsg = ref("");
 const successMsg = ref("");
 
+const userForm = ref({
+  name: "",
+  username: "",
+  email: "",
+  phone: "",
+  bio: "",
+});
 const user = ref({
   id: null,
   isVerified: false,
@@ -56,9 +63,6 @@ const user = ref({
   avatarUrl: "",
   passwordIsSet: true,
 });
-const emailUser = ref({
-  email: "",
-});
 /* ----- Lifecycle: Fetch profile ----- */
 const fetchProfile = async () => {
   const { fetchUser } = useAuth();
@@ -66,8 +70,12 @@ const fetchProfile = async () => {
   errorMsg.value = "";
   try {
     const { data } = await fetchUser();
-    Object.assign(emailUser.value, {
+    Object.assign(userForm.value, {
       email: data?.email ?? "",
+      username: data?.username ?? "",
+      name: data?.name ?? "",
+      phone: data?.phone ?? "",
+      bio: data?.bio ?? "",
     });
     Object.assign(user.value, {
       passwordIsSet: data?.password_is_set ?? false,
@@ -103,7 +111,7 @@ const initials = computed(() => {
 });
 
 const canSave = computed(
-  () => user.value.name?.trim() && user.value.username?.trim()
+  () => userForm.value.name?.trim() && userForm.value.username?.trim()
 );
 
 /* ----- Actions ----- */
@@ -118,7 +126,6 @@ const onAvatarPick = async (e) => {
     formData.append("image", file);
     formData.append("_method", "PUT");
     const res = await $api.post(`/api/user/${user.value.id}`, formData);
-    console.log(res);
     const url = res?.data?.image;
     user.value.image = url;
     useSwal().showSuccess("Avatar diperbarui.");
@@ -137,12 +144,22 @@ const saveProfile = async () => {
   successMsg.value = "";
   try {
     const payload = {
-      name: user.value.name,
-      username: user.value.username,
-      email: user.value.email,
-      phone: user.value.phone,
-      bio: user.value.bio,
+      name: userForm.value.name,
+      username: userForm.value.username,
+      email: userForm.value.email,
+      phone: userForm.value.phone,
+      bio: userForm.value.bio,
     };
+    if (user.value.email) {
+      if (payload.email === "") {
+        return useSwal().showError("Email tidak boleh dikosongkan.");
+      }
+    }
+    if (user.value.phone === "") {
+      if (payload.phone === "") {
+        return useSwal().showError("Nomor HP tidak boleh dikosongkan.");
+      }
+    }
     await $api.put(`/api/user/${user.value.id}`, payload, {
       withCredentials: true,
     });
@@ -445,7 +462,7 @@ const savePassword = async () => {
                 >Nama Lengkap</label
               >
               <input
-                v-model="user.name"
+                v-model="userForm.name"
                 type="text"
                 class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
                 :disabled="loading"
@@ -457,7 +474,7 @@ const savePassword = async () => {
             <div>
               <label class="mb-1 block text-xs text-slate-300">Username</label>
               <input
-                v-model="user.username"
+                v-model="userForm.username"
                 type="text"
                 class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
                 :disabled="loading"
@@ -469,7 +486,7 @@ const savePassword = async () => {
             <div>
               <label class="mb-1 block text-xs text-slate-300">Nomor HP</label>
               <input
-                v-model="user.phone"
+                v-model="userForm.phone"
                 type="tel"
                 class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
                 :disabled="loading"
@@ -481,7 +498,7 @@ const savePassword = async () => {
             <div class="sm:col-span-2">
               <label class="mb-1 block text-xs text-slate-300">Email</label>
               <input
-                v-model="user.email"
+                v-model="userForm.email"
                 type="email"
                 class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-indigo-400 disabled:opacity-60"
                 :disabled="loading"
@@ -489,7 +506,7 @@ const savePassword = async () => {
                 autocomplete="email"
               />
               <p class="mt-1 text-xs text-slate-400">
-                <span v-if="!emailUser.email">
+                <span v-if="!user.email">
                   Email Anda belum diset, Set Sekarang!
                 </span>
 
@@ -516,7 +533,7 @@ const savePassword = async () => {
             <div class="sm:col-span-2">
               <label class="mb-1 block text-xs text-slate-300">Bio</label>
               <textarea
-                v-model="user.bio"
+                v-model="userForm.bio"
                 rows="4"
                 class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-indigo-400 disabled:opacity-60"
                 :disabled="loading"
