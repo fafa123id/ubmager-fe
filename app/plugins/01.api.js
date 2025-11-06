@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useAuth } from "~/composables/useAuth";
 
-export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin(async (nuxtApp) => {
   const { _clearAuth, token } = useAuth();
 
   const api = axios.create({
@@ -15,7 +15,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   if (token().value) {
     api.defaults.headers.common["Authorization"] = `Bearer ${token().value}`;
   }
-  api.interceptors.response.use(
+  await api.interceptors.response.use(
     (response) => {
       return response;
     },
