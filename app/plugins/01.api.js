@@ -27,25 +27,16 @@ export default defineNuxtPlugin((nuxtApp) => {
         
         originalRequest._retry = true; 
 
-        const { token, refreshToken } = useAuth(); 
-
-        if (!refreshToken.value) {
-          _clearAuth();
-          return Promise.reject(error);
-        }
+        const { token } = useAuth();
 
         try {
           console.log('Interceptor: Access token expired. Refreshing token...');
           
-          const response = await api.post('/api/refresh', {
-            refresh_token: refreshToken.value,
-          });
+          const response = await api.post('/api/refresh');
 
           const newAccessToken = response.data.access_token;
-          const newRefreshToken = response.data.refresh_token;
 
           token.value = newAccessToken;
-          refreshToken.value = newRefreshToken;
 
           api.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
           originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
