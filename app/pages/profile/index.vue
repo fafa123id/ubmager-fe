@@ -15,7 +15,7 @@ const verificationEmail = async () => {
     useSwal().showLoading();
     await $api.post(
       "/api/verify-email/send",
-      { email: emailUser.value },
+      { email: emailUser.value.email },
       { withCredentials: true }
     );
     useSwal().showSuccess("Email verifikasi telah dikirim.");
@@ -56,7 +56,9 @@ const user = ref({
   avatarUrl: "",
   passwordIsSet: true,
 });
-const emailUser = ref("");
+const emailUser = ref({
+  email: "",
+});
 /* ----- Lifecycle: Fetch profile ----- */
 const fetchProfile = async () => {
   const { fetchUser } = useAuth();
@@ -64,7 +66,9 @@ const fetchProfile = async () => {
   errorMsg.value = "";
   try {
     const { data } = await fetchUser();
-    Object.assign(emailUser.value, data?.email ?? "");
+    Object.assign(emailUser.value, {
+      email: data?.email ?? "",
+    });
     Object.assign(user.value, {
       passwordIsSet: data?.password_is_set ?? false,
       isVerified: data?.is_verified ?? false,
@@ -485,7 +489,7 @@ const savePassword = async () => {
                 autocomplete="email"
               />
               <p class="mt-1 text-xs text-slate-400">
-                <span v-if="!emailUser.value">
+                <span v-if="!emailUser.value.email">
                   Email Anda belum diset, Set Sekarang!
                 </span>
 
