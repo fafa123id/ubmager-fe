@@ -2,7 +2,7 @@
   <div>
     <Navbar />
     <main>
-      <NuxtPage />
+      <slot />
     </main>
   </div>
 </template>
