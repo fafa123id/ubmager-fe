@@ -34,7 +34,7 @@ export const useAuth = () => {
     }
   };
 
-  const fetchUser = async () => {
+  const fetchUser = async (maxage = 60 * 60) => {
     // Prevent multiple simultaneous fetches - reuse existing promise
     if (authCheckPromise.value) {
       console.log("Auth check already in progress, reusing promise...");
@@ -46,8 +46,8 @@ export const useAuth = () => {
     const fetchPromise = (async () => {
       try {
         // Try with existing access token first
-        if (token().value) {
-          _setAuthHeader(token().value);
+        if (token(maxage).value) {
+          _setAuthHeader(token(maxage).value);
           try {
             const response = await nuxtApp.$api.get("/api/user");
             user.value = response.data;
@@ -82,7 +82,7 @@ export const useAuth = () => {
           const refreshResponse = await nuxtApp.$api.post("/api/refresh");
           const newAccessToken = refreshResponse.data.access_token;
 
-          token().value = newAccessToken;
+          token(maxage).value = newAccessToken;
           _setAuthHeader(newAccessToken);
 
           const userResponse = await nuxtApp.$api.get("/api/user");
@@ -128,7 +128,7 @@ export const useAuth = () => {
   const loginWithToken = async (accessToken) => {
     token(60 * 60 * 24 * 30).value = accessToken;
     _setAuthHeader(accessToken);
-    await fetchUser();
+    await fetchUser(60 * 60 * 24 * 30);
   };
 
   const logout = async () => {
