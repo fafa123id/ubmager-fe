@@ -8,13 +8,13 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const { user, checkAuth } = useAuth();
 
+  await checkAuth();
+  
   if (user.value) {
     return;
   }
 
-  const isAuthed = await checkAuth();
-
-  if (!isAuthed) {
+  if (!user.value) {
     useSwal().showError('Silakan masuk terlebih dahulu untuk mengakses halaman ini.');
     return navigateTo(`/auth/login?next=${encodeURIComponent(to.fullPath)}`);
   }
