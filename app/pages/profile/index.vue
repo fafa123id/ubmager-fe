@@ -99,8 +99,7 @@ const initials = computed(() => {
 const canSave = computed(
   () =>
     user.value.name?.trim() &&
-    user.value.username?.trim() &&
-    user.value.email?.trim()
+    user.value.username?.trim()
 );
 
 /* ----- Actions ----- */
@@ -393,9 +392,14 @@ const changePassword = () => navigateTo("/settings/password");
               />
               <p class="mt-1 text-xs text-slate-400">
                 {{
-                  user.isVerified
+                  user.isVerified && user.email != null
                     ? "Email Anda sudah diverifikasi"
                     : "Email Anda belum diverifikasi"
+                }}
+                {{
+                  user.email == null
+                    ? "Email Anda belum diset, Set Sekarang!"
+                    : ""
                 }}
                 <button
                   type="button"
