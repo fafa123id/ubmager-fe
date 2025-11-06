@@ -68,7 +68,7 @@ const fetchProfile = async () => {
   loading.value = true;
   errorMsg.value = "";
   try {
-    const { data } = useAuth().user.value;
+    const { data } = await useAuth().fetchUser();
     Object.assign(userForm.value, {
       email: data?.email ?? "",
       username: data?.username ?? "",
