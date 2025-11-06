@@ -1,12 +1,7 @@
 import { useAuth } from '~/composables/useAuth'; 
 
 export default defineNuxtRouteMiddleware(async (to) => {
-  const requiresGuest = to.meta.auth === "guest";
-
-  if (!requiresGuest) {
-    return;
-  }
-
+  
   const { user, checkAuth } = useAuth();
 
   if (user.value) {
