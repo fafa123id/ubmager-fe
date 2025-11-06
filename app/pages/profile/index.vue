@@ -54,7 +54,7 @@ const user = ref({
   phone: "",
   bio: "",
   avatarUrl: "",
-  passwordIsSet: false,
+  passwordIsSet: true,
 });
 const emailUser = ref("");
 /* ----- Lifecycle: Fetch profile ----- */
@@ -260,7 +260,7 @@ const savePassword = async () => {
     ></div>
     <p
       v-if="user.passwordIsSet === false"
-      class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200"
+      class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200 "
     >
       Anda belum mengatur kata sandi. Silakan atur kata sandi untuk keamanan
       akun Anda. <button @click="showChangePasswordModal = true" class="text-sky-500 hover:underline">Atur Kata Sandi</button>
