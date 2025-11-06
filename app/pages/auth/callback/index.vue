@@ -11,8 +11,8 @@ onMounted(async () => {
   const route = useRoute();
   const query = route.query;
   const { loginWithToken } = useAuth();
-  if (query.token && query.refresh) {
-    await loginWithToken(query.token, query.refresh);
+  if (query.token) {
+    await loginWithToken(query.token);
   }
   let destination = "/";
   if (query.next) {
