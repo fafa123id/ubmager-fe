@@ -9,9 +9,11 @@
 
 <script setup>
 import Navbar from './layouts/navbar.vue';
-const { fetchUser } = useAuth();
-import { onMounted } from 'vue';
-onMounted(() => {
-  fetchUser() 
-});
+const { user, fetchUser } = useAuth();
+
+if (!user.value) {
+  fetchUser().catch(() => {
+    console.log('Background auth check failed (user not logged in).');
+  });
+}
 </script>
