@@ -27,26 +27,41 @@ export const useAuth = () => {
   };
 
   const fetchUser = async () => {
-    if (!token.value) {
-        try {
-          const response = await nuxtApp.$api.post("/api/refresh")
+    if (user.value) {
+      return user.value;
+    }
 
-          const newAccessToken = response.data.access_token;
-          token.value = newAccessToken;
-
-        } catch (error) {
-          console.error("Gagal memperbarui token:", error);
+    if (token.value) {
+      _setAuthHeader(token.value);
+      try {
+        const response = await nuxtApp.$api.get("/api/user");
+        user.value = response.data;
+        return user.value;
+      } catch (error) {
+        if (error.response?.status !== 401) {
+          console.error("Gagal fetch user (bukan 401):", error);
           _clearAuth();
           return null;
         }
+
+        console.log("Access token kedaluwarsa, mencoba refresh...");
+      }
     }
-    _setAuthHeader(token.value);
+
     try {
-      const response = await nuxtApp.$api.get("/api/user");
-      user.value = response.data;
+      const refreshResponse = await nuxtApp.$api.post("/api/refresh");
+      const newAccessToken = refreshResponse.data.access_token;
+
+      token.value = newAccessToken;
+      _setAuthHeader(newAccessToken);
+
+      const userResponse = await nuxtApp.$api.get("/api/user");
+      user.value = userResponse.data;
       return user.value;
     } catch (error) {
-      console.error("Gagal mengambil data user:", error);
+      console.error("Gagal refresh token atau fetch user kedua:", error);
+      _clearAuth();
+      return null;
     }
   };
 
@@ -114,16 +129,15 @@ export const useAuth = () => {
     }
   };
 
-  const checkAuth = async () => {
-    if (user.value) {
-      return true;
-    }
+const checkAuth = async () => {
+  if (user.value) {
+    return true;
+  }
 
-    if (await fetchUser()) {
-      return !!user.value;
-    }
-    return false;
-  };
+  const fetchedUser = await fetchUser();
+
+  return !!fetchedUser;
+};
 
   return {
     token,
