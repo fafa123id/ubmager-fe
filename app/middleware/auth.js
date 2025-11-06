@@ -8,8 +8,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const { user, checkAuth } = useAuth();
 
-  await checkAuth();
-  
   if (user.value) {
     return;
   }
