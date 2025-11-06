@@ -65,11 +65,10 @@ const user = ref({
 });
 /* ----- Lifecycle: Fetch profile ----- */
 const fetchProfile = async () => {
-  const { fetchUser } = useAuth();
   loading.value = true;
   errorMsg.value = "";
   try {
-    const { data } = await fetchUser();
+    const { data } = useAuth().user;
     Object.assign(userForm.value, {
       email: data?.email ?? "",
       username: data?.username ?? "",
