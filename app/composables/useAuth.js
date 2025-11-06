@@ -33,18 +33,11 @@ export const useAuth = () => {
   };
 
   const fetchUser = async () => {
-    const passportClientId = runtimeConfig.public.passportClientId;
-    const passportClientSecret = runtimeConfig.public.passportClientSecret;
-
     if (!token.value) {
       if (refreshToken.value) {
         try {
-          const response = await nuxtApp.$api.post("/oauth/token", {
-            grant_type: "refresh_token",
+          const response = await api.post("/api/refresh", {
             refresh_token: refreshToken.value,
-            client_id: passportClientId,
-            client_secret: passportClientSecret,
-            scope: "",
           });
 
           const newAccessToken = response.data.access_token;
@@ -113,15 +106,27 @@ export const useAuth = () => {
 
     await navigateTo("/");
   };
-  const register = async ({ name, email, password, password_confirmation, username, phone }) => {
+  const register = async ({
+    name,
+    email,
+    password,
+    password_confirmation,
+    username,
+    phone,
+  }) => {
     try {
       const response = await nuxtApp.$api.post("/api/register", {
-        name, email, password, password_confirmation, username, phone
+        name,
+        email,
+        password,
+        password_confirmation,
+        username,
+        phone,
       });
     } catch (error) {
       console.error("Register gagal:", error);
       return Promise.reject(error);
-      }
+    }
   };
 
   const checkAuth = async () => {
