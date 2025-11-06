@@ -392,12 +392,12 @@ const changePassword = () => navigateTo("/settings/password");
               />
               <p class="mt-1 text-xs text-slate-400">
                 {{
-                  user.isVerified && user.email != null
+                  user.isVerified && user.email != ""
                     ? "Email Anda sudah diverifikasi"
                     : "Email Anda belum diverifikasi"
                 }}
                 {{
-                  user.email == null
+                  user.email == ""
                     ? "Email Anda belum diset, Set Sekarang!"
                     : ""
                 }}
