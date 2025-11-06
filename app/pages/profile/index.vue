@@ -55,6 +55,7 @@ const user = ref({
   phone: "",
   bio: "",
   avatarUrl: "",
+  passwordIsSet: false,
 });
 
 /* ----- Lifecycle: Fetch profile ----- */
@@ -65,6 +66,7 @@ const fetchProfile = async () => {
   try {
     const { data } = await fetchUser();
     Object.assign(user.value, {
+      passwordIsSet: data?.password_is_set ?? false,
       isVerified: data?.is_verified ?? false,
       id: data?.id || null,
       name: data?.name ?? "",
@@ -392,7 +394,7 @@ const changePassword = () => navigateTo("/settings/password");
               />
               <p class="mt-1 text-xs text-slate-400">
                 {{
-                  user.isVerified && user.email != ""
+                  (user.isVerified && user.email != "")
                     ? "Email Anda sudah diverifikasi"
                     : "Email Anda belum diverifikasi"
                 }}
