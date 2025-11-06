@@ -13,6 +13,7 @@ export const useAuth = () => {
   const user = useState("auth_user", () => null);
   const isAuthChecking = useState("auth_checking", () => false);
   const authCheckPromise = useState("auth_check_promise", () => null);
+  const lastAuthCheckFailed = useState("auth_check_failed", () => false);
 
   const _setAuthHeader = (accessToken) => {
     if (nuxtApp.$api && accessToken) {
@@ -27,14 +28,21 @@ export const useAuth = () => {
     user.value = null;
     isAuthChecking.value = false;
     authCheckPromise.value = null;
+    lastAuthCheckFailed.value = true;
     if (nuxtApp.$api) {
       delete nuxtApp.$api.defaults.headers.common["Authorization"];
     }
   };
 
-  const fetchUser = async () => {
+  const fetchUser = async (force = false) => {
+    // If last check failed and not forcing, return early
+    if (lastAuthCheckFailed.value && !force) {
+      console.log("Previous auth check failed, skipping auto-check");
+      return null;
+    }
+
     // Prevent multiple simultaneous fetches
-    if (authCheckPromise.value) {
+    if (authCheckPromise.value && !force) {
       console.log("Auth check already in progress, waiting...");
       return authCheckPromise.value;
     }
@@ -49,6 +57,7 @@ export const useAuth = () => {
           try {
             const response = await nuxtApp.$api.get("/api/user");
             user.value = response.data;
+            lastAuthCheckFailed.value = false;
             return user.value;
           } catch (error) {
             // If not 401, it's a real error
@@ -62,6 +71,13 @@ export const useAuth = () => {
           }
         }
 
+        // Try refresh token
+        if (!useCookie("refresh_token").value) {
+          console.log("No refresh token available");
+          _clearAuth();
+          return null;
+        }
+
         try {
           const refreshResponse = await nuxtApp.$api.post("/api/refresh");
           const newAccessToken = refreshResponse.data.access_token;
@@ -71,6 +87,7 @@ export const useAuth = () => {
 
           const userResponse = await nuxtApp.$api.get("/api/user");
           user.value = userResponse.data;
+          lastAuthCheckFailed.value = false;
           return user.value;
         } catch (refreshError) {
           console.error("Gagal refresh token:", refreshError);
@@ -97,7 +114,8 @@ export const useAuth = () => {
       token().value = accessToken;
       _setAuthHeader(accessToken);
 
-      await fetchUser();
+      lastAuthCheckFailed.value = false;
+      await fetchUser(true);
       return true;
     } catch (error) {
       console.error("Login gagal:", error);
@@ -109,7 +127,8 @@ export const useAuth = () => {
   const loginWithToken = async (accessToken) => {
     token(60 * 60 * 24 * 30).value = accessToken;
     _setAuthHeader(accessToken);
-    await fetchUser();
+    lastAuthCheckFailed.value = false;
+    await fetchUser(true);
   };
 
   const logout = async () => {
@@ -150,10 +169,16 @@ export const useAuth = () => {
     }
   };
 
-  const checkAuth = async () => {
+  const checkAuth = async (force = false) => {
     // If already authenticated, return immediately
     if (user.value) {
       return true;
+    }
+
+    // If last check failed and not forcing, return false immediately
+    if (lastAuthCheckFailed.value && !force) {
+      console.log("Previous auth check failed, returning false");
+      return false;
     }
 
     // If auth check in progress, wait for it
@@ -162,8 +187,14 @@ export const useAuth = () => {
       return !!result;
     }
 
+    // Check if we have refresh token
+    if (!useCookie("refresh_token").value) {
+      lastAuthCheckFailed.value = true;
+      return false;
+    }
+
     // Perform auth check
-    const fetchedUser = await fetchUser();
+    const fetchedUser = await fetchUser(force);
     return !!fetchedUser;
   };
 
@@ -171,6 +202,7 @@ export const useAuth = () => {
     token,
     user,
     isAuthChecking,
+    lastAuthCheckFailed,
     login,
     logout,
     checkAuth,

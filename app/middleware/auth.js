@@ -20,9 +20,12 @@ export default defineNuxtRouteMiddleware(async (to) => {
     if (!isAuthed) {
       console.log('Middleware [auth]: User not authenticated. Redirecting to login.');
       
-      // Only show error if not already on login page
-      if (to.path !== '/auth/login') {
-        useSwal().showError('Silakan masuk terlebih dahulu untuk mengakses halaman ini.');
+      // Don't show error if already on an auth page
+      if (!to.path.startsWith('/auth')) {
+        // Use nextTick to ensure navigation happens before showing error
+        nextTick(() => {
+          useSwal().showError('Silakan masuk terlebih dahulu untuk mengakses halaman ini.');
+        });
       }
       
       return navigateTo(`/auth/login?next=${encodeURIComponent(to.fullPath)}`);
