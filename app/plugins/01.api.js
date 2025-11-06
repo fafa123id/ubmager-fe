@@ -33,6 +33,17 @@ export default defineNuxtPlugin((nuxtApp) => {
           console.log("Interceptor: Access token expired. Refreshing token...");
 
           const response = await api.post("/api/refresh");
+          const newAccessToken = response.data.access_token;
+          const shortToken = useCookie("auth_token", {
+            maxAge: 60,
+            sameSite: "lax",
+          });
+          shortToken.value = newAccessToken;
+          api.defaults.headers.common[
+            Authorization
+          ] = `Bearer ${newAccessToken}`;
+          originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+          return api(originalRequest);
         } catch (refreshError) {
           console.error(
             "Interceptor: Gagal refresh token. Logout.",
