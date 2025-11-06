@@ -118,7 +118,7 @@ const handleModalContentClick = () => {
                     leave-to-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
                     <div
-                        class="relative bg-white rounded-lg shadow-xl overflow-y-auto w-full my-6"
+                        class="relative bg-slate-900/95 rounded-lg shadow-xl overflow-y-auto w-full my-6"
                         :class="maxWidthClass" :style="{ zIndex: modalZ + 1 }" @mousedown.stop >
                         <slot />
                     </div>
