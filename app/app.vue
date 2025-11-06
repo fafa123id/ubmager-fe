@@ -7,7 +7,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import Navbar from './layouts/navbar.vue'
 import { onMounted } from 'vue'
 

@@ -13,17 +13,14 @@ export const useAuth = () => {
 
   // Cookie access token (non-HttpOnly, agar bisa dipakai header Authorization)
   const token = (maxAge = 60) =>
-    (useCookie < string) |
-    (null >
-      ("auth_token",
-      {
-        maxAge,
-        sameSite: "lax",
-        // sesuaikan jika perlu:
-        // secure: true,
-        // domain: '.bornhub.cloud',
-        path: "/",
-      }));
+    useCookie("auth_token", {
+      maxAge,
+      sameSite: "lax",
+      // sesuaikan jika perlu:
+      // secure: true,
+      // domain: '.bornhub.cloud',
+      path: "/",
+    });
 
   // === Helpers ===============================================================
   const _setAuthHeader = (accessToken) => {
