@@ -15,7 +15,7 @@ const verificationEmail = async () => {
     useSwal().showLoading();
     await $api.post(
       "/api/verify-email/send",
-      { email: emailUser.value.email },
+      { email: user.value.email },
       { withCredentials: true }
     );
     useSwal().showSuccess("Email verifikasi telah dikirim.");
