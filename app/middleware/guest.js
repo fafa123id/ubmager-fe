@@ -8,7 +8,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     console.log(
       "Middleware [guest]: User detected in state. Redirecting to home."
     );
-    return navigateTo("/");
+    navigateTo(from?.fullPath || "/", { replace: true });
   }
 
   try {
