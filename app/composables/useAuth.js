@@ -5,25 +5,28 @@ export const useAuth = () => {
   const nuxtApp = useNuxtApp();
 
   // === States ================================================================
-  const user = useState<any>("auth_user", () => null);
-  const authReady = useState<boolean>("auth_ready", () => false);
+  const user = useState("auth_user", () => null);
+  const authReady = useState("auth_ready", () => false);
 
   // "Lock" untuk dedup refresh/fetch concurrent
-  const inFlight = useState<Promise<any> | null>("auth_in_flight", () => null);
+  const inFlight = useState("auth_in_flight", () => null);
 
   // Cookie access token (non-HttpOnly, agar bisa dipakai header Authorization)
   const token = (maxAge = 60) =>
-    useCookie<string | null>("auth_token", {
-      maxAge,
-      sameSite: "lax",
-      // sesuaikan jika perlu:
-      // secure: true,
-      // domain: '.bornhub.cloud',
-      path: "/",
-    });
+    (useCookie < string) |
+    (null >
+      ("auth_token",
+      {
+        maxAge,
+        sameSite: "lax",
+        // sesuaikan jika perlu:
+        // secure: true,
+        // domain: '.bornhub.cloud',
+        path: "/",
+      }));
 
   // === Helpers ===============================================================
-  const _setAuthHeader = (accessToken?: string | null) => {
+  const _setAuthHeader = (accessToken) => {
     if (!nuxtApp.$api) return;
     if (accessToken) {
       nuxtApp.$api.defaults.headers.common[
@@ -41,7 +44,7 @@ export const useAuth = () => {
     authReady.value = true;
   };
 
-  const setAccessToken = (accessToken: string, opts?: { maxAge?: number }) => {
+  const setAccessToken = (accessToken, opts) => {
     const maxAge = opts?.maxAge ?? 60;
     token(maxAge).value = accessToken;
     _setAuthHeader(accessToken);
@@ -91,7 +94,7 @@ export const useAuth = () => {
         user.value = r1.data ?? null;
         authReady.value = true;
         return user.value;
-      } catch (err: any) {
+      } catch (err) {
         // Kalau 401 → coba refresh, lalu get user lagi
         if (err?.response?.status === 401) {
           try {
@@ -132,13 +135,7 @@ export const useAuth = () => {
   };
 
   // === Public APIs ===========================================================
-  const login = async ({
-    emailor_username,
-    password,
-  }: {
-    emailor_username: string;
-    password: string;
-  }) => {
+  const login = async ({ emailor_username, password }) => {
     try {
       const res = await nuxtApp.$api.post("/api/login", {
         emailor_username,
@@ -157,7 +154,7 @@ export const useAuth = () => {
     }
   };
 
-  const loginWithToken = async (accessToken: string) => {
+  const loginWithToken = async (accessToken) => {
     setAccessToken(accessToken, { maxAge: 60 * 60 * 24 * 30 });
     await fetchUser();
   };
