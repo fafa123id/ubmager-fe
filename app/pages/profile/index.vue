@@ -186,6 +186,13 @@ const changePassword = () => navigateTo("/settings/password");
       Anda belum mengatur kata sandi. Silakan atur kata sandi untuk keamanan
       akun Anda.
     </p>
+    <p
+      v-if="user.phone === ''"
+      class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200"
+    >
+      Anda belum mengatur nomor telepon. Silakan atur nomor telepon untuk mulai
+      berbelanja di akun Anda.
+    </p>
     <!-- Breadcrumbs kecil -->
     <div
       class="mx-auto max-w-7xl px-4 pt-6 text-xs text-slate-400 sm:px-6 lg:px-8"
