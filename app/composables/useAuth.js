@@ -6,11 +6,6 @@ export const useAuth = () => {
     maxAge: 60,
     sameSite: "lax",
   });
-  const PAT = useCookie("auth_pat", {
-    maxAge: 60 * 60 * 24 * 30,
-    sameSite: "lax",
-  });
-
   const user = useState("auth_user", () => null);
 
   const _setAuthHeader = (accessToken) => {
@@ -23,18 +18,13 @@ export const useAuth = () => {
 
   const _clearAuth = () => {
     token.value = null;
-    PAT.value = null;
     user.value = null;
     if (nuxtApp.$api) {
       delete nuxtApp.$api.defaults.headers.common["Authorization"];
     }
   };
   const fetchUser = async () => {
-    if (PAT.value) {
-      _setAuthHeader(PAT.value);
-    } else if (token.value) {
-      _setAuthHeader(token.value);
-    }
+    _setAuthHeader(token.value);
     try {
       const response = await nuxtApp.$api.get("/api/user");
       user.value = response.data;
@@ -72,16 +62,19 @@ export const useAuth = () => {
   };
 
   const loginWithToken = async (accessToken) => {
-    PAT.value = accessToken;
-    _setAuthHeader(PAT.value);
+    const longToken = useCookie("auth_token", {
+      maxAge: 60,
+      sameSite: "lax",
+    });
+    longToken.value = accessToken;
+    _setAuthHeader(accessToken);
     await fetchUser();
   };
 
   const logout = async () => {
     try {
       if (nuxtApp.$api) {
-        if (PAT.value) _setAuthHeader(PAT.value);
-        else if (token.value) _setAuthHeader(token.value);
+        _setAuthHeader(token.value);
         await nuxtApp.$api.post("/api/logout");
       }
     } catch (error) {
@@ -127,7 +120,6 @@ export const useAuth = () => {
 
   return {
     token,
-    PAT,
     user,
     login,
     logout,
