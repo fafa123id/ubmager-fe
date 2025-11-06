@@ -2,23 +2,23 @@
 import { useAuth } from '~/composables/useAuth';
 
 export default defineNuxtPlugin(async (nuxtApp) => {
-  const { token, fetchUser, user } = useAuth();
+  // const { token, fetchUser, user } = useAuth();
 
 
-  if (user.value) {
-    return;
-  }
+  // if (user.value) {
+  //   return;
+  // }
 
 
-  if (!token.value) {
+  // if (!token.value) {
 
-    return;
-  }
+  //   return;
+  // }
 
-  if (process.server) {
-    await fetchUser();
-  } else {
+  // if (process.server) {
+  //   await fetchUser();
+  // } else {
 
-    fetchUser();
-  }
+  //   fetchUser();
+  // }
 });
