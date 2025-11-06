@@ -99,9 +99,7 @@ const initials = computed(() => {
 });
 
 const canSave = computed(
-  () =>
-    user.value.name?.trim() &&
-    user.value.username?.trim()
+  () => user.value.name?.trim() && user.value.username?.trim()
 );
 
 /* ----- Actions ----- */
@@ -180,7 +178,13 @@ const changePassword = () => navigateTo("/settings/password");
     <div
       class="pointer-events-none absolute -bottom-24 -right-16 h-72 w-72 rounded-full bg-indigo-500/15 blur-3xl"
     ></div>
-
+    <p
+      v-if="user.passwordIsSet === false"
+      class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200"
+    >
+      Anda belum mengatur kata sandi. Silakan atur kata sandi untuk keamanan
+      akun Anda.
+    </p>
     <!-- Breadcrumbs kecil -->
     <div
       class="mx-auto max-w-7xl px-4 pt-6 text-xs text-slate-400 sm:px-6 lg:px-8"
@@ -393,24 +397,24 @@ const changePassword = () => navigateTo("/settings/password");
                 autocomplete="email"
               />
               <p class="mt-1 text-xs text-slate-400">
-                {{
-                  (user.isVerified && user.email != "")
-                    ? "Email Anda sudah diverifikasi"
-                    : "Email Anda belum diverifikasi"
-                }}
-                {{
-                  user.email == ""
-                    ? "Email Anda belum diset, Set Sekarang!"
-                    : ""
-                }}
-                <button
-                  type="button"
-                  v-if="!user.isVerified"
-                  class="text-sky-500 hover:underline"
-                  @click="verificationEmail"
-                >
-                  Verifikasi Email
-                </button>
+                <span v-if="!user.email">
+                  Email Anda belum diset, Set Sekarang!
+                </span>
+
+                <span v-else-if="user.isVerified">
+                  Email Anda sudah diverifikasi
+                </span>
+
+                <span v-else>
+                  Email Anda belum diverifikasi
+                  <button
+                    type="button"
+                    class="text-sky-500 hover:underline ml-1"
+                    @click="verificationEmail"
+                  >
+                    Kirim ulang verifikasi
+                  </button>
+                </span>
               </p>
               <div>
                 <p></p>
