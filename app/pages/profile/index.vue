@@ -155,7 +155,7 @@ const saveProfile = async () => {
         return useSwal().showError("Email tidak boleh dikosongkan.");
       }
     }
-    if (user.value.phone === "") {
+    if (user.value.phone) {
       if (payload.phone === "") {
         return useSwal().showError("Nomor HP tidak boleh dikosongkan.");
       }
