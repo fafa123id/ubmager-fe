@@ -200,7 +200,7 @@ const savePassword = async () => {
     >
       <div class="p-6">
         <form @submit.prevent="savePassword">
-          <h2 class="text-lg font-medium text-gray-900">
+          <h2 class="text-lg font-medium text-white">
             Masukkan Password Baru
           </h2>
           <div class="mt-6">
