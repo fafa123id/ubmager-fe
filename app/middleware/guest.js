@@ -1,14 +1,11 @@
-// middleware/guest.ts
+// middleware/guest.js
 import { useAuth } from '~/composables/useAuth'
 
-export default defineNuxtRouteMiddleware(async (to) => {
-  const { ensureAuth, user } = useAuth()
+export default defineNuxtRouteMiddleware((to) => {
+  const { user, token } = useAuth()
 
-  // Tunggu hasil memastikan auth (agar tidak balapan)
-  await ensureAuth()
-
-  if (user.value) {
-    // sudah login → lempar ke home
-    return navigateTo('/')
+  // Hindari call API di halaman guest. Cukup cek local state/token.
+  if (user.value || token().value) {
+    return navigateTo('/', { replace: true })
   }
 })
