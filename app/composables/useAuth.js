@@ -54,22 +54,6 @@ export const useAuth = () => {
     if (await GetUser()) {
       return user.value;
     }
-
-    try {
-      const refreshResponse = await nuxtApp.$api.post("/api/refresh");
-      const newAccessToken = refreshResponse.data.access_token;
-
-      token.value = newAccessToken;
-      _setAuthHeader(newAccessToken);
-
-      const userResponse = await nuxtApp.$api.get("/api/user");
-      user.value = userResponse.data;
-      return user.value;
-    } catch (error) {
-      console.error("Gagal refresh token atau fetch user kedua:", error);
-      _clearAuth();
-      return null;
-    }
   };
 
   const login = async ({ emailor_username, password }) => {

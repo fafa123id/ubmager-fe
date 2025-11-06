@@ -25,7 +25,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     async (error) => {
       const originalRequest = error.config;
 
-      if (error.response?.status === 401 && !originalRequest._retry && originalRequest.url !== '/oauth/token') {
+      if (error.response?.status === 401 && !originalRequest._retry && originalRequest.url !== '/api/refresh') {
         
         originalRequest._retry = true; 
 
