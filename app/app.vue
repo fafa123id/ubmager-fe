@@ -1,4 +1,3 @@
-<!-- app.vue -->
 <template>
   <div>
     <NuxtLayout />
@@ -9,11 +8,12 @@
 
 <script setup>
 import Navbar from './layouts/navbar.vue';
-const { user, fetchUser } = useAuth();
 
-if (!user.value) {
-  fetchUser().catch(() => {
-    console.log('Background auth check failed (user not logged in).');
+const { user, checkAuth } = useAuth();
+
+if (process.client && !user.value) {
+  checkAuth().catch((error) => {
+    console.log('Background auth check failed:', error);
   });
 }
 </script>
