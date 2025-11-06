@@ -213,7 +213,7 @@ const savePassword = async () => {
 </script>
 
 <template>
-  <main class="relative min-h-dvh text-slate-100 overflow-hidden">
+  <div class="relative min-h-dvh text-slate-100 overflow-hidden">
     <MyModal
       id="change-password-modal"
       :show="showChangePasswordModal"
@@ -596,5 +596,5 @@ const savePassword = async () => {
       •
       <NuxtLink to="/syarat-ketentuan" class="hover:underline">S&K</NuxtLink>
     </footer>
-  </main>
+  </div>
 </template>
