@@ -9,6 +9,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     headers: {
       'Accept': 'application/json',
     },
+    withCredentials: true,
   });
 
   const initialToken = useCookie('auth_token');
@@ -45,6 +46,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
         } catch (refreshError) {
           console.error('Interceptor: Gagal refresh token. Logout.', refreshError);
+          _clearAuth();
           return Promise.reject(refreshError);
         }
       }
