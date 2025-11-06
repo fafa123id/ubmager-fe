@@ -68,7 +68,7 @@ export const useAuth = () => {
         emailor_username,
         password,
       });
-      accessToken = response.data.access_token
+      const accessToken = response.data.access_token
       token().value = accessToken;
 
       _setAuthHeader(accessToken);
