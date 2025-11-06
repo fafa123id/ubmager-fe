@@ -16,7 +16,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // Wait for any ongoing auth check to complete
   try {
     const isAuthed = await checkAuth();
-
+    console.log(`Middleware [auth]: Auth check result: ${isAuthed}`);
     if (!isAuthed) {
       console.log("Middleware [auth]: User not authenticated. Redirecting to login.");
 
