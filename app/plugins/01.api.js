@@ -34,13 +34,9 @@ export default defineNuxtPlugin((nuxtApp) => {
 
           const response = await api.post("/api/refresh");
           const newAccessToken = response.data.access_token;
-          const shortToken = useCookie("auth_token", {
-            maxAge: 60,
-            sameSite: "lax",
-          });
           token().value = newAccessToken;
           api.defaults.headers.common[
-            Authorization
+            "Authorization"
           ] = `Bearer ${newAccessToken}`;
           originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
           return api(originalRequest);
