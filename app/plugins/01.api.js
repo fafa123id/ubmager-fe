@@ -1,20 +1,22 @@
-import axios from 'axios';
-import { useAuth } from '~/composables/useAuth'; 
+import axios from "axios";
+import { useAuth } from "~/composables/useAuth";
 
 export default defineNuxtPlugin((nuxtApp) => {
-  const {_clearAuth, logout, token} = useAuth();
+  const { _clearAuth, logout, token } = useAuth();
 
   const api = axios.create({
-    baseURL: 'https://api.ubmager.bornhub.cloud',
+    baseURL: "https://api.ubmager.bornhub.cloud",
     headers: {
-      'Accept': 'application/json',
+      Accept: "application/json",
     },
     withCredentials: true,
   });
 
   const initialToken = token();
   if (initialToken.value) {
-    api.defaults.headers.common['Authorization'] = `Bearer ${initialToken.value}`;
+    api.defaults.headers.common[
+      "Authorization"
+    ] = `Bearer ${initialToken.value}`;
   }
 
   api.interceptors.response.use(
@@ -24,28 +26,38 @@ export default defineNuxtPlugin((nuxtApp) => {
     async (error) => {
       const originalRequest = error.config;
 
-      if (error.response?.status === 401 && !originalRequest._retry && originalRequest.url !== '/oauth/token') {
-        
-        originalRequest._retry = true; 
+      if (
+        error.response?.status === 401 &&
+        !originalRequest._retry &&
+        originalRequest.url !== "/oauth/token"
+      ) {
+        originalRequest._retry = true;
 
         const { token } = useAuth();
-
+        if (!useCookie("refresh_token").value) {
+          _clearAuth();
+          return null;
+        }
         try {
-          console.log('Interceptor: Access token expired. Refreshing token...');
-          
-          const response = await api.post('/api/refresh');
+          console.log("Interceptor: Access token expired. Refreshing token...");
+
+          const response = await api.post("/api/refresh");
 
           const newAccessToken = response.data.access_token;
 
           token().value = newAccessToken;
 
-          api.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
-          originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+          api.defaults.headers.common[
+            "Authorization"
+          ] = `Bearer ${newAccessToken}`;
+          originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
 
           return api(originalRequest);
-
         } catch (refreshError) {
-          console.error('Interceptor: Gagal refresh token. Logout.', refreshError);
+          console.error(
+            "Interceptor: Gagal refresh token. Logout.",
+            refreshError
+          );
           _clearAuth();
           return Promise.reject(refreshError);
         }
