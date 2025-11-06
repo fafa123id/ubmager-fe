@@ -1,44 +1,110 @@
-// plugins/api.js
-import axios from 'axios'
+import axios from "axios";
+import { useAuth } from "~/composables/useAuth";
 
 export default defineNuxtPlugin((nuxtApp) => {
+  const { token } = useAuth();
   const api = axios.create({
-    baseURL: 'https://api.ubmager.bornhub.cloud',
-    headers: { Accept: 'application/json' },
+    baseURL: "https://api.ubmager.bornhub.cloud",
+    headers: {
+      Accept: "application/json",
+    },
     withCredentials: true,
-  })
+  });
 
-  const { token, _setAuthHeader, refreshAccessToken, _clearAuth } = useAuth()
-  const t = token().value
-  if (t) _setAuthHeader(t)
+  // Set initial token if available
+  const tokenCookie = token();
+  if (tokenCookie.value) {
+    api.defaults.headers.common[
+      "Authorization"
+    ] = `Bearer ${tokenCookie.value}`;
+  }
+
+  // Track ongoing refresh to prevent multiple simultaneous refreshes
+  let isRefreshing = false;
+  let refreshPromise = null;
 
   api.interceptors.response.use(
-    (res) => res,
+    (response) => response,
     async (error) => {
-      const originalRequest = error.config || {}
+      const originalRequest = error.config;
 
       if (
-        error?.response?.status !== 401 ||
+        error.response?.status !== 401 ||
         originalRequest._retry ||
-        originalRequest.url === '/api/refresh' ||
-        originalRequest.url === '/api/login'
+        originalRequest.url === "/api/refresh" ||
+        originalRequest.url === "/api/login" ||
+        originalRequest.url === "/api/register"
       ) {
-        return Promise.reject(error)
+        return Promise.reject(error);
       }
 
-      originalRequest._retry = true
+      originalRequest._retry = true;
+
+      // If refresh is already in progress, wait for it
+      if (isRefreshing && refreshPromise) {
+        try {
+          await refreshPromise;
+          const newToken = token().value;
+          if (newToken) {
+            originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+            return api(originalRequest);
+          }
+        } catch (refreshError) {
+          return Promise.reject(refreshError);
+        }
+      }
+
+      // Start refresh process
+      isRefreshing = true;
+
+      refreshPromise = (async () => {
+        try {
+          console.log("Interceptor: Access token expired. Refreshing token...");
+
+          const response = await api.post("/api/refresh");
+          const newAccessToken = response.data.access_token;
+
+          // Update token cookie
+          const tokenCookie = token();
+          tokenCookie.value = newAccessToken;
+
+          // Update axios default header
+          api.defaults.headers.common[
+            "Authorization"
+          ] = `Bearer ${newAccessToken}`;
+
+          console.log("Interceptor: Token refreshed successfully");
+          return newAccessToken;
+        } catch (refreshError) {
+          console.error(
+            "Interceptor: Gagal refresh token. Clearing auth.",
+            refreshError
+          );
+
+          // Clear auth state
+          const { _clearAuth } = useAuth();
+          _clearAuth();
+
+          throw refreshError;
+        } finally {
+          isRefreshing = false;
+          refreshPromise = null;
+        }
+      })();
+
       try {
-        const newAccessToken = await refreshAccessToken()
-        originalRequest.headers = Object.assign({}, originalRequest.headers, {
-          Authorization: `Bearer ${newAccessToken}`,
-        })
-        return api(originalRequest)
-      } catch (e) {
-        _clearAuth()
-        return Promise.reject(e)
+        const newToken = await refreshPromise;
+        originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+        return api(originalRequest);
+      } catch (refreshError) {
+        return Promise.reject(refreshError);
       }
     }
-  )
+  );
 
-  return { provide: { api } }
-})
+  return {
+    provide: {
+      api: api,
+    },
+  };
+});

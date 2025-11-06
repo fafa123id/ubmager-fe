@@ -1,167 +1,183 @@
-// composables/useAuth.js
+import { defineNuxtPlugin } from "#app";
+
 export const useAuth = () => {
-  const nuxtApp = useNuxtApp()
-
-  // ===== States =====
-  const user = useState('auth_user', () => null)
-  const authReady = useState('auth_ready', () => false)
-  const inFlight = useState('auth_in_flight', () => null) // Promise lock
-
+  const nuxtApp = useNuxtApp();
+  
   const token = (maxAge = 60) =>
-    useCookie('auth_token', {
-      maxAge,
-      sameSite: 'lax',
-      path: '/',
-      // secure: true, // aktifkan kalau full HTTPS
-      // domain: '.bornhub.cloud', // kalau lintas subdomain
-    })
+    useCookie("auth_token", {
+      maxAge: maxAge,
+      sameSite: "lax",
+    });
 
-  // ===== Helpers =====
+  // Global states
+  const user = useState("auth_user", () => null);
+  const isAuthChecking = useState("auth_checking", () => false);
+  const authCheckPromise = useState("auth_check_promise", () => null);
+
   const _setAuthHeader = (accessToken) => {
-    if (!nuxtApp.$api) return
-    if (accessToken) {
-      nuxtApp.$api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
-    } else {
-      delete nuxtApp.$api.defaults.headers.common['Authorization']
+    if (nuxtApp.$api && accessToken) {
+      nuxtApp.$api.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${accessToken}`;
     }
-  }
+  };
 
   const _clearAuth = () => {
-    token().value = null
-    user.value = null
-    _setAuthHeader(null)
-    authReady.value = true
-  }
-
-  const setAccessToken = (accessToken, opts = {}) => {
-    const maxAge = opts.maxAge ?? 60
-    token(maxAge).value = accessToken
-    _setAuthHeader(accessToken)
-  }
-
-  // ===== Core =====
-  const refreshAccessToken = async () => {
-    if (inFlight.value) return inFlight.value
-
-    const job = (async () => {
-      const res = await nuxtApp.$api.post('/api/refresh')
-      const newAccessToken = res?.data?.access_token
-      if (!newAccessToken) throw new Error('No access_token from /api/refresh')
-      setAccessToken(newAccessToken, { maxAge: 60 })
-      return newAccessToken
-    })()
-
-    inFlight.value = job
-    try {
-      return await job
-    } finally {
-      inFlight.value = null
+    token().value = null;
+    user.value = null;
+    isAuthChecking.value = false;
+    authCheckPromise.value = null;
+    if (nuxtApp.$api) {
+      delete nuxtApp.$api.defaults.headers.common["Authorization"];
     }
-  }
+  };
 
   const fetchUser = async () => {
-    if (inFlight.value) {
-      await inFlight.value
-      return user.value
+    // Prevent multiple simultaneous fetches
+    if (authCheckPromise.value) {
+      console.log("Auth check already in progress, waiting...");
+      return authCheckPromise.value;
     }
 
-    const job = (async () => {
-      const t = token().value
-      if (t) _setAuthHeader(t)
+    isAuthChecking.value = true;
 
+    const fetchPromise = (async () => {
       try {
-        const r1 = await nuxtApp.$api.get('/api/user')
-        user.value = r1?.data ?? null
-        authReady.value = true
-        return user.value
-      } catch (err) {
-        if (err?.response?.status === 401) {
+        // Try with existing access token first
+        if (token().value) {
+          _setAuthHeader(token().value);
           try {
-            await refreshAccessToken()
-            const r2 = await nuxtApp.$api.get('/api/user')
-            user.value = r2?.data ?? null
-            authReady.value = true
-            return user.value
-          } catch (e) {
-            _clearAuth()
-            return null
+            const response = await nuxtApp.$api.get("/api/user");
+            user.value = response.data;
+            return user.value;
+          } catch (error) {
+            // If not 401, it's a real error
+            if (error.response?.status !== 401) {
+              console.error("Gagal fetch user (bukan 401):", error);
+              _clearAuth();
+              return null;
+            }
+            console.log("Access token kedaluwarsa, mencoba refresh...");
+            // Continue to refresh attempt below
           }
-        } else {
-          _clearAuth()
-          return null
         }
+
+        try {
+          const refreshResponse = await nuxtApp.$api.post("/api/refresh");
+          const newAccessToken = refreshResponse.data.access_token;
+
+          token().value = newAccessToken;
+          _setAuthHeader(newAccessToken);
+
+          const userResponse = await nuxtApp.$api.get("/api/user");
+          user.value = userResponse.data;
+          return user.value;
+        } catch (refreshError) {
+          console.error("Gagal refresh token:", refreshError);
+          _clearAuth();
+          return null;
+        }
+      } finally {
+        isAuthChecking.value = false;
+        authCheckPromise.value = null;
       }
-    })()
+    })();
 
-    inFlight.value = job
-    try {
-      return await job
-    } finally {
-      inFlight.value = null
-    }
-  }
+    authCheckPromise.value = fetchPromise;
+    return fetchPromise;
+  };
 
-  // Dipakai route protected
-  const ensureAuth = async () => {
-    if (user.value) {
-      authReady.value = true
-      return true
-    }
-    const u = await fetchUser()
-    return !!u
-  }
-
-  // ===== Public =====
   const login = async ({ emailor_username, password }) => {
     try {
-      const res = await nuxtApp.$api.post('/api/login', { emailor_username, password })
-      const accessToken = res?.data?.access_token
-      if (!accessToken) throw new Error('No access_token from /api/login')
-      setAccessToken(accessToken, { maxAge: 60 }) // 1 menit
-      await fetchUser()
-      return true
-    } catch (e) {
-      _clearAuth()
-      return Promise.reject(e)
+      const response = await nuxtApp.$api.post("/api/login", {
+        emailor_username,
+        password,
+      });
+      const accessToken = response.data.access_token;
+      token().value = accessToken;
+      _setAuthHeader(accessToken);
+
+      await fetchUser();
+      return true;
+    } catch (error) {
+      console.error("Login gagal:", error);
+      _clearAuth();
+      return Promise.reject(error);
     }
-  }
+  };
 
   const loginWithToken = async (accessToken) => {
-    setAccessToken(accessToken, { maxAge: 60 * 60 * 24 * 30 })
-    await fetchUser()
-  }
+    token(60 * 60 * 24 * 30).value = accessToken;
+    _setAuthHeader(accessToken);
+    await fetchUser();
+  };
 
   const logout = async () => {
     try {
-      if (nuxtApp.$api) {
-        _setAuthHeader(token().value)
-        await nuxtApp.$api.post('/api/logout')
+      if (nuxtApp.$api && token().value) {
+        _setAuthHeader(token().value);
+        await nuxtApp.$api.post("/api/logout");
       }
-    } catch (e) {
-      // ignore
-    } finally {
-      _clearAuth()
-      await navigateTo('/', { replace: true })
+    } catch (error) {
+      console.error("Logout gagal:", error);
     }
-  }
+
+    _clearAuth();
+    await navigateTo("/");
+  };
+
+  const register = async ({
+    name,
+    email,
+    password,
+    password_confirmation,
+    username,
+    phone,
+  }) => {
+    try {
+      const response = await nuxtApp.$api.post("/api/register", {
+        name,
+        email,
+        password,
+        password_confirmation,
+        username,
+        phone,
+      });
+      return response;
+    } catch (error) {
+      console.error("Register gagal:", error);
+      return Promise.reject(error);
+    }
+  };
 
   const checkAuth = async () => {
-    return await ensureAuth()
-  }
+    // If already authenticated, return immediately
+    if (user.value) {
+      return true;
+    }
+
+    // If auth check in progress, wait for it
+    if (authCheckPromise.value) {
+      const result = await authCheckPromise.value;
+      return !!result;
+    }
+
+    // Perform auth check
+    const fetchedUser = await fetchUser();
+    return !!fetchedUser;
+  };
 
   return {
-    user,
-    authReady,
     token,
+    user,
+    isAuthChecking,
     login,
-    loginWithToken,
     logout,
-    ensureAuth,
     checkAuth,
     fetchUser,
-    refreshAccessToken,
     _clearAuth,
     _setAuthHeader,
-    setAccessToken,
-  }
-}
+    register,
+    loginWithToken,
+  };
+};

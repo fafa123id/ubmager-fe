@@ -1,11 +1,24 @@
-// middleware/guest.js
-import { useAuth } from '~/composables/useAuth'
+import { useAuth } from '~/composables/useAuth'; 
 
-export default defineNuxtRouteMiddleware((to) => {
-  const { user, token } = useAuth()
+export default defineNuxtRouteMiddleware(async (to) => {
+  const { user, checkAuth } = useAuth();
 
-  // Hindari call API di halaman guest. Cukup cek local state/token.
-  if (user.value || token().value) {
-    return navigateTo('/', { replace: true })
+  // If user already in state, redirect immediately
+  if (user.value) {
+    console.log('Middleware [guest]: User detected in state. Redirecting to home.');
+    return navigateTo('/'); 
   }
-})
+
+  // Check auth status
+  try {
+    const isAuthed = await checkAuth();
+
+    if (isAuthed) {
+      console.log('Middleware [guest]: User validated via token. Redirecting to home.');
+      return navigateTo('/'); 
+    }
+  } catch (error) {
+    console.error('Middleware [guest]: Error checking auth:', error);
+    // Allow access to guest pages on error
+  }
+});
