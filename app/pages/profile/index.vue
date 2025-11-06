@@ -412,7 +412,7 @@ const changePassword = () => navigateTo("/settings/password");
                     class="text-sky-500 hover:underline ml-1"
                     @click="verificationEmail"
                   >
-                    Kirim ulang verifikasi
+                    Verifikasi sekarang!
                   </button>
                 </span>
               </p>
