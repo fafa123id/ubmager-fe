@@ -8,13 +8,7 @@ export const useAuth = () => {
       sameSite: "lax",
     });
   const user = useState("auth_user", () => null);
-  const ssrHeaders = {"Accept":"application/json"};
-  if (process.server) {
-    const requestHeaders = useRequestHeaders(["cookie"]);
-    if (requestHeaders.cookie) {
-      ssrHeaders.cookie = requestHeaders.cookie;
-    }
-  }
+
   const _clearAuth = () => {
     token().value = null;
     user.value = null;
@@ -34,7 +28,7 @@ export const useAuth = () => {
       if (token().value) {
         _setAuthHeader(token().value);
       }
-      const response = await nuxtApp.$api.get("/api/user", { headers: ssrHeaders });
+      const response = await nuxtApp.$api.get("/api/user");
       user.value = response.data;
       return user.value;
     } catch (error) {
@@ -44,11 +38,11 @@ export const useAuth = () => {
         return null;
       }
 
-      const response = await nuxtApp.$api.post("/api/refresh", {}, { headers: ssrHeaders });
+      const response = await nuxtApp.$api.post("/api/refresh");
       const newAccessToken = response.data.access_token;
       token().value = newAccessToken;
       _setAuthHeader(newAccessToken);
-      const userResponse = await nuxtApp.$api.get("/api/user", { headers: ssrHeaders });
+      const userResponse = await nuxtApp.$api.get("/api/user");
       user.value = userResponse.data;
       return user.value;
     }
