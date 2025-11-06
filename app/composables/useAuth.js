@@ -2,14 +2,15 @@ import { defineNuxtPlugin } from "#app";
 
 export const useAuth = () => {
   const nuxtApp = useNuxtApp();
-  const token = useCookie("auth_token", {
-    maxAge: 60 * 60 * 24 * 30,
-    sameSite: "lax",
-  });
+  const token = (maxage = 60) =>
+    useCookie("auth_token", {
+      maxAge: maxage,
+      sameSite: "lax",
+    });
   const user = useState("auth_user", () => null);
 
   const _clearAuth = () => {
-    token.value = null;
+    token().value = null;
     user.value = null;
     if (nuxtApp.$api) {
       delete nuxtApp.$api.defaults.headers.common["Authorization"];
@@ -24,8 +25,8 @@ export const useAuth = () => {
   };
   const fetchUser = async () => {
     try {
-      if (token.value) {
-        _setAuthHeader(token.value);
+      if (token().value) {
+        _setAuthHeader(token().value);
       }
       const response = await nuxtApp.$api.get("/api/user");
       user.value = response.data;
@@ -48,11 +49,7 @@ export const useAuth = () => {
         emailor_username,
         password,
       });
-      const shortToken = useCookie("auth_token", {
-        maxAge: 60,
-        sameSite: "lax",
-      });
-      shortToken.value = response.data.access_token;
+      token().value = response.data.access_token;
       _setAuthHeader(response.data.access_token);
       await fetchUser();
       return true;
@@ -64,7 +61,7 @@ export const useAuth = () => {
   };
 
   const loginWithToken = async (accessToken) => {
-    token.value = accessToken;
+    token(60 * 60 * 24 * 30).value = accessToken;
     _setAuthHeader(accessToken);
     await fetchUser();
   };
@@ -72,8 +69,8 @@ export const useAuth = () => {
   const logout = async () => {
     try {
       if (nuxtApp.$api) {
-        if (token.value) {
-          _setAuthHeader(token.value);
+        if (token().value) {
+          _setAuthHeader(token().value);
         }
         await nuxtApp.$api.post("/api/logout");
       }

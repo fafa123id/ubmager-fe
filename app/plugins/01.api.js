@@ -12,8 +12,8 @@ export default defineNuxtPlugin((nuxtApp) => {
     withCredentials: true,
   });
 
-  if (token.value) {
-    api.defaults.headers.common["Authorization"] = `Bearer ${token.value}`;
+  if (token().value) {
+    api.defaults.headers.common["Authorization"] = `Bearer ${token().value}`;
   }
   api.interceptors.response.use(
     (response) => {
@@ -38,7 +38,7 @@ export default defineNuxtPlugin((nuxtApp) => {
             maxAge: 60,
             sameSite: "lax",
           });
-          shortToken.value = newAccessToken;
+          token().value = newAccessToken;
           api.defaults.headers.common[
             Authorization
           ] = `Bearer ${newAccessToken}`;
