@@ -7,9 +7,10 @@
 </template>
 
 <script setup>
-const { fetchUser } = useAuth();
-import { onMounted } from "vue";
-onMounted(async () => {
-  await fetchUser();
-});
+const { user, checkAuth } = useAuth();
+if (!user.value) {
+  checkAuth().catch(() => {
+    console.log('Background auth check failed (user not logged in).');
+  });
+}
 </script>
