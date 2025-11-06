@@ -2,11 +2,11 @@ import { defineNuxtPlugin } from "#app";
 
 export const useAuth = () => {
   const nuxtApp = useNuxtApp();
-  const runtimeConfig = useRuntimeConfig();
-  const token = useCookie("auth_token", {
-    maxAge: 60 * 60,
-    sameSite: "lax",
-  });
+  const token = (maxAge = 60 * 60) =>
+    useCookie("auth_token", {
+      maxAge: maxAge,
+      sameSite: "lax",
+    });
 
   const user = useState("auth_user", () => null);
 
@@ -48,7 +48,7 @@ export const useAuth = () => {
       const refreshResponse = await nuxtApp.$api.post("/api/refresh");
       const newAccessToken = refreshResponse.data.access_token;
 
-      token.value = newAccessToken;
+      token(60 * 60 * 24 * 30).value = newAccessToken;
       _setAuthHeader(newAccessToken);
 
       const userResponse = await nuxtApp.$api.get("/api/user");
@@ -125,15 +125,15 @@ export const useAuth = () => {
     }
   };
 
-const checkAuth = async () => {
-  if (user.value) {
-    return true;
-  }
+  const checkAuth = async () => {
+    if (user.value) {
+      return true;
+    }
 
-  const fetchedUser = await fetchUser();
+    const fetchedUser = await fetchUser();
 
-  return !!fetchedUser;
-};
+    return !!fetchedUser;
+  };
 
   return {
     token,
