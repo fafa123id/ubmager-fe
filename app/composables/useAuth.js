@@ -3,6 +3,10 @@ import axios from "axios";
 import { clear } from "console";
 
 export const useAuth = () => {
+  const isLoggedIn = sessionStorage.getItem("isLoggedIn");
+  const setIsLoggedIn = (value) => {
+    sessionStorage.setItem("isLoggedIn", value);
+  }
   const nuxtApp = useNuxtApp();
   // const token = (maxage = 60) =>
   //   useCookie("auth_token", {
@@ -31,6 +35,7 @@ export const useAuth = () => {
       //   _setAuthHeader(token().value);
       // }
       const response = await nuxtApp.$api.get("/api/user");
+      setIsLoggedIn(true);
       user.value = response.data;
       return user.value;
     } catch (error) {
@@ -125,5 +130,7 @@ export const useAuth = () => {
     // _setAuthHeader,
     register,
     // loginWithToken,
+    isLoggedIn,
+    setIsLoggedIn,
   };
 };
