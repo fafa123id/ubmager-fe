@@ -1,8 +1,6 @@
 <!-- pages/profile.vue -->
 <script setup>
-definePageMeta({
-  middleware: ['auth'],
-});
+definePageMeta({ auth: true });
 import { ref, computed, onMounted } from "vue";
 watch;
 const ENDPOINTS = {
