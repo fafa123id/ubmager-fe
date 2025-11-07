@@ -21,6 +21,7 @@ export const useAuth = () => {
     // if (nuxtApp.$api) {
     //   delete nuxtApp.$api.defaults.headers.common["Authorization"];
     // }
+    setIsLoggedIn(false);
   };
   // const _setAuthHeader = (accessToken) => {
   //   if (nuxtApp.$api && accessToken) {
