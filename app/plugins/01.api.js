@@ -12,9 +12,9 @@ export default defineNuxtPlugin((nuxtApp) => {
     withCredentials: true,
   });
 
-  if (token().value) {
-    api.defaults.headers.common["Authorization"] = `Bearer ${token().value}`;
-  }
+  // if (token().value) {
+  //   api.defaults.headers.common["Authorization"] = `Bearer ${token().value}`;
+  // }
   api.interceptors.response.use(
     (response) => {
       return response;
@@ -33,12 +33,12 @@ export default defineNuxtPlugin((nuxtApp) => {
           console.log("Interceptor: Access token expired. Refreshing token...");
 
           const response = await api.post("/api/refresh");
-          const newAccessToken = response.data.access_token;
-          token().value = newAccessToken;
-          api.defaults.headers.common[
-            "Authorization"
-          ] = `Bearer ${newAccessToken}`;
-          originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+          // const newAccessToken = response.data.access_token;
+          // token().value = newAccessToken;
+          // api.defaults.headers.common[
+          //   "Authorization"
+          // ] = `Bearer ${newAccessToken}`;
+          // originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
           return api(originalRequest);
         } catch (refreshError) {
           console.error(

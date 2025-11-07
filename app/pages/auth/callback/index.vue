@@ -10,14 +10,9 @@ definePageMeta({ middleware: ['guest'] });
 onMounted(async () => {
   const route = useRoute();
 
-  const { loginWithToken } = useAuth();
+  const { fetchUser } = useAuth();
 
-  const token = useCookie("auth_token");
-
-  if (token) {
-
-    await loginWithToken(token); 
-  }
+  await fetchUser();
 
   let destination = "/";
 
