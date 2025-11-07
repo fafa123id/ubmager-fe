@@ -6,7 +6,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   const next = route.query.next || "/";
   const requiresAuth = to.meta.auth === "guest";
   const { isLoggedIn } = useAuth();
-  if (!isLoggedIn) {
+  if (!isLoggedIn === true) {
     return;
   }
   if (user.value && requiresAuth) {

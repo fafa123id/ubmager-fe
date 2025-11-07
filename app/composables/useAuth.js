@@ -3,10 +3,13 @@ import axios from "axios";
 import { clear } from "console";
 
 export const useAuth = () => {
-  const isLoggedIn = sessionStorage.getItem("isLoggedIn");
+  const isLoggedIn = useCookie("isLoggedIn", {
+    maxAge: 60 * 60 * 24 * 30, // 30 days
+    sameSite: "lax",
+  });
   const setIsLoggedIn = (value) => {
-    sessionStorage.setItem("isLoggedIn", value);
-  }
+    isLoggedIn.value = value;
+  };
   const nuxtApp = useNuxtApp();
   // const token = (maxage = 60) =>
   //   useCookie("auth_token", {
