@@ -30,20 +30,9 @@ export default defineNuxtPlugin((nuxtApp) => {
         originalRequest._retry = true;
 
         try {
-          const ssrHeaders = {};
-          if (process.server) {
-            const requestHeaders = useRequestHeaders(["cookie"]);
-            if (requestHeaders.cookie) {
-              ssrHeaders.cookie = requestHeaders.cookie;
-            }
-          }
           console.log("Interceptor: Access token expired. Refreshing token...");
 
-          const response = await api.post(
-            "/api/refresh",
-            {},
-            { headers: ssrHeaders, withCredentials: true }
-          );
+          const response = await api.post("/api/refresh");
           // const newAccessToken = response.data.access_token;
           // token().value = newAccessToken;
           // api.defaults.headers.common[
