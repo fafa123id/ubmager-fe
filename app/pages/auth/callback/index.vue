@@ -9,7 +9,16 @@ import { onMounted } from "vue";
 definePageMeta({ middleware: ['guest'] });
 onMounted(async () => {
   const route = useRoute();
-  await useAuth().checkAuth();
+
+  const { loginWithToken } = useAuth();
+
+  const token = useCookie("auth_token");
+
+  if (token) {
+
+    await loginWithToken(token); 
+  }
+
   let destination = "/";
 
   if (route.query.next) {

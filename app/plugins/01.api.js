@@ -1,8 +1,8 @@
 import axios from "axios";
 import { useAuth } from "~/composables/useAuth";
 
-export default defineNuxtPlugin(async (nuxtApp) => {
-  const { _clearAuth } = useAuth();
+export default defineNuxtPlugin((nuxtApp) => {
+  const { _clearAuth, token } = useAuth();
 
   const api = axios.create({
     baseURL: "https://api.ubmager.bornhub.cloud",
@@ -12,7 +12,10 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     withCredentials: true,
   });
 
-  await api.interceptors.response.use(
+  if (token().value) {
+    api.defaults.headers.common["Authorization"] = `Bearer ${token().value}`;
+  }
+  api.interceptors.response.use(
     (response) => {
       return response;
     },
@@ -30,7 +33,12 @@ export default defineNuxtPlugin(async (nuxtApp) => {
           console.log("Interceptor: Access token expired. Refreshing token...");
 
           const response = await api.post("/api/refresh");
-          
+          const newAccessToken = response.data.access_token;
+          token().value = newAccessToken;
+          api.defaults.headers.common[
+            "Authorization"
+          ] = `Bearer ${newAccessToken}`;
+          originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
           return api(originalRequest);
         } catch (refreshError) {
           console.error(
