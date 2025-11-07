@@ -60,6 +60,7 @@ const user = ref({
   bio: "",
   avatarUrl: "",
   passwordIsSet: true,
+  phoneIsSet: true,
 });
 /* ----- Lifecycle: Fetch profile ----- */
 const fetchProfile = async () => {
@@ -82,6 +83,7 @@ const fetchProfile = async () => {
       username: data?.username ?? "",
       email: data?.email ?? "",
       phone: data?.phone ?? "",
+      phoneIsSet: data?.phone ? true : false,
       bio: data?.bio ?? "",
       avatarUrl: data?.image ?? "",
     });
@@ -219,9 +221,7 @@ const savePassword = async () => {
     >
       <div class="p-6">
         <form @submit.prevent="savePassword">
-          <h2 class="text-lg font-medium text-white">
-            Masukkan Password Baru
-          </h2>
+          <h2 class="text-lg font-medium text-white">Masukkan Password Baru</h2>
           <div class="mt-6">
             <label class="mb-1 block text-xs text-slate-300">Password</label>
             <input
@@ -279,13 +279,19 @@ const savePassword = async () => {
     ></div>
     <p
       v-if="user.passwordIsSet === false"
-      class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200 "
+      class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200"
     >
       Anda belum mengatur kata sandi. Silakan atur kata sandi untuk keamanan
-      akun Anda. <button @click="showChangePasswordModal = true" class="text-sky-500 hover:underline">Atur Kata Sandi</button>
+      akun Anda.
+      <button
+        @click="showChangePasswordModal = true"
+        class="text-sky-500 hover:underline"
+      >
+        Atur Kata Sandi
+      </button>
     </p>
     <p
-      v-if="user.phone === ''"
+      v-if="user.phoneIsSet === false"
       class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200"
     >
       Anda belum mengatur nomor telepon. Silakan atur nomor telepon untuk mulai
