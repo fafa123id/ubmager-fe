@@ -26,6 +26,7 @@ export const useAuth = () => {
   //   }
   // };
   const fetchUser = async () => {
+    await initAuth();
     try {
       // if (token().value) {
       //   _setAuthHeader(token().value);
@@ -43,6 +44,7 @@ export const useAuth = () => {
   };
 
   const login = async ({ emailor_username, password }) => {
+    
     try {
       const response = await nuxtApp.$api.post("/api/login", {
         emailor_username,
@@ -113,6 +115,19 @@ export const useAuth = () => {
 
     return !!fetchedUser;
   };
+  async function initAuth() {
+    await axios
+      .get(`${useRuntimeConfig().public.apiBase}/api/me`, {
+        withCredentials: true,
+      })
+      .catch(async (error) => {
+        if (error.response?.status === 401) {
+          await nuxtApp.$api.post("/api/refresh").catch((refreshError) => {
+            _clearAuth();
+          });
+        }
+      });
+  }
 
   return {
     // token,
