@@ -3,7 +3,7 @@
 definePageMeta({
   middleware: [
     async function (to, from) {
-      setTokenandEmail();
+      setTokenandEmail(to);
       loading.value = true;
       try {
         await useNuxtApp().$api.post("/api/forgot-password/token", {
@@ -37,9 +37,9 @@ const errorMsg = ref("");
 const successMsg = ref("");
 const canSubmit = computed(() => email.value.trim());
 
-const setTokenandEmail = () => {
-  const hash = window.location.hash;
-  const params = new URLSearchParams(hash.substring(1));
+const setTokenandEmail = (route) => {
+  const hash = route.hash || ""; // misalnya "#token=xxx&email=yyy"
+  const params = new URLSearchParams(hash.startsWith("#") ? hash.slice(1) : hash);
   token.value = params.get("token");
   email.value = params.get("email") || "";
 };
