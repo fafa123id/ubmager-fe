@@ -12,6 +12,7 @@ const canSubmit = computed(
 );
 
 const submit = async () => {
+  console.log (email.value);
   errorMsg.value = "";
   successMsg.value = "";
   if (!canSubmit.value || loading.value) return;

@@ -126,10 +126,10 @@ export const useAuth = () => {
   const forgotPassword = async ({ email }) => {
     try {
       if (nuxtApp.$api) {
-        await nuxtApp.$api.post("/api/forgot-password", { email });
+        return await nuxtApp.$api.post("/api/forgot-password", { email });
       }
     } catch (error) {
-      console.error("Logout gagal:", error);
+      return Promise.reject(error);
     }
   };
   return {
