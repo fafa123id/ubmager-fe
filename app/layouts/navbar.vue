@@ -9,6 +9,7 @@ const links = [
   { to: "/kontak", label: "Kontak" },
 ];
 const route = useRoute();
+const { user } = useAuth();
 const logout = async () => {
   await useAuth().logout();
   await navigateTo("/");
