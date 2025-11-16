@@ -4,7 +4,6 @@ definePageMeta({ auth: "guest" });
 import { ref, computed } from "vue";
 const { forgotPassword } = useAuth();
 const email = ref("");
-const password = ref("");
 const loading = ref(false);
 const errorMsg = ref("");
 const successMsg = ref("");
@@ -82,7 +81,7 @@ const submit = async () => {
             <input
               id="email"
               v-model="email"
-              type="text"
+              type="email"
               autocomplete="email"
               required
               class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent transition focus:ring-sky-400"
