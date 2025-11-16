@@ -25,7 +25,8 @@ export default defineNuxtPlugin((nuxtApp) => {
       if (
         error.response?.status === 401 &&
         !originalRequest._retry &&
-        originalRequest.url !== "/api/refresh"
+        originalRequest.url !== "/api/refresh" &&
+        originalRequest.url !== "/api/login"
       ) {
         originalRequest._retry = true;
 
