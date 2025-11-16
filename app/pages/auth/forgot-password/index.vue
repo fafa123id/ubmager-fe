@@ -1,8 +1,6 @@
 <!-- pages/login.vue -->
 <script setup>
-definePageMeta({
-  auth: "guest",
-});
+
 import { ref, computed } from "vue";
 const { forgotPassword } = useAuth();
 const email = ref("");
