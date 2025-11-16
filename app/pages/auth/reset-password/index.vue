@@ -23,6 +23,8 @@ onMounted(async () => {
   token.value = tokenValue;
   email.value = params.get("email") || "";
   useSwal().showLoading();
+  loading.value = true;
+  canSubmit.value = false;
   try {
     await useNuxtApp().$api.post("/api/forgot-password/token", {
       token: tokenValue,
