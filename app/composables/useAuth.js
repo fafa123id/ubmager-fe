@@ -87,8 +87,6 @@ export const useAuth = () => {
     }
 
     _clearAuth();
-
-    await navigateTo("/");
   };
   const register = async ({
     name,
