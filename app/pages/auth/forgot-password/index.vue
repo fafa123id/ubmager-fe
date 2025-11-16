@@ -1,18 +1,18 @@
 <!-- pages/login.vue -->
 <script setup>
-definePageMeta({ auth: "guest" });
+definePageMeta({
+  auth: "guest",
+});
 import { ref, computed } from "vue";
 const { forgotPassword } = useAuth();
 const email = ref("");
 const loading = ref(false);
 const errorMsg = ref("");
 const successMsg = ref("");
-const canSubmit = computed(
-  () => email.value.trim()
-);
+const canSubmit = computed(() => email.value.trim());
 
 const submit = async () => {
-  console.log (email.value);
+  console.log(email.value);
   errorMsg.value = "";
   successMsg.value = "";
   if (!canSubmit.value || loading.value) return;
@@ -22,10 +22,11 @@ const submit = async () => {
     await forgotPassword({
       email: email.value,
     });
-    successMsg.value = "Email reset kata sandi telah dikirim. Periksa inbox Anda.";
-    
+    successMsg.value =
+      "Email reset kata sandi telah dikirim. Periksa inbox Anda.";
   } catch (e) {
-    errorMsg.value = errorMsg.value = e.response.data.message || "Gagal mengirim email reset kata sandi.";
+    errorMsg.value = errorMsg.value =
+      e.response.data.message || "Gagal mengirim email reset kata sandi.";
   } finally {
     loading.value = false;
   }
@@ -70,7 +71,6 @@ const submit = async () => {
             <h1 class="text-lg font-bold leading-tight">UBMager</h1>
             <p class="text-xs text-slate-300">Belanja & jualan makin gampang</p>
           </div>
-          
         </div>
         <h2 class="text-lg font-bold leading-tight mb-4">Lupa Kata Sandi</h2>
         <form @submit.prevent="submit" class="space-y-4">
@@ -89,8 +89,6 @@ const submit = async () => {
               placeholder="nama@kampus.ac.id"
             />
           </div>
-
-          
 
           <!-- Error / Success -->
           <p
@@ -134,7 +132,7 @@ const submit = async () => {
             </svg>
             Masuk
           </button>
-        </form>   
+        </form>
 
         <!-- Footer kecil -->
         <p class="mt-6 text-center text-xs text-slate-400">

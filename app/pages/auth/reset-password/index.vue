@@ -1,7 +1,27 @@
 <!-- pages/login.vue -->
 <script setup>
-definePageMeta({ auth: "guest" });
-import { ref, computed, onMounted } from "vue";
+definePageMeta({
+  auth: "guest",
+  middleware: [
+    async function (to, from) {
+      setTokenandEmail();
+      loading.value = true;
+      try {
+        await useNuxtApp().$api.post("/api/forgot-password/token", {
+          token: token.value,
+          email: email.value,
+        });
+      } catch (e) {
+        useSwal().showError(
+          "Aksi tidak valid atau tautan telah kedaluwarsa. Silakan minta tautan baru."
+        );
+        return navigateTo("/auth/forgot-password");
+      }
+      loading.value = false;
+    },
+  ],
+});
+import { ref, computed } from "vue";
 const { resetPassword } = useAuth();
 const email = ref("");
 const token = ref("");
@@ -16,28 +36,13 @@ const loading = ref(false);
 const errorMsg = ref("");
 const successMsg = ref("");
 const canSubmit = computed(() => email.value.trim());
-onMounted(async () => {
+
+const setTokenandEmail = () => {
   const hash = window.location.hash;
   const params = new URLSearchParams(hash.substring(1));
-  const tokenValue = params.get("token");
-  token.value = tokenValue;
+  token.value = params.get("token");
   email.value = params.get("email") || "";
-  useSwal().showLoading();
-  loading.value = true;
-  try {
-    await useNuxtApp().$api.post("/api/forgot-password/token", {
-      token: tokenValue,
-      email: email.value,
-    });
-  } catch (e) {
-    useSwal().showError(
-      "Aksi tidak valid atau tautan telah kedaluwarsa. Silakan minta tautan baru."
-    );
-    return navigateTo("/auth/forgot-password");
-  }
-  useSwal().close();
-  loading.value = false;
-});
+};
 const clearError = (fieldName) => {
   if (errorMsg.value[fieldName]) {
     errorMsg.value[fieldName] = null;
@@ -114,7 +119,7 @@ const submit = async () => {
             <p class="text-xs text-slate-300">Belanja & jualan makin gampang</p>
           </div>
         </div>
-        <h2 class="text-lg font-bold leading-tight mb-4">Lupa Kata Sandi</h2>
+        <h2 class="text-lg font-bold leading-tight mb-4">Reset Kata Sandi</h2>
         <form @submit.prevent="submit" class="space-y-4">
           <div>
             <label for="password" class="mb-1 block text-xs text-slate-300"
