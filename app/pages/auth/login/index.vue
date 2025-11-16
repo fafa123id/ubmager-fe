@@ -174,7 +174,7 @@ const submit = async () => {
             </label>
 
             <NuxtLink
-              to="/forgot-password"
+              to="/auth/forgot-password"
               class="text-xs text-slate-300 underline-offset-4 hover:underline"
             >
               Lupa sandi?
