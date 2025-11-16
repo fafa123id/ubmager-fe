@@ -132,7 +132,27 @@ export const useAuth = () => {
       return Promise.reject(error);
     }
   };
+  const resetPassword = async ({
+    token,
+    email,
+    password,
+    password_confirmation,
+  }) => {
+    try {
+      if (nuxtApp.$api) {
+        return await nuxtApp.$api.post("/api/reset-password", {
+          token,
+          email,
+          password,
+          password_confirmation,
+        });
+      }
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  };
   return {
+    resetPassword,
     forgotPassword,
     user,
     login,
