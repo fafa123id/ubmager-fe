@@ -134,30 +134,7 @@ const submit = async () => {
             </svg>
             Masuk
           </button>
-        </form>
-
-        <!-- Divider -->
-        <div class="my-6 flex items-center gap-3">
-          <div class="h-px flex-1 bg-white/10"></div>
-          <span class="text-[11px] text-slate-400">atau</span>
-          <div class="h-px flex-1 bg-white/10"></div>
-        </div>
-
-        <!-- OAuth placeholder -->
-        <div class="flex flex-col w-full items-center">
-          <button
-            class="cursor-pointer inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-100 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
-            type="button"
-            @click="loginWithGoogle"
-          >
-            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor">
-              <path
-                d="M21.35 11.1h-9.18v2.96h5.31a4.54 4.54 0 0 1-1.97 2.99l3.19 2.48c1.86-1.72 2.93-4.26 2.93-7.34 0-.49-.04-.96-.12-1.43Z"
-              />
-            </svg>
-            Google
-          </button>
-        </div>
+        </form>   
 
         <!-- Footer kecil -->
         <p class="mt-6 text-center text-xs text-slate-400">
