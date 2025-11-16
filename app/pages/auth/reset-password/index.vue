@@ -1,27 +1,23 @@
 <!-- pages/login.vue -->
 <script setup>
-definePageMeta({
-  middleware: [
-    async function (to, from) {
-      setTokenandEmail(to);
-      loading.value = true;
-      try {
-        await useNuxtApp().$api.post("/api/forgot-password/token", {
-          token: token.value,
-          email: email.value,
-        });
-      } catch (e) {
-        useSwal().showError(
-          "Aksi tidak valid atau tautan telah kedaluwarsa. Silakan minta tautan baru."
-        );
-        return navigateTo("/auth/forgot-password");
-      }
-      loading.value = false;
-    },
-  ],
+onMounted(async () => {
+  setTokenandEmail();
+  loading.value = true;
+  try {
+    await useNuxtApp().$api.post("/api/forgot-password/token", {
+      token: token.value,
+      email: email.value,
+    });
+  } catch (e) {
+    useSwal().showError(
+      "Aksi tidak valid atau tautan telah kedaluwarsa. Silakan minta tautan baru."
+    );
+    return navigateTo("/auth/forgot-password");
+  }
+  loading.value = false;
 });
 const { user } = useAuth();
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 const { resetPassword } = useAuth();
 const email = ref("");
 const token = ref("");
@@ -37,9 +33,9 @@ const errorMsg = ref("");
 const successMsg = ref("");
 const canSubmit = computed(() => email.value.trim());
 
-const setTokenandEmail = (route) => {
-  const hash = route.hash || ""; // misalnya "#token=xxx&email=yyy"
-  const params = new URLSearchParams(hash.startsWith("#") ? hash.slice(1) : hash);
+const setTokenandEmail = () => {
+  const hash = window.location.hash;
+  const params = new URLSearchParams(hash.substring(1));
   token.value = params.get("token");
   email.value = params.get("email") || "";
 };
