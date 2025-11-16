@@ -30,7 +30,7 @@ onMounted(async () => {
     });
   } catch (e) {
     useSwal().showError(
-      e?.response?.data?.message || "Tautan reset kata sandi tidak valid."
+      "Aksi tidak valid atau tautan telah kedaluwarsa. Silakan minta tautan baru."
     );
     return navigateTo("/auth/forgot-password");
   }
@@ -63,7 +63,7 @@ const submit = async () => {
       errorMsg.value = e.response.data.errors;
     } else {
       useSwal().showError(
-        e?.response?.data?.message || "Terjadi kesalahan saat mendaftar."
+        e?.response?.data?.message || "Gagal mereset kata sandi."
       );
     }
   } finally {
@@ -270,7 +270,7 @@ const submit = async () => {
                 fill="currentColor"
               ></path>
             </svg>
-            Kirim Email Reset Kata Sandi
+            Ubah Kata Sandi
           </button>
         </form>
 
