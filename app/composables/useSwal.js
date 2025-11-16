@@ -19,7 +19,9 @@ export const useSwal = () => {
       cancelButtonText: "Batal",
     });
   }
-
+  function close() {
+    return Swal.close();
+  }
   function showSuccess(text = "Data Anda telah disimpan.") {
     return Swal.fire({
       title: "Berhasil!",
@@ -61,6 +63,7 @@ export const useSwal = () => {
     });
   }
   return {
+    close,
     confirmAction,
     showSuccess,
     showError,

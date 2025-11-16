@@ -24,7 +24,6 @@ onMounted(async () => {
   email.value = params.get("email") || "";
   useSwal().showLoading();
   loading.value = true;
-  canSubmit.value = false;
   try {
     await useNuxtApp().$api.post("/api/forgot-password/token", {
       token: tokenValue,
@@ -36,6 +35,8 @@ onMounted(async () => {
     );
     return navigateTo("/auth/forgot-password");
   }
+  useSwal().close();
+  loading.value = false;
 });
 const clearError = (fieldName) => {
   if (errorMsg.value[fieldName]) {
