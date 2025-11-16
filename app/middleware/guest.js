@@ -1,5 +1,3 @@
-import { useAuth } from "~/composables/useAuth";
-
 export default defineNuxtRouteMiddleware((to, from) => {
   // Prevent SSR hydration mismatch
   if (process.server) return;
