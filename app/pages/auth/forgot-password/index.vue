@@ -25,7 +25,7 @@ const submit = async () => {
     successMsg.value = "Email reset kata sandi telah dikirim. Periksa inbox Anda.";
     
   } catch (e) {
-    errorMsg.value = e?.message || "Gagal mengirim email reset kata sandi.";
+    errorMsg.value = errorMsg.value = e.response.data.message || "Gagal mengirim email reset kata sandi.";
   } finally {
     loading.value = false;
   }
