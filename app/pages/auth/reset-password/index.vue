@@ -1,5 +1,8 @@
 <!-- pages/login.vue -->
 <script setup>
+definePageMeta({
+  auth: "guest",
+});
 onMounted(async () => {
   setTokenandEmail();
   loading.value = true;
@@ -60,9 +63,7 @@ const submit = async () => {
     });
     successMsg.value =
       "Kata sandi berhasil direset. Silakan masuk dengan kata sandi baru Anda.";
-    if (user.value && user.value.email === email.value) {
-      await useAuth().logout();
-    }
+
     useSwal().showSuccess(successMsg.value);
     navigateTo("/auth/login");
   } catch (e) {
