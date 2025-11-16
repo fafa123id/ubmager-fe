@@ -3,7 +3,7 @@ import { useAuth } from "~/composables/useAuth";
 export default defineNuxtRouteMiddleware(async (to, from) => {
   const { user, checkAuth } = useAuth();
   const route = useRoute();
-  const next = route.query.next || "/";
+  const next = route.query.next
 
   const { isLoggedIn } = useAuth();
   if (!isLoggedIn === true) {
@@ -13,6 +13,6 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     console.log(
       "Middleware [guest]: User detected in state. Redirecting to home."
     );
-    return navigateTo(next, { replace: true });
+    return navigateTo(next ? next : "/", { replace: true });
   }
 });
