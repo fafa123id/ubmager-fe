@@ -1,5 +1,8 @@
 export default defineNuxtRouteMiddleware((to, from) => {
-
+  const requireAuth = to.meta.auth === "guest";
+  if (!requireAuth) {
+    return;
+  }
 
   const { user, isLoggedIn } = useAuth();
 

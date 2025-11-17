@@ -1,7 +1,7 @@
 <!-- pages/login.vue -->
 <script setup>
 definePageMeta({
-  middleware: "guest",
+  auth: "guest",
 });
 onMounted(async () => {
   setTokenandEmail();

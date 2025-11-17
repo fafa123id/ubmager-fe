@@ -7,7 +7,7 @@
 import { onMounted } from "vue";
 
 definePageMeta({
-  middleware: "guest",
+  auth: "guest",
 });
 onMounted(async () => {
   const route = useRoute();
