@@ -14,7 +14,7 @@ const verificationEmail = async () => {
     useSwal().showLoading();
     await $api.post(
       "/api/verify-email/send",
-      { email: user.value.email },
+      { email: user.data.email },
       { withCredentials: true }
     );
     useSwal().showSuccess("Email verifikasi telah dikirim.");
@@ -22,14 +22,14 @@ const verificationEmail = async () => {
     sessionStorage.setItem(
       "otpFlow",
       JSON.stringify({
-        email: user.value.email, // ⬅️ pakai .value
+        email: user.data.email, // ⬅️ pakai .value
         startedAt: Date.now(),
         lastResendAt: Date.now(),
         guard: "from-profile",
       })
     );
 
-    navigateTo("/auth/otp?email=" + encodeURIComponent(user.value.email));
+    navigateTo("/auth/otp?email=" + encodeURIComponent(user.data.email));
   } catch (e) {
     useSwal().showError(
       e?.response?.data?.message || "Gagal mengirim email verifikasi."
@@ -53,7 +53,7 @@ const userForm = ref({
 });
 
 watch(
-  () => user.value,
+  () => user.data,
   (u) => {
     if (!u) return;
     userForm.value = {
@@ -69,7 +69,7 @@ watch(
 
 /* ----- Derived ----- */
 const initials = computed(() => {
-  const parts = String(user.value.name || "")
+  const parts = String(user.data.name || "")
     .trim()
     .split(/\s+/);
   return (
@@ -95,9 +95,9 @@ const onAvatarPick = async (e) => {
     const formData = new FormData();
     formData.append("image", file);
     formData.append("_method", "PUT");
-    const res = await $api.post(`/api/user/${user.value.id}`, formData);
+    const res = await $api.post(`/api/user/${user.data.id}`, formData);
     const url = res?.data?.image;
-    user.value.image = url;
+    user.data.image = url;
     useSwal().showSuccess("Avatar diperbarui.");
     fetchUser();
   } catch (err) {
@@ -120,17 +120,17 @@ const saveProfile = async () => {
       phone: userForm.value.phone,
       bio: userForm.value.bio,
     };
-    if (user.value.email) {
+    if (user.data.email) {
       if (payload.email === "") {
         return useSwal().showError("Email tidak boleh dikosongkan.");
       }
     }
-    if (user.value.phone) {
+    if (user.data.phone) {
       if (payload.phone === "") {
         return useSwal().showError("Nomor HP tidak boleh dikosongkan.");
       }
     }
-    await $api.put(`/api/user/${user.value.id}`, payload, {
+    await $api.put(`/api/user/${user.data.id}`, payload, {
       withCredentials: true,
     });
     useSwal().showSuccess("Profil berhasil diperbarui.");
