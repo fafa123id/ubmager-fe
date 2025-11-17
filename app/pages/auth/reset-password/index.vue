@@ -64,7 +64,7 @@ const submit = async () => {
       "Kata sandi berhasil direset. Silakan masuk dengan kata sandi baru Anda.";
 
     useSwal().showSuccess(successMsg.value);
-    useCookie("reset_password_token") = null;
+    useCookie("reset_password_token").value = null;
     navigateTo("/auth/login");
   } catch (e) {
     if (e?.response?.status === 422 && e?.response?.data?.errors) {
