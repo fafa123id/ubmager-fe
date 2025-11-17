@@ -1,7 +1,3 @@
-import { defineNuxtPlugin } from "#app";
-import axios from "axios";
-import { clear } from "console";
-
 export const useAuth = () => {
   const isLoggedIn = useCookie("isLoggedIn", {
     maxAge: 60 * 60 * 24 * 30, // 30 days
@@ -130,6 +126,40 @@ export const useAuth = () => {
       return Promise.reject(error);
     }
   };
+  const attachGoogle = async () => {
+    const result = await useSwal().confirmAction(
+      "Hubungkan Akun Google",
+      "Anda akan diarahkan ke halaman Google untuk menghubungkan akun Anda.",
+      "info"
+    );
+    if (!result.isConfirmed) {
+      return;
+    }
+    try {
+      return window.location.href= `${nuxtApp.$api.defaults.baseURL}/api/auth/google/link/redirect`;
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  };
+  const unlinkGoogle = async () => {
+    const result = await useSwal().confirmAction(
+      "Lepas Akun Google",
+      "Apakah Anda yakin ingin melepaskan akun Google dari profil Anda?",
+      "warning"
+    );
+    if (!result.isConfirmed) {
+      return;
+    }
+    try {
+      if (nuxtApp.$api) {
+        await nuxtApp.$api.post("/api/auth/google/unlink");
+        await fetchUser();
+        return useSwal().showSuccess("Akun Google telah dilepas.");
+      }
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  };
   const resetPassword = async ({
     token,
     email,
@@ -150,6 +180,8 @@ export const useAuth = () => {
     }
   };
   return {
+    attachGoogle,
+    unlinkGoogle,
     resetPassword,
     forgotPassword,
     user,
