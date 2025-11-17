@@ -159,7 +159,7 @@ const saveProfile = async () => {
         return useSwal().showError("Nomor HP tidak boleh dikosongkan.");
       }
     }
-    await $api.put(`/api/user/${userObject.id}`, payload, {
+    await $api.put(`/api/user/${userObject.value.id}`, payload, {
       withCredentials: true,
     });
     useSwal().showSuccess("Profil berhasil diperbarui.");
