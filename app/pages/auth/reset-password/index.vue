@@ -12,6 +12,7 @@ onMounted(async () => {
       email: email.value,
     });
   } catch (e) {
+    useCookie("reset_password_token").value = null;
     useSwal().showError(
       "Aksi tidak valid atau tautan telah kedaluwarsa. Silakan minta tautan baru."
     );
