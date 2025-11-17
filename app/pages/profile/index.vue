@@ -1,5 +1,6 @@
 <!-- pages/profile.vue -->
 <script setup>
+import ChangePw from "~/components/form/ChangePw.vue";
 definePageMeta({
   auth: true,
 });
@@ -173,12 +174,12 @@ const saveProfile = async () => {
   }
 };
 
-const changePassword = () => navigateTo("/settings/password");
+const changePassword = () => showChangePasswordModal.value = true;
 const passwordInput = ref("");
 const passwordConfirmationInput = ref("");
-const showChangePasswordModal = ref(false);
+const showCreatePasswordModal = ref(false);
 const closeAndReset = () => {
-  showChangePasswordModal.value = false;
+  showCreatePasswordModal.value = false;
   passwordInput.value = "";
   passwordConfirmationInput.value = "";
 };
@@ -210,13 +211,15 @@ const savePassword = async () => {
     loading.value = false;
   }
 };
+const showChangePasswordModal = ref(false);
 </script>
 
 <template>
   <div class="relative min-h-dvh text-slate-100 overflow-hidden">
+    <ChangePw :show="showChangePasswordModal" @close="showChangePasswordModal = false" />
     <MyModal
-      id="change-password-modal"
-      :show="showChangePasswordModal"
+      id="create-password-modal"
+      :show="showCreatePasswordModal"
       @close="closeAndReset"
     >
       <div class="p-6">
@@ -284,7 +287,7 @@ const savePassword = async () => {
       Anda belum mengatur kata sandi. Silakan atur kata sandi untuk keamanan
       akun Anda.
       <button
-        @click="showChangePasswordModal = true"
+        @click="showCreatePasswordModal = true"
         class="text-sky-500 hover:underline"
       >
         Atur Kata Sandi
