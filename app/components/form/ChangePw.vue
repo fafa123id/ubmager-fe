@@ -13,11 +13,9 @@ const clearError = (fieldName) => {
   }
 };
 const canSave = computed(() => {
-  return (
-    oldPasswordInput.value &&
+  oldPasswordInput.value &&
     passwordInput.value &&
-    passwordConfirmationInput.value
-  );
+    passwordConfirmationInput.value;
 });
 const loading = ref(false);
 const oldPasswordInput = ref("");
