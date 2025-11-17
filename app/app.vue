@@ -8,19 +8,25 @@
 <script setup>
 import { onMounted } from "vue";
 
+const router = useRouter();
+const route = useRoute();
+
 onMounted(() => {
-  const error = useRoute().query.error;
+  const { error, success, need_refresh } = route.query;
+
   if (error) {
-    useSwal().showError(decodeURIComponent(error));
+    useSwal().showError(error);
   }
-  const success = useRoute().query.success;
+
   if (success) {
-    useSwal().showSuccess(decodeURIComponent(success));
+    useSwal().showSuccess(success);
   }
-  const needRefresh = useRoute().query.need_refresh;
-  if (needRefresh == "true") {
+
+  if (need_refresh) {
     useAuth().fetchUser();
   }
-  useRoute().query = {};
+
+  router.replace({ query: {} });
 });
+
 </script>
