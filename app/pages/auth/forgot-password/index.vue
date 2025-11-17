@@ -130,7 +130,7 @@ const submit = async () => {
                 fill="currentColor"
               ></path>
             </svg>
-            Masuk
+            Kirim Email Reset Kata Sandi
           </button>
         </form>
 
