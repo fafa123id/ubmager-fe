@@ -155,8 +155,10 @@ export const useAuth = () => {
     }
     try {
       if (nuxtApp.$api) {
+        useSwal().showLoading("Memproses...", "Mohon tunggu sebentar.");
         await nuxtApp.$api.post("/api/auth/google/unlink");
         await fetchUser();
+        useSwal().close();
         return useSwal().showSuccess("Akun Google telah dilepas.");
       }
     } catch (error) {
