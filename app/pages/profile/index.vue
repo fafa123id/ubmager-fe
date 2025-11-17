@@ -76,6 +76,7 @@ const fetchProfile = (object) => {
   loading.value = true;
   errorMsg.value = "";
   try {
+    console.log(object);
     const { data } = object || {};
     Object.assign(userForm.value, {
       email: data?.email ?? "",
