@@ -11,6 +11,10 @@ const props = defineProps({
         type: String,
         default: 'submit',
     },
+    disabled: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const computedClasses = computed(() => {
@@ -35,7 +39,7 @@ const attrs = useAttrs();
         v-else
         :type="type"
         :class="computedClasses"
-        :disabled="attrs.disabled" >
+        :disabled="disabled" >
         <slot />
     </button>
 </template>
