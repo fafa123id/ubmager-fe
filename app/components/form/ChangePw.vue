@@ -58,6 +58,7 @@ const closeAndReset = () => {
   oldPasswordInput.value = "";
   passwordInput.value = "";
   passwordConfirmationInput.value = "";
+  errorMsg.value = {};
 };
 </script>
 <template>
