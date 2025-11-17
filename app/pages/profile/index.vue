@@ -100,8 +100,6 @@ const onAvatarPick = async (e) => {
     formData.append("image", file);
     formData.append("_method", "PUT");
     const res = await $api.post(`/api/user/${user?.data?.id}`, formData);
-    const url = res?.data?.image;
-    user?.data?.image = url;
     useSwal().showSuccess("Avatar diperbarui.");
     fetchUser();
   } catch (err) {
