@@ -62,7 +62,22 @@ export const useSwal = () => {
       color: "#f8fafc",
     });
   }
+  function showInfo(
+    title = "Info",
+    text = "",
+  ) {
+    return Swal.fire({
+      title: title,
+      text: text,
+      icon: "info",
+      timer: 1000,
+      background: "rgba(15,23,42,0.95)", // gelap elegan
+      color: "#f8fafc",
+      showConfirmButton: false,
+    });
+  }
   return {
+    showInfo,
     close,
     confirmAction,
     showSuccess,
