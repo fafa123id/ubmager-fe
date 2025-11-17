@@ -37,7 +37,7 @@ const successMsg = ref("");
 const canSubmit = computed(() => email.value.trim());
 
 const setTokenandEmail = () => {
-  token.value = useCookie().get("reset_password_token") || "";
+  token.value = useCookie("reset_password_token").value || "";
   email.value = useRoute().query.email || "";
 };
 const clearError = (fieldName) => {
@@ -63,6 +63,7 @@ const submit = async () => {
       "Kata sandi berhasil direset. Silakan masuk dengan kata sandi baru Anda.";
 
     useSwal().showSuccess(successMsg.value);
+    useCookie("reset_password_token").value = null;
     navigateTo("/auth/login");
   } catch (e) {
     if (e?.response?.status === 422 && e?.response?.data?.errors) {
