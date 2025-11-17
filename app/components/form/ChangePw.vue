@@ -119,15 +119,36 @@ const closeAndReset = () => {
             {{ errorMsg.password_confirmation[0] }}
           </p>
         </div>
-        <div class="mt-6 flex justify-end">
+        <div class="mt-6 flex justify-end rounded-xl">
           <SecondaryButton @click="closeAndReset"> Cancel </SecondaryButton>
-          <PrimaryButton
-            class="ms-3"
-            :class="{ 'opacity-25': loading }"
-            :disabled="loading || !canSave"
+          <button
+            type="submit"
+            :disabled="!canSave || loading"
+            class="cursor-pointer inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm font-semibold text-white ring-1 ring-white/15 transition-colors hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Save Password
-          </PrimaryButton>
+            <svg
+              v-if="loading"
+              class="h-4 w-4 animate-spin"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="3"
+                class="opacity-25"
+              ></circle>
+              <path
+                d="M12 2a10 10 0 0110 10h-3A7 7 0 0012 5V2z"
+                fill="currentColor"
+                class="opacity-75"
+              ></path>
+            </svg>
+            Simpan Perubahan
+          </button>
         </div>
       </form>
     </div>
