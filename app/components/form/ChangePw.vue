@@ -19,7 +19,7 @@ const passwordConfirmationInput = ref("");
 const saveChangePassword = async () => {
   try {
     loading.value = true;
-    await $api.post(
+    await useNuxtApp().$api.post(
       "/api/new-password",
       {
         old_password: oldPasswordInput.value,
