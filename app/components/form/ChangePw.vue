@@ -30,7 +30,7 @@ const saveChangePassword = async () => {
     );
     useSwal().showSuccess("Password berhasil diubah.");
     closeAndReset();
-  } catch (error) {
+  } catch (e) {
     if (e?.response?.status === 422 && e?.response?.data?.errors) {
       errorMsg.value = e.response.data.errors;
     } else {
