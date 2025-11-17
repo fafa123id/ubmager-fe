@@ -119,7 +119,7 @@ const closeAndReset = () => {
             {{ errorMsg.password_confirmation[0] }}
           </p>
         </div>
-        <div class="mt-6 flex justify-end rounded-xl">
+        <div class="mt-6 flex justify-end gap-3 rounded-xl">
           <SecondaryButton @click="closeAndReset"> Cancel </SecondaryButton>
           <button
             type="submit"
