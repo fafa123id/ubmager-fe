@@ -136,7 +136,10 @@ export const useAuth = () => {
       return;
     }
     try {
-      return window.location.href= `${nuxtApp.$api.defaults.baseURL}/api/auth/google/link/redirect`;
+      if (nuxtApp.$api) {
+        const res = await nuxtApp.$api.get("/api/auth/google/link/redirect");
+        window.location.href = res.data.url;
+      }
     } catch (error) {
       return Promise.reject(error);
     }
