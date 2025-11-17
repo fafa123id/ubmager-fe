@@ -143,6 +143,13 @@ const submit = async () => {
             >Daftar</NuxtLink
           >
         </p>
+        <p class="mt-6 text-center text-xs text-slate-400">
+          <NuxtLink
+            to="/auth/login"
+            class="font-semibold text-slate-200 underline-offset-4 hover:underline"
+            >Kembali ke login</NuxtLink
+          >
+        </p>
       </div>
     </section>
   </main>
