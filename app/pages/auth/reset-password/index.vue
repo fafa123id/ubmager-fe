@@ -37,10 +37,8 @@ const successMsg = ref("");
 const canSubmit = computed(() => email.value.trim());
 
 const setTokenandEmail = () => {
-  const hash = window.location.hash;
-  const params = new URLSearchParams(hash.substring(1));
-  token.value = params.get("token");
-  email.value = params.get("email") || "";
+  token.value = useCookie().get("reset_password_token") || "";
+  email.value = useRoute().query.email || "";
 };
 const clearError = (fieldName) => {
   if (errorMsg.value[fieldName]) {
