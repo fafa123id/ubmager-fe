@@ -27,7 +27,7 @@ export const useSwal = () => {
       title: "Berhasil!",
       text: text,
       icon: "success",
-      timer: 1000,
+      timer: 2000,
       background: "rgba(15,23,42,0.95)", 
       color: "#f8fafc",
       showConfirmButton: false,
@@ -38,7 +38,7 @@ export const useSwal = () => {
       title: "Gagal!",
       text: text,
       icon: "error",
-      timer: 1000,
+      timer: 2000,
       background: "rgba(15,23,42,0.95)", // gelap elegan
       color: "#f8fafc",
       showConfirmButton: false,
@@ -70,7 +70,7 @@ export const useSwal = () => {
       title: title,
       text: text,
       icon: "info",
-      timer: 1000,
+      timer: 2000,
       background: "rgba(15,23,42,0.95)", // gelap elegan
       color: "#f8fafc",
       showConfirmButton: false,
