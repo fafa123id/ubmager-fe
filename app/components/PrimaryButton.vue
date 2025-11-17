@@ -34,7 +34,8 @@ const attrs = useAttrs();
     <button
         v-else
         :type="type"
-        :class="computedClasses" >
+        :class="computedClasses"
+        :disabled="attrs.disabled" >
         <slot />
     </button>
 </template>
