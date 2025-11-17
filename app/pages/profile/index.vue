@@ -314,54 +314,53 @@ const savePassword = async () => {
         <div
           class="flex flex-col items-center gap-6 sm:flex-row sm:items-end sm:justify-between"
         >
-          <ClientOnly>
-            <div class="flex items-center gap-4">
-              <!-- Avatar -->
-              <label
-                class="group relative grid h-20 w-20 cursor-pointer place-items-center overflow-hidden rounded-2xl border border-white/10 bg-white/5 ring-1 ring-white/10"
+          <div class="flex items-center gap-4">
+            <!-- Avatar -->
+            <label
+              class="group relative grid h-20 w-20 cursor-pointer place-items-center overflow-hidden rounded-2xl border border-white/10 bg-white/5 ring-1 ring-white/10"
+            >
+              <input
+                type="file"
+                accept="image/*"
+                class="hidden"
+                @change="onAvatarPick"
+                aria-label="Unggah avatar"
+              />
+              <img
+                v-if="user.avatarUrl"
+                :src="user.avatarUrl"
+                alt="avatar"
+                class="h-full w-full object-cover"
+              />
+              <span v-else class="text-lg font-semibold text-slate-200">{{
+                initials
+              }}</span>
+              <span
+                class="pointer-events-none absolute inset-0 hidden place-items-center bg-slate-950/30 text-xs text-slate-200 group-hover:grid"
+                >Ganti</span
               >
-                <input
-                  type="file"
-                  accept="image/*"
-                  class="hidden"
-                  @change="onAvatarPick"
-                  aria-label="Unggah avatar"
-                />
-                <img
-                  v-if="user.avatarUrl"
-                  :src="user.avatarUrl"
-                  alt="avatar"
-                  class="h-full w-full object-cover"
-                />
-                <span v-else class="text-lg font-semibold text-slate-200">{{
-                  initials
-                }}</span>
-                <span
-                  class="pointer-events-none absolute inset-0 hidden place-items-center bg-slate-950/30 text-xs text-slate-200 group-hover:grid"
-                  >Ganti</span
-                >
-              </label>
+            </label>
 
-              <div>
-                <h1 class="text-2xl font-bold tracking-tight">
-                  <template v-if="loading">
-                    <span
-                      class="inline-block h-6 w-48 animate-pulse rounded bg-white/10"
-                    ></span>
-                  </template>
-                  <template v-else>{{ user.name || "—" }}</template>
-                </h1>
-                <p class="text-sm text-slate-300">
-                  <template v-if="loading">
-                    <span
-                      class="inline-block h-4 w-28 animate-pulse rounded bg-white/10"
-                    ></span>
-                  </template>
-                  <template v-else>@{{ user.username || "—" }}</template>
-                </p>
-              </div>
+            <div>
+              <h1 class="text-2xl font-bold tracking-tight">
+                <template v-if="loading">
+                  <span
+                    class="inline-block h-6 w-48 animate-pulse rounded bg-white/10"
+                  ></span>
+                </template>
+                <template v-else>{{ user.name || "—" }}</template>
+              </h1>
+              <p class="text-sm text-slate-300">
+                <template v-if="loading">
+                  <span
+                    class="inline-block h-4 w-28 animate-pulse rounded bg-white/10"
+                  ></span>
+                </template>
+                <template v-else>@{{ user.username || "—" }}</template>
+              </p>
             </div>
-          </ClientOnly>
+          </div>
+
           <!-- Aksi cepat -->
           <div class="flex flex-wrap items-center gap-2">
             <NuxtLink
@@ -461,141 +460,133 @@ const savePassword = async () => {
             <h2 class="text-lg font-semibold">Informasi Profil</h2>
             <p class="text-xs text-slate-300">Perbarui data akunmu.</p>
           </div>
-          <ClientOnly>
-            <form
-              class="grid gap-4 sm:grid-cols-2"
-              @submit.prevent="saveProfile"
-            >
-              <div class="sm:col-span-2">
-                <label class="mb-1 block text-xs text-slate-300"
-                  >Nama Lengkap</label
-                >
-                <input
-                  v-model="userForm.name"
-                  type="text"
-                  class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
-                  :disabled="loading"
-                  placeholder="Nama kamu"
-                  autocomplete="name"
-                />
-              </div>
 
-              <div>
-                <label class="mb-1 block text-xs text-slate-300"
-                  >Username</label
-                >
-                <input
-                  v-model="userForm.username"
-                  type="text"
-                  class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
-                  :disabled="loading"
-                  placeholder="username"
-                  autocomplete="username"
-                />
-              </div>
+          <form class="grid gap-4 sm:grid-cols-2" @submit.prevent="saveProfile">
+            <div class="sm:col-span-2">
+              <label class="mb-1 block text-xs text-slate-300"
+                >Nama Lengkap</label
+              >
+              <input
+                v-model="userForm.name"
+                type="text"
+                class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
+                :disabled="loading"
+                placeholder="Nama kamu"
+                autocomplete="name"
+              />
+            </div>
 
-              <div>
-                <label class="mb-1 block text-xs text-slate-300"
-                  >Nomor HP</label
-                >
-                <input
-                  v-model="userForm.phone"
-                  type="tel"
-                  class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
-                  :disabled="loading"
-                  placeholder="08xxxxxxxxxx"
-                  autocomplete="tel"
-                />
-              </div>
+            <div>
+              <label class="mb-1 block text-xs text-slate-300">Username</label>
+              <input
+                v-model="userForm.username"
+                type="text"
+                class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
+                :disabled="loading"
+                placeholder="username"
+                autocomplete="username"
+              />
+            </div>
 
-              <div class="sm:col-span-2">
-                <label class="mb-1 block text-xs text-slate-300">Email</label>
-                <input
-                  v-model="userForm.email"
-                  type="email"
-                  class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-indigo-400 disabled:opacity-60"
-                  :disabled="loading"
-                  placeholder="nama@kampus.ac.id"
-                  autocomplete="email"
-                />
-                <p class="mt-1 text-xs text-slate-400">
-                  <span v-if="!user.email">
-                    Email Anda belum diset, Set Sekarang!
-                  </span>
+            <div>
+              <label class="mb-1 block text-xs text-slate-300">Nomor HP</label>
+              <input
+                v-model="userForm.phone"
+                type="tel"
+                class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
+                :disabled="loading"
+                placeholder="08xxxxxxxxxx"
+                autocomplete="tel"
+              />
+            </div>
 
-                  <span v-else-if="user.isVerified">
-                    Email Anda sudah diverifikasi
-                  </span>
+            <div class="sm:col-span-2">
+              <label class="mb-1 block text-xs text-slate-300">Email</label>
+              <input
+                v-model="userForm.email"
+                type="email"
+                class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-indigo-400 disabled:opacity-60"
+                :disabled="loading"
+                placeholder="nama@kampus.ac.id"
+                autocomplete="email"
+              />
+              <p class="mt-1 text-xs text-slate-400">
+                <span v-if="!user.email">
+                  Email Anda belum diset, Set Sekarang!
+                </span>
 
-                  <span v-else>
-                    Email Anda belum diverifikasi
-                    <button
-                      type="button"
-                      class="text-sky-500 hover:underline ml-1"
-                      @click="verificationEmail"
-                    >
-                      Verifikasi sekarang!
-                    </button>
-                  </span>
-                </p>
-                <div>
-                  <p></p>
-                </div>
-              </div>
+                <span v-else-if="user.isVerified">
+                  Email Anda sudah diverifikasi
+                </span>
 
-              <div class="sm:col-span-2">
-                <label class="mb-1 block text-xs text-slate-300">Bio</label>
-                <textarea
-                  v-model="userForm.bio"
-                  rows="4"
-                  class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-indigo-400 disabled:opacity-60"
-                  :disabled="loading"
-                  placeholder="Ceritakan tentang dirimu..."
-                ></textarea>
-              </div>
-
-              <div class="sm:col-span-2 mt-2 flex flex-wrap items-center gap-3">
-                <button
-                  type="submit"
-                  :disabled="!canSave || saving || loading"
-                  class="cursor-pointer inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm font-semibold text-white ring-1 ring-white/15 transition-colors hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  <svg
-                    v-if="saving"
-                    class="h-4 w-4 animate-spin"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    aria-hidden="true"
+                <span v-else>
+                  Email Anda belum diverifikasi
+                  <button
+                    type="button"
+                    class="text-sky-500 hover:underline ml-1"
+                    @click="verificationEmail"
                   >
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      stroke-width="3"
-                      class="opacity-25"
-                    ></circle>
-                    <path
-                      d="M12 2a10 10 0 0110 10h-3A7 7 0 0012 5V2z"
-                      fill="currentColor"
-                      class="opacity-75"
-                    ></path>
-                  </svg>
-                  Simpan Perubahan
-                </button>
-
-                <button
-                  type="button"
-                  @click="fetchProfile"
-                  :disabled="loading"
-                  class="cursor-pointer inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 disabled:cursor-not-allowed disabled:opacity-60"
-                  title="Muat ulang data dari server"
-                >
-                  Muat Ulang
-                </button>
+                    Verifikasi sekarang!
+                  </button>
+                </span>
+              </p>
+              <div>
+                <p></p>
               </div>
-            </form>
-          </ClientOnly>
+            </div>
+
+            <div class="sm:col-span-2">
+              <label class="mb-1 block text-xs text-slate-300">Bio</label>
+              <textarea
+                v-model="userForm.bio"
+                rows="4"
+                class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-indigo-400 disabled:opacity-60"
+                :disabled="loading"
+                placeholder="Ceritakan tentang dirimu..."
+              ></textarea>
+            </div>
+
+            <div class="sm:col-span-2 mt-2 flex flex-wrap items-center gap-3">
+              <button
+                type="submit"
+                :disabled="!canSave || saving || loading"
+                class="cursor-pointer inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm font-semibold text-white ring-1 ring-white/15 transition-colors hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <svg
+                  v-if="saving"
+                  class="h-4 w-4 animate-spin"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="3"
+                    class="opacity-25"
+                  ></circle>
+                  <path
+                    d="M12 2a10 10 0 0110 10h-3A7 7 0 0012 5V2z"
+                    fill="currentColor"
+                    class="opacity-75"
+                  ></path>
+                </svg>
+                Simpan Perubahan
+              </button>
+
+              <button
+                type="button"
+                @click="fetchProfile"
+                :disabled="loading"
+                class="cursor-pointer inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 disabled:cursor-not-allowed disabled:opacity-60"
+                title="Muat ulang data dari server"
+              >
+                Muat Ulang
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </section>
