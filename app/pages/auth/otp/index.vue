@@ -54,6 +54,7 @@ const submitVerify = async () => {
     await $api.post('/api/verify-email', { email: email.value, otp: otp.value })
     useSwal().showSuccess('Email berhasil diverifikasi.')
     sessionStorage.removeItem(STORAGE_KEY)
+    useAuth().fetchUser()
     router.push('/profile');
   } catch (e) {
     useSwal().showError(e?.response?.data?.message || 'Kode OTP salah atau kadaluarsa.')
