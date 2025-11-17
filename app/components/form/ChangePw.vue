@@ -12,12 +12,22 @@ const clearError = (fieldName) => {
     errorMsg.value[fieldName] = null; // Menjadikannya 'falsy'
   }
 };
+const canSave = computed(() => {
+  return (
+    oldPasswordInput.value &&
+    passwordInput.value &&
+    passwordConfirmationInput.value
+  );
+});
 const loading = ref(false);
 const oldPasswordInput = ref("");
 const passwordInput = ref("");
 const passwordConfirmationInput = ref("");
 const saveChangePassword = async () => {
   try {
+    if (!canSave.value) {
+      return;
+    }
     loading.value = true;
     await useNuxtApp().$api.post(
       "/api/new-password",
@@ -113,7 +123,7 @@ const closeAndReset = () => {
           <PrimaryButton
             class="ms-3"
             :class="{ 'opacity-25': loading }"
-            :disabled="loading"
+            :disabled="loading || !canSave"
           >
             Save Password
           </PrimaryButton>
