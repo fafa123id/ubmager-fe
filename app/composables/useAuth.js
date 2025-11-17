@@ -162,7 +162,8 @@ export const useAuth = () => {
         return useSwal().showSuccess("Akun Google telah dilepas.");
       }
     } catch (error) {
-      return Promise.reject(error);
+      useSwal().close();
+      return useSwal().showError(error.response?.data?.message || "Gagal melepaskan akun Google.");
     }
   };
   const resetPassword = async ({
