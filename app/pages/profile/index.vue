@@ -69,7 +69,7 @@ const fetchProfile = async () => {
   loading.value = true;
   errorMsg.value = "";
   try {
-    const { data } = await useAuth().fetchUser();
+    const { data } = useAuth().user
     Object.assign(userForm.value, {
       email: data?.email ?? "",
       username: data?.username ?? "",
@@ -95,8 +95,6 @@ const fetchProfile = async () => {
     loading.value = false;
   }
 };
-
-onMounted(fetchProfile);
 
 /* ----- Derived ----- */
 const initials = computed(() => {
