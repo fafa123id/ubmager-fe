@@ -1,20 +1,23 @@
 <script setup>
-import { useAuth } from "~/composables/useAuth";
+import { useAuth } from "~/composables/useAuth"
 
-const isOpen = ref(false);
+const isOpen = ref(false)
 const links = [
   { to: "/", label: "Beranda" },
   { to: "/produk", label: "Produk" },
   { to: "/tentang", label: "Tentang" },
   { to: "/kontak", label: "Kontak" },
-];
-const route = useRoute();
-const { user } = useAuth();
+]
+
+const route = useRoute()
+const { user } = useAuth()
+
 const logout = async () => {
-  await useAuth().logout();
-  await navigateTo("/");
-};
-const isActive = (to) => route.path === to;
+  await useAuth().logout()
+  await navigateTo("/")
+}
+
+const isActive = (to) => route.path === to
 </script>
 
 <template>
@@ -43,60 +46,72 @@ const isActive = (to) => route.path === to;
               <span
                 v-if="isActive(l.to)"
                 class="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-sky-500/15 to-indigo-600/15 ring-1 ring-white/15"
-              >
-              </span>
+              />
             </NuxtLink>
           </li>
         </ul>
 
-        <!-- CTA -->
-        <div v-if="!user" class="hidden items-center gap-2 md:flex">
-          <NuxtLink
-            to="/auth/login"
-            class="group inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
-          >
-            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor">
-              <path
-                d="M10.828 11H3a1 1 0 1 0 0 2h7.828l-3.536 3.536a1 1 0 0 0 1.414 1.414l5.243-5.243a1 1 0 0 0 0-1.414L8.707 6.05a1 1 0 1 0-1.414 1.414L10.828 11Z"
-              />
-              <path
-                d="M21 4a1 1 0 0 0-1-1h-7a1 1 0 1 0 0 2h6v14h-6a1 1 0 1 0 0 2h7a1 1 0 0 0 1-1V4Z"
-              />
-            </svg>
-            Masuk
-          </NuxtLink>
-        </div>
-        <div v-else class="hidden items-center gap-2 md:flex">
-          <button
-            @click="logout"
-            class="group inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
-          >
-            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor">
-              <path
-                d="M10.828 11H3a1 1 0 1 0 0 2h7.828l-3.536 3.536a1 1 0 0 0 1.414 1.414l5.243-5.243a1 1 0 0 0 0-1.414L8.707 6.05a1 1 0 1 0-1.414 1.414L10.828 11Z"
-              />
-              <path
-                d="M21 4a1 1 0 0 0-1-1h-7a1 1 0 1 0 0 2h6v14h-6a1 1 0 1 0 0 2h7a1 1 0 0 0 1-1V4Z"
-              />
-            </svg>
-            Logout
-          </button>
-          <NuxtLink
-            to="/profile"
-            class="group inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
-            :class="
-              isActive('/profile')
-                ? 'bg-gradient-to-br from-sky-500/15 to-indigo-600/15 ring-1 ring-white/10'
-                : 'bg-white/5 hover:bg-white/10 ring-1 ring-white/5'
-            "
-          >
-            <img
-              :src="user.data.image"
-              alt="Avatar"
-              class="h-8 w-8 rounded-full object-cover"
-            />
-          </NuxtLink>
-        </div>
+        <!-- CTA Desktop (client-only auth state) -->
+        <ClientOnly>
+          <template #default>
+            <div v-if="!user" class="hidden items-center gap-2 md:flex">
+              <NuxtLink
+                to="/auth/login"
+                class="group inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+              >
+                <svg viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor">
+                  <path
+                    d="M10.828 11H3a1 1 0 1 0 0 2h7.828l-3.536 3.536a1 1 0 0 0 1.414 1.414l5.243-5.243a1 1 0 0 0 0-1.414L8.707 6.05a1 1 0 1 0-1.414 1.414L10.828 11Z"
+                  />
+                  <path
+                    d="M21 4a1 1 0 0 0-1-1h-7a1 1 0 1 0 0 2h6v14h-6a1 1 0 1 0 0 2h7a1 1 0 0 0 1-1V4Z"
+                  />
+                </svg>
+                Masuk
+              </NuxtLink>
+            </div>
+
+            <div v-else class="hidden items-center gap-2 md:flex">
+              <button
+                @click="logout"
+                class="group inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+              >
+                <svg viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor">
+                  <path
+                    d="M10.828 11H3a1 1 0 1 0 0 2h7.828l-3.536 3.536a1 1 0 0 0 1.414 1.414l5.243-5.243a1 1 0 0 0 0-1.414L8.707 6.05a1 1 0 1 0-1.414 1.414L10.828 11Z"
+                  />
+                  <path
+                    d="M21 4a1 1 0 0 0-1-1h-7a1 1 0 1 0 0 2h6v14h-6a1 1 0 1 0 0 2h7a1 1 0 0 0 1-1V4Z"
+                  />
+                </svg>
+                Logout
+              </button>
+              <NuxtLink
+                to="/profile"
+                class="group inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+                :class="
+                  isActive('/profile')
+                    ? 'bg-gradient-to-br from-sky-500/15 to-indigo-600/15 ring-1 ring-white/10'
+                    : 'bg-white/5 hover:bg-white/10 ring-1 ring-white/5'
+                "
+              >
+                <img
+                  :src="user?.data?.image || '/default-avatar.png'"
+                  alt="Avatar"
+                  class="h-8 w-8 rounded-full object-cover"
+                />
+              </NuxtLink>
+            </div>
+          </template>
+
+          <!-- Optional skeleton while loading di client -->
+          <template #fallback>
+            <div class="hidden items-center gap-2 md:flex">
+              <div class="h-9 w-20 rounded-xl bg-white/10 animate-pulse" />
+            </div>
+          </template>
+        </ClientOnly>
+
         <!-- Mobile toggle -->
         <button
           class="md:hidden inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 p-2 text-slate-100 transition hover:bg-white/10"
@@ -108,10 +123,9 @@ const isActive = (to) => route.path === to;
       </nav>
 
       <!-- Mobile menu -->
-      <!-- Mobile menu -->
       <transition name="pop">
         <div v-if="isOpen" class="mt-3 grid gap-2 text-slate-100 md:hidden">
-          <!-- Link navigasi -->
+          <!-- Links -->
           <NuxtLink
             v-for="l in links"
             :key="l.to"
@@ -127,60 +141,50 @@ const isActive = (to) => route.path === to;
             {{ l.label }}
           </NuxtLink>
 
-          <!-- Tombol login -->
-          <NuxtLink
-            v-if="!user"
-            to="/auth/login"
-            class="mt-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-white/10 px-4 py-3 text-sm font-semibold text-white ring-1 ring-white/10 transition hover:bg-white/15"
-            @click="isOpen = false"
-          >
-            Masuk
-          </NuxtLink>
+          <!-- Bagian auth mobile juga boleh di-ClientOnly, tapi risiko mismatch lebih kecil di sini -->
+          <ClientOnly>
+            <template #default>
+              <NuxtLink
+                v-if="!user"
+                to="/auth/login"
+                class="mt-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-white/10 px-4 py-3 text-sm font-semibold text-white ring-1 ring-white/10 transition hover:bg-white/15"
+                @click="isOpen = false"
+              >
+                Masuk
+              </NuxtLink>
 
-          <!-- Logout + Avatar -->
-          <div v-else class="mt-1 flex items-center gap-3 rounded-2xl">
-            <!-- Tombol Logout -->
-            <button
-              @click="
-                logout();
-                isOpen = false;
-              "
-              class="flex-1 cursor-pointer rounded-xl bg-white/5 px-4 py-2 text-sm font-semibold text-white ring-1 ring-white/10 transition hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
-            >
-              Logout
-            </button>
+              <div v-else class="mt-1 flex items-center gap-3 rounded-2xl">
+                <button
+                  @click="
+                    logout();
+                    isOpen = false;
+                  "
+                  class="flex-1 cursor-pointer rounded-xl bg-white/5 px-4 py-2 text-sm font-semibold text-white ring-1 ring-white/10 transition hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+                >
+                  Logout
+                </button>
 
-            <!-- Avatar Profil -->
-            <NuxtLink
-              to="/profile"
-              class="inline-flex items-center justify-center rounded-xl bg-white/5 p-1.5 ring-1 ring-white/10 transition hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
-              :class="
-                isActive('/profile')
-                  ? 'bg-gradient-to-br from-sky-500/15 to-indigo-600/15 ring-1 ring-white/10'
-                  : 'bg-white/5 hover:bg-white/10 ring-1 ring-white/5'
-              "
-            >
-              <img
-                :src="user?.data?.image || '/default-avatar.png'"
-                alt="Avatar"
-                class="h-9 w-9 rounded-full object-cover ring-1 ring-white/10"
-              />
-            </NuxtLink>
-          </div>
+                <NuxtLink
+                  to="/profile"
+                  class="inline-flex items-center justify-center rounded-xl bg-white/5 p-1.5 ring-1 ring-white/10 transition hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+                  :class="
+                    isActive('/profile')
+                      ? 'bg-gradient-to-br from-sky-500/15 to-indigo-600/15 ring-1 ring-white/10'
+                      : 'bg-white/5 hover:bg-white/10 ring-1 ring-white/5'
+                  "
+                  @click="isOpen = false"
+                >
+                  <img
+                    :src="user?.data?.image || '/default-avatar.png'"
+                    alt="Avatar"
+                    class="h-9 w-9 rounded-full object-cover ring-1 ring-white/10"
+                  />
+                </NuxtLink>
+              </div>
+            </template>
+          </ClientOnly>
         </div>
       </transition>
     </div>
   </header>
 </template>
-
-<style scoped>
-.pop-enter-active,
-.pop-leave-active {
-  transition: opacity 0.15s ease, transform 0.2s ease;
-}
-.pop-enter-from,
-.pop-leave-to {
-  opacity: 0;
-  transform: translateY(-6px) scale(0.98);
-}
-</style>
