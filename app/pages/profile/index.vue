@@ -2,7 +2,7 @@
 <script setup>
 import ChangePw from "~/components/form/ChangePw.vue";
 definePageMeta({
-  auth: true,
+  middleware: "auth",
 });
 import { ref, computed, onMounted, watch } from "vue";
 const ENDPOINTS = {
