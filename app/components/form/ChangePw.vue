@@ -12,15 +12,17 @@ const clearError = (fieldName) => {
     errorMsg.value[fieldName] = null; // Menjadikannya 'falsy'
   }
 };
-const canSave = computed(() => {
-  oldPasswordInput.value &&
-    passwordInput.value &&
-    passwordConfirmationInput.value;
-});
 const loading = ref(false);
 const oldPasswordInput = ref("");
 const passwordInput = ref("");
 const passwordConfirmationInput = ref("");
+const canSave = computed(() => {
+  return (
+    !!oldPasswordInput.value &&
+    !!passwordInput.value &&
+    !!passwordConfirmationInput.value
+  );
+});
 const saveChangePassword = async () => {
   try {
     if (!canSave.value) {
