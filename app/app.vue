@@ -26,7 +26,8 @@ onMounted(() => {
     useAuth().fetchUser();
   }
 
-  router.replace({ query: {} });
+  if (error || success || need_refresh) {
+    router.replace({ query: {} });
+  }
 });
-
 </script>
