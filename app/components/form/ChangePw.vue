@@ -11,6 +11,7 @@ const clearError = (fieldName) => {
     errorMsg.value[fieldName] = null; // Menjadikannya 'falsy'
   }
 };
+const loading = ref(false);
 const oldPasswordInput = ref("");
 const passwordInput = ref("");
 const passwordConfirmationInput = ref("");
@@ -62,6 +63,7 @@ const closeAndReset = () => {
             class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
             :disabled="loading"
             placeholder="Password Lama"
+            @focus="clearError('old_password')"
             autocomplete="current-old-password"
           />
           <p
@@ -77,6 +79,7 @@ const closeAndReset = () => {
             class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
             :disabled="loading"
             placeholder="Password"
+            @focus="clearError('password')"
             autocomplete="current-password"
           />
           <p
@@ -94,6 +97,7 @@ const closeAndReset = () => {
             class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
             :disabled="loading"
             placeholder="Password Confirmation"
+            @focus="clearError('password_confirmation')"
             autocomplete="current-password_confirmation"
           />
           <p
