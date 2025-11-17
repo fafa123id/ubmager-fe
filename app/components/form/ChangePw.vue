@@ -1,4 +1,5 @@
 <script setup>
+import { emit } from 'process';
 const props = defineProps({
   show: {
     type: Boolean,
