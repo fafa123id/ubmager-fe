@@ -17,5 +17,10 @@ onMounted(() => {
   if (success) {
     useSwal().showSuccess(decodeURIComponent(success));
   }
+  const needRefresh = useRoute().query.need_refresh;
+  if (needRefresh == "true") {
+    useAuth().fetchUser();
+  }
+  useRoute().query = {};
 });
 </script>
