@@ -5,7 +5,6 @@ export default defineNuxtConfig({
     // Homepage pre-rendered at build time
     "/": { prerender: true },
     "/auth/**": { ssr: false },
-    "/profile/**": { ssr: false },
   },
   compatibilityDate: "2025-07-15",
   css: ["./app/assets/css/main.css"],
