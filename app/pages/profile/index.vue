@@ -14,7 +14,7 @@ const verificationEmail = async () => {
     useSwal().showLoading();
     await $api.post(
       "/api/verify-email/send",
-      { email: user?.data?.email },
+      { email: userObject.value?.email },
       { withCredentials: true }
     );
     useSwal().showSuccess("Email verifikasi telah dikirim.");
@@ -22,14 +22,14 @@ const verificationEmail = async () => {
     sessionStorage.setItem(
       "otpFlow",
       JSON.stringify({
-        email: user?.data?.email, // ⬅️ pakai .value
+        email: userObject.value?.email, // ⬅️ pakai .value
         startedAt: Date.now(),
         lastResendAt: Date.now(),
         guard: "from-profile",
       })
     );
 
-    navigateTo("/auth/otp?email=" + encodeURIComponent(user?.data?.email));
+    navigateTo("/auth/otp?email=" + encodeURIComponent(userObject.value?.email));
   } catch (e) {
     useSwal().showError(
       e?.response?.data?.message || "Gagal mengirim email verifikasi."
@@ -51,7 +51,18 @@ const userForm = ref({
   phone: "",
   bio: "",
 });
-
+const userObject = ref ({
+  id: null,
+  isVerified: false,
+  name: "",
+  username: "",
+  email: "",
+  phone: "",
+  bio: "",
+  avatarUrl: "",
+  passwordIsSet: true,
+  phoneIsSet: true,
+});
 watch(
   () => user.value,
   (u) => {
@@ -66,6 +77,19 @@ watch(
       bio: d.bio ?? "",
     };
 
+    userObject.value = {
+      id: d.id ?? null,
+      isVerified: d.is_verified ?? false,
+      name: d.name ?? "",
+      username: d.username ?? "",
+      email: d.email ?? "",
+      phone: d.phone ?? "",
+      bio: d.bio ?? "",
+      avatarUrl: d.image ?? "",
+      passwordIsSet: d.password_is_set ?? true,
+      phoneIsSet: d.phone_is_set ?? true,
+    };
+
     loading.value = false; // jangan lupa matiin loading
   },
   { immediate: true }
@@ -73,7 +97,7 @@ watch(
 
 /* ----- Derived ----- */
 const initials = computed(() => {
-  const parts = String(user?.data?.name || "")
+  const parts = String(userObject.value?.name || "")
     .trim()
     .split(/\s+/);
   return (
@@ -99,7 +123,7 @@ const onAvatarPick = async (e) => {
     const formData = new FormData();
     formData.append("image", file);
     formData.append("_method", "PUT");
-    const res = await $api.post(`/api/user/${user?.data?.id}`, formData);
+    const res = await $api.post(`/api/user/${userObject.value?.id}`, formData);
     useSwal().showSuccess("Avatar diperbarui.");
     fetchUser();
   } catch (err) {
@@ -122,17 +146,17 @@ const saveProfile = async () => {
       phone: userForm.value.phone,
       bio: userForm.value.bio,
     };
-    if (user?.data?.email) {
+    if (userObject.value?.email) {
       if (payload.email === "") {
         return useSwal().showError("Email tidak boleh dikosongkan.");
       }
     }
-    if (user?.data?.phone) {
+    if (userObject.value?.phone) {
       if (payload.phone === "") {
         return useSwal().showError("Nomor HP tidak boleh dikosongkan.");
       }
     }
-    await $api.put(`/api/user/${user?.data?.id}`, payload, {
+    await $api.put(`/api/user/${userObject.value?.id}`, payload, {
       withCredentials: true,
     });
     useSwal().showSuccess("Profil berhasil diperbarui.");
@@ -251,7 +275,7 @@ const savePassword = async () => {
       class="pointer-events-none absolute -bottom-24 -right-16 h-72 w-72 rounded-full bg-indigo-500/15 blur-3xl"
     ></div>
     <p
-      v-if="user.password_is_set === false"
+      v-if="userObject.value.passwordIsSet === false"
       class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200"
     >
       Anda belum mengatur kata sandi. Silakan atur kata sandi untuk keamanan
@@ -264,7 +288,7 @@ const savePassword = async () => {
       </button>
     </p>
     <p
-      v-if="user.phone_is_set === false"
+      v-if="userObject.value.phoneIsSet === false"
       class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200"
     >
       Anda belum mengatur nomor telepon. Silakan atur nomor telepon untuk mulai
@@ -299,8 +323,8 @@ const savePassword = async () => {
                   aria-label="Unggah avatar"
                 />
                 <img
-                  v-if="user.avatarUrl"
-                  :src="user.avatarUrl"
+                  v-if="userObject.value.avatarUrl"
+                  :src="userObject.value.avatarUrl"
                   alt="avatar"
                   class="h-full w-full object-cover"
                 />
@@ -320,7 +344,7 @@ const savePassword = async () => {
                       class="inline-block h-6 w-48 animate-pulse rounded bg-white/10"
                     ></span>
                   </template>
-                  <template v-else>{{ user.name || "—" }}</template>
+                  <template v-else>{{ userObject.value.name || "—" }}</template>
                 </h1>
                 <p class="text-sm text-slate-300">
                   <template v-if="loading">
@@ -328,7 +352,7 @@ const savePassword = async () => {
                       class="inline-block h-4 w-28 animate-pulse rounded bg-white/10"
                     ></span>
                   </template>
-                  <template v-else>@{{ user.username || "—" }}</template>
+                  <template v-else>@{{ userObject.value.username || "—" }}</template>
                 </p>
               </div>
             </div>
@@ -490,11 +514,11 @@ const savePassword = async () => {
                   autocomplete="email"
                 />
                 <p class="mt-1 text-xs text-slate-400">
-                  <span v-if="!user.email">
+                  <span v-if="!userObject.value.email">
                     Email Anda belum diset, Set Sekarang!
                   </span>
 
-                  <span v-else-if="user.is_verified">
+                  <span v-else-if="userObject.value.isVerified">
                     Email Anda sudah diverifikasi
                   </span>
 
