@@ -138,7 +138,7 @@ const onAvatarPick = async (e) => {
     const url = res?.data?.image;
     user.value.image = url;
     useSwal().showSuccess("Avatar diperbarui.");
-    fetchProfile();
+    fetchRemote();
   } catch (err) {
     useSwal().showError(
       err?.response?.data?.message || "Gagal mengunggah avatar."
@@ -173,7 +173,7 @@ const saveProfile = async () => {
       withCredentials: true,
     });
     useSwal().showSuccess("Profil berhasil diperbarui.");
-    fetchProfile();
+    fetchRemote();
   } catch (e) {
     useSwal().showError(
       e?.response?.data?.message || "Gagal menyimpan profil."
@@ -211,7 +211,7 @@ const savePassword = async () => {
     });
     useSwal().showSuccess("Kata sandi berhasil diperbarui.");
     closeAndReset();
-    fetchProfile();
+    fetchRemote();
   } catch (e) {
     useSwal().showError(
       e?.response?.data?.message || "Gagal memperbarui kata sandi."
@@ -594,7 +594,7 @@ const savePassword = async () => {
 
                 <button
                   type="button"
-                  @click="fetchProfile"
+                  @click="fetchRemote"
                   :disabled="loading"
                   class="cursor-pointer inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 disabled:cursor-not-allowed disabled:opacity-60"
                   title="Muat ulang data dari server"
