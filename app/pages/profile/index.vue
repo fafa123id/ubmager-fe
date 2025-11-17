@@ -66,7 +66,7 @@ const user = ref({
   phoneIsSet: true,
 });
 const fetchLocally = () => {
-  fetchProfile(useAuth().user);
+  fetchProfile(useAuth().user.value);
 };
 const fetchRemote = async () => {
   fetchProfile(await useAuth().fetchUser());
