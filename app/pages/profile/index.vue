@@ -3,9 +3,7 @@
 definePageMeta({
   auth: true,
 });
-import { on } from "events";
-import { ref, computed, onMounted } from "vue";
-watch;
+import { ref, computed, onMounted, watch } from "vue";
 const ENDPOINTS = {
   me: "/api/user",
   updateProfile: "/api/user",
@@ -45,7 +43,7 @@ const loading = ref(true);
 const saving = ref(false);
 const errorMsg = ref("");
 const successMsg = ref("");
-
+const { user, fetchUser } = useAuth();
 const userForm = ref({
   name: "",
   username: "",
@@ -53,59 +51,22 @@ const userForm = ref({
   phone: "",
   bio: "",
 });
-const user = ref({
-  id: null,
-  isVerified: false,
-  name: "",
-  username: "",
-  email: "",
-  phone: "",
-  bio: "",
-  avatarUrl: "",
-  passwordIsSet: true,
-  phoneIsSet: true,
-});
-const fetchLocally = () => {
-  fetchProfile(useAuth().user.value);
-};
-const fetchRemote = async () => {
-  fetchProfile(await useAuth().fetchUser());
-}
-/* ----- Lifecycle: Fetch profile ----- */
-const fetchProfile = (object) => {
-  loading.value = true;
-  errorMsg.value = "";
-  try {
-    console.log(object);
-    const { data } = object || {};
-    Object.assign(userForm.value, {
-      email: data?.email ?? "",
-      username: data?.username ?? "",
-      name: data?.name ?? "",
-      phone: data?.phone ?? "",
-      bio: data?.bio ?? "",
-    });
-    Object.assign(user.value, {
-      passwordIsSet: data?.password_is_set ?? false,
-      isVerified: data?.is_verified ?? false,
-      id: data?.id || null,
-      name: data?.name ?? "",
-      username: data?.username ?? "",
-      email: data?.email ?? "",
-      phone: data?.phone ?? "",
-      phoneIsSet: data?.phone ? true : false,
-      bio: data?.bio ?? "",
-      avatarUrl: data?.image ?? "",
-    });
-  } catch (e) {
-    errorMsg.value = e?.response?.data?.message || "Gagal memuat profil.";
-  } finally {
-    loading.value = false;
-  }
-};
-onMounted(() => {
-  fetchLocally();
-});
+
+watch(
+  () => user.value,
+  (u) => {
+    if (!u) return;
+    userForm.value = {
+      name: u.name ?? "",
+      username: u.username ?? "",
+      email: u.email ?? "",
+      phone: u.phone ?? "",
+      bio: u.bio ?? "",
+    };
+  },
+  { immediate: true }
+);
+
 /* ----- Derived ----- */
 const initials = computed(() => {
   const parts = String(user.value.name || "")
@@ -138,7 +99,7 @@ const onAvatarPick = async (e) => {
     const url = res?.data?.image;
     user.value.image = url;
     useSwal().showSuccess("Avatar diperbarui.");
-    fetchRemote();
+    fetchUser();
   } catch (err) {
     useSwal().showError(
       err?.response?.data?.message || "Gagal mengunggah avatar."
@@ -173,7 +134,7 @@ const saveProfile = async () => {
       withCredentials: true,
     });
     useSwal().showSuccess("Profil berhasil diperbarui.");
-    fetchRemote();
+    fetchUser();
   } catch (e) {
     useSwal().showError(
       e?.response?.data?.message || "Gagal menyimpan profil."
@@ -211,7 +172,7 @@ const savePassword = async () => {
     });
     useSwal().showSuccess("Kata sandi berhasil diperbarui.");
     closeAndReset();
-    fetchRemote();
+    fetchUser();
   } catch (e) {
     useSwal().showError(
       e?.response?.data?.message || "Gagal memperbarui kata sandi."
@@ -288,7 +249,7 @@ const savePassword = async () => {
       class="pointer-events-none absolute -bottom-24 -right-16 h-72 w-72 rounded-full bg-indigo-500/15 blur-3xl"
     ></div>
     <p
-      v-if="user.passwordIsSet === false"
+      v-if="user.password_is_set === false"
       class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200"
     >
       Anda belum mengatur kata sandi. Silakan atur kata sandi untuk keamanan
@@ -301,7 +262,7 @@ const savePassword = async () => {
       </button>
     </p>
     <p
-      v-if="user.phoneIsSet === false"
+      v-if="user.phone_is_set === false"
       class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200"
     >
       Anda belum mengatur nomor telepon. Silakan atur nomor telepon untuk mulai
@@ -531,7 +492,7 @@ const savePassword = async () => {
                     Email Anda belum diset, Set Sekarang!
                   </span>
 
-                  <span v-else-if="user.isVerified">
+                  <span v-else-if="user.is_verified">
                     Email Anda sudah diverifikasi
                   </span>
 
@@ -594,7 +555,7 @@ const savePassword = async () => {
 
                 <button
                   type="button"
-                  @click="fetchRemote"
+                  @click="fetchUser"
                   :disabled="loading"
                   class="cursor-pointer inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 disabled:cursor-not-allowed disabled:opacity-60"
                   title="Muat ulang data dari server"
