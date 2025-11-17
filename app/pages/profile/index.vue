@@ -44,7 +44,7 @@ const loading = ref(true);
 const saving = ref(false);
 const errorMsg = ref("");
 const successMsg = ref("");
-const { user, fetchUser } = useAuth();
+const { user, fetchUser, attachGoogle, unlinkGoogle } = useAuth();
 const userForm = ref({
   name: "",
   username: "",
@@ -52,7 +52,7 @@ const userForm = ref({
   phone: "",
   bio: "",
 });
-const userObject = ref ({
+const userObject = ref({
   id: null,
   isVerified: false,
   name: "",
@@ -63,6 +63,7 @@ const userObject = ref ({
   avatarUrl: "",
   passwordIsSet: true,
   phoneIsSet: true,
+  gmail: "",
 });
 watch(
   () => user.value,
@@ -91,13 +92,13 @@ watch(
       avatarUrl: d.image ?? "",
       passwordIsSet: d.password_is_set ?? true,
       phoneIsSet: d.phone_is_set ?? !!d.phone,
+      gmail: d.gmail ?? "",
     };
 
     loading.value = false;
   },
   { immediate: true }
 );
-
 
 /* ----- Derived ----- */
 const initials = computed(() => {
@@ -174,7 +175,7 @@ const saveProfile = async () => {
   }
 };
 
-const changePassword = () => showChangePasswordModal.value = true;
+const changePassword = () => (showChangePasswordModal.value = true);
 const passwordInput = ref("");
 const passwordConfirmationInput = ref("");
 const showCreatePasswordModal = ref(false);
@@ -213,10 +214,12 @@ const savePassword = async () => {
 };
 const showChangePasswordModal = ref(false);
 </script>
-
 <template>
   <div class="relative min-h-dvh text-slate-100 overflow-hidden">
-    <ChangePw :show="showChangePasswordModal" @close="showChangePasswordModal = false" />
+    <ChangePw
+      :show="showChangePasswordModal"
+      @close="showChangePasswordModal = false"
+    />
     <MyModal
       id="create-password-modal"
       :show="showCreatePasswordModal"
@@ -463,6 +466,35 @@ const showChangePasswordModal = ref(false);
             <p class="text-xs text-slate-300">Perbarui data akunmu.</p>
           </div>
           <ClientOnly>
+            <div
+              class="mb-6 flex flex-col  gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3"
+            >
+              <p>Penautan Akun Google</p>
+              <div>
+                <FontAwesomeIcon
+                  icon="fa-brands fa-google"
+                  class="text-white text-3xl"
+                />
+                <span class="ml-2 text-sm text-slate-300">{{
+                  userObject.gmail || "Belum ditautkan"
+                }}</span>
+
+                <button
+                  v-if="!userObject.gmail"
+                  @click="attachGoogle"
+                  class="ms-4 inline-block rounded-lg bg-sky-500 px-3 py-1 text-xs text-white hover:bg-sky-600"
+                >
+                  Tautkan
+                </button>
+                <button
+                  v-else
+                  @click="unlinkGoogle"
+                  class="ms-4 inline-block rounded-lg bg-rose-500 px-3 py-1 text-xs text-white hover:bg-rose-600"
+                >
+                  Lepas
+                </button>
+              </div>
+            </div>
             <form
               class="grid gap-4 sm:grid-cols-2"
               @submit.prevent="saveProfile"
