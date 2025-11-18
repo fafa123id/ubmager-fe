@@ -144,26 +144,38 @@ export const useAuth = () => {
       return Promise.reject(error);
     }
   };
-  const unlinkGoogle = async () => {
-    const result = await useSwal().confirmAction(
-      "Lepas Akun Google",
-      "Apakah Anda yakin ingin melepaskan akun Google dari profil Anda?",
-      "warning"
-    );
-    if (!result.isConfirmed) {
-      return;
+  const sendOtpForUnlinkGoogle = async () => {
+    try {
+      const result = await useSwal().confirmAction(
+        "Lepas Akun Google",
+        "Apakah Anda yakin ingin melepaskan akun Google dari profil Anda?",
+        "warning"
+      );
+      if (!result.isConfirmed) {
+        return false;
+      }
+      useSwal().showLoading("Memproses...", "Mohon tunggu sebentar.");
+      if (nuxtApp.$api) {
+        const response = await nuxtApp.$api.post("/api/auth/google/send-unlink-email");
+        useSwal().close();
+        return response;
+      }
+    } catch (error) {
+      useSwal().close();
+      return Promise.reject(error);
     }
+  };
+  const unlinkGoogle = async ({ otp }) => {
     try {
       if (nuxtApp.$api) {
         useSwal().showLoading("Memproses...", "Mohon tunggu sebentar.");
-        await nuxtApp.$api.post("/api/auth/google/unlink");
+        await nuxtApp.$api.post("/api/auth/google/unlink", { otp });
         await fetchUser();
         useSwal().close();
         return useSwal().showSuccess("Akun Google telah dilepas.");
       }
     } catch (error) {
-      useSwal().close();
-      return useSwal().showError(error.response?.data?.message || "Gagal melepaskan akun Google.");
+      return Promise.reject(error);
     }
   };
   const resetPassword = async ({
@@ -186,6 +198,7 @@ export const useAuth = () => {
     }
   };
   return {
+    sendOtpForUnlinkGoogle,
     attachGoogle,
     unlinkGoogle,
     resetPassword,
