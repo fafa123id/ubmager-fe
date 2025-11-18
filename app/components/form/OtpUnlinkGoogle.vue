@@ -22,7 +22,8 @@ const saveOtp = async () => {
     await useAuth().unlinkGoogle({
       otp: otp.value,
     });
-    closeAndReset(true);
+    emit("close");
+    otp.value = "";
   } catch (e) {
     useSwal().close();
     return useSwal().showError(
@@ -32,13 +33,12 @@ const saveOtp = async () => {
     loading.value = false;
   }
 };
-const closeAndReset = async (bool = false) => {
-  if (!bool) {
-    const result = await useSwal().confirmAction(
-      "Apakah Anda yakin ingin membatalkan pelepasan akun Google?"
-    );
-    if (!result.isConfirmed) return;
-  }
+const closeAndReset = async () => {
+  const result = await useSwal().confirmAction(
+    "Apakah Anda yakin ingin membatalkan pelepasan akun Google?"
+  );
+  if (!result.isConfirmed) return;
+
   emit("close");
   otp.value = "";
 };
@@ -47,7 +47,9 @@ const closeAndReset = async (bool = false) => {
   <MyModal id="unlink-google-modal" :show="props.show" @close="closeAndReset">
     <div class="p-6">
       <form @submit.prevent="saveOtp">
-        <h2 class="text-lg font-medium text-white">Masukkan OTP yang dikirimkan ke email kamu</h2>
+        <h2 class="text-lg font-medium text-white">
+          Masukkan OTP yang dikirimkan ke email kamu
+        </h2>
 
         <div class="mt-6">
           <label class="mb-1 block text-xs text-slate-300">OTP</label>
