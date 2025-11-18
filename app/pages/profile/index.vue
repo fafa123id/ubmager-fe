@@ -1,6 +1,7 @@
 <!-- pages/profile.vue -->
 <script setup>
 import ChangePw from "~/components/form/ChangePw.vue";
+import OtpUnlinkGoogle from "~/components/form/OtpUnlinkGoogle.vue";
 definePageMeta({
   middleware: "auth",
 });
@@ -44,7 +45,8 @@ const loading = ref(true);
 const saving = ref(false);
 const errorMsg = ref("");
 const successMsg = ref("");
-const { user, fetchUser, attachGoogle, unlinkGoogle } = useAuth();
+const { user, fetchUser, attachGoogle, unlinkGoogle, sendOtpForUnlinkGoogle } =
+  useAuth();
 const userForm = ref({
   name: "",
   username: "",
@@ -213,9 +215,25 @@ const savePassword = async () => {
   }
 };
 const showChangePasswordModal = ref(false);
+
+const processUnlinkGoogle = async () => {
+  try {
+    if (await sendOtpForUnlinkGoogle()) showUnlinkGoogleModal.value = true;
+  } catch (e) {
+    useSwal().showError(
+      e?.response?.data?.message || "Gagal mengirim email konfirmasi."
+    );
+  }
+};
+const showUnlinkGoogleModal = ref(false);
 </script>
 <template>
   <div class="relative min-h-dvh text-slate-100 overflow-hidden">
+    <OtpUnlinkGoogle
+      :show="showUnlinkGoogleModal"
+      @close="showUnlinkGoogleModal = false"
+    />
+
     <ChangePw
       :show="showChangePasswordModal"
       @close="showChangePasswordModal = false"
@@ -467,7 +485,7 @@ const showChangePasswordModal = ref(false);
           </div>
           <ClientOnly>
             <div
-              class="mb-6 flex flex-col  gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3"
+              class="mb-6 flex flex-col gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3"
             >
               <p>Penautan Akun Google</p>
               <div>
@@ -488,7 +506,7 @@ const showChangePasswordModal = ref(false);
                 </button>
                 <button
                   v-else
-                  @click="unlinkGoogle"
+                  @click="processUnlinkGoogle"
                   class="ms-4 inline-block rounded-lg bg-rose-500 px-3 py-1 text-xs text-white hover:bg-rose-600"
                 >
                   Lepas
