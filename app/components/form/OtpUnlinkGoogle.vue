@@ -47,7 +47,7 @@ const closeAndReset = async (bool = false) => {
   <MyModal id="unlink-google-modal" :show="props.show" @close="closeAndReset">
     <div class="p-6">
       <form @submit.prevent="saveOtp">
-        <h2 class="text-lg font-medium text-white">Masukkan OTP</h2>
+        <h2 class="text-lg font-medium text-white">Masukkan OTP yang dikirimkan ke email kamu</h2>
 
         <div class="mt-6">
           <label class="mb-1 block text-xs text-slate-300">OTP</label>

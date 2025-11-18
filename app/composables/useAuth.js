@@ -158,6 +158,7 @@ export const useAuth = () => {
       if (nuxtApp.$api) {
         const response = await nuxtApp.$api.post("/api/auth/google/send-unlink-email");
         useSwal().close();
+        useSwal().showSuccess("OTP telah dikirim ke email Anda.");
         return response;
       }
     } catch (error) {
