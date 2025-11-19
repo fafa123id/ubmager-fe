@@ -156,9 +156,7 @@ export const useAuth = () => {
       }
       useSwal().showLoading("Memproses...", "Mohon tunggu sebentar.");
       if (nuxtApp.$api) {
-        const response = await nuxtApp.$api.post(
-          "/api/auth/google/send-unlink-email"
-        );
+        const response = await nuxtApp.$api.post("/api/auth/google/send-unlink-email");
         useSwal().close();
         useSwal().showSuccess("OTP telah dikirim ke email Anda.");
         return response;
@@ -178,9 +176,7 @@ export const useAuth = () => {
         return useSwal().showSuccess("Akun Google telah dilepas.");
       }
     } catch (error) {
-      useSwal().showError(
-        error.response?.data?.message || "Gagal melepaskan akun Google."
-      );
+      return Promise.reject(error);
     }
   };
   const resetPassword = async ({
