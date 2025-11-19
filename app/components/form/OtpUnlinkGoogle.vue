@@ -25,11 +25,11 @@ const saveOtp = async () => {
     emit("close");
     otp.value = "";
   } catch (e) {
-    useSwal().close();
-    return useSwal().showError(
-      error.response?.data?.message || "Gagal melepaskan akun Google."
+    useSwal().showError(
+      e.response?.data?.message || "Gagal melepaskan akun Google."
     );
   } finally {
+    useSwal().close();
     loading.value = false;
   }
 };
