@@ -5,7 +5,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   const { _clearAuth, token } = useAuth();
 
   const api = axios.create({
-    baseURL: "https://api.ubmager.bornhub.cloud",
+    baseURL: useNuxtApp().$config.public.apiBaseUrl,
     headers: {
       Accept: "application/json",
     },
