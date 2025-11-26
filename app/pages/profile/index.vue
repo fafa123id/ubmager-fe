@@ -39,7 +39,14 @@ const verificationEmail = async () => {
   }
 };
 const { $api } = useNuxtApp();
-
+const fetching = () =>{
+  loading.value = true;
+  useSwal().showLoading();
+  fetchUser().finally(() => {
+    loading.value = false;
+    useSwal().close();
+  });
+}
 /* ----- State ----- */
 const loading = ref(true);
 const saving = ref(false);
@@ -130,6 +137,8 @@ const onAvatarPick = async (e) => {
     const formData = new FormData();
     formData.append("image", file);
     formData.append("_method", "PUT");
+    loading.value = true;
+    useSwal().showLoading();
     const res = await $api.post(`/api/user/${userObject.value.id}`, formData);
     useSwal().showSuccess("Avatar diperbarui.");
     fetchUser();
@@ -137,6 +146,8 @@ const onAvatarPick = async (e) => {
     useSwal().showError(
       err?.response?.data?.message || "Gagal mengunggah avatar."
     );
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -637,7 +648,7 @@ const showUnlinkGoogleModal = ref(false);
 
                 <button
                   type="button"
-                  @click="fetchUser"
+                  @click="fetching"
                   :disabled="loading"
                   class="cursor-pointer inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 disabled:cursor-not-allowed disabled:opacity-60"
                   title="Muat ulang data dari server"
