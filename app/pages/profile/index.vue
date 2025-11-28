@@ -39,14 +39,14 @@ const verificationEmail = async () => {
   }
 };
 const { $api } = useNuxtApp();
-const fetching = () =>{
+const fetching = () => {
   loading.value = true;
   useSwal().showLoading();
   fetchUser().finally(() => {
     loading.value = false;
     useSwal().close();
   });
-}
+};
 /* ----- State ----- */
 const loading = ref(true);
 const saving = ref(false);
@@ -572,9 +572,23 @@ const showUnlinkGoogleModal = ref(false);
 
               <div class="sm:col-span-2">
                 <label class="mb-1 block text-xs text-slate-300">Email</label>
-                <h2 class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-indigo-400">
-                  {{ userObject.email || "—" }}
-                </h2>
+                <div class="flex items-center gap-2">
+                  <h2
+                    class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-indigo-400"
+                  >
+                    {{ userObject.email || "—" }}
+                  </h2>
+                  <button
+                    type="button"
+                    @click=""
+                    :disabled="loading"
+                    class="cursor-pointer inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 disabled:cursor-not-allowed disabled:opacity-60"
+                    title="Ganti email"
+                  >
+                    Ganti Email
+                  </button>
+                </div>
+
                 <p class="mt-1 text-xs text-slate-400">
                   <span v-if="!userObject.email">
                     Email Anda belum diset, Set Sekarang!
