@@ -582,13 +582,12 @@ const showUnlinkGoogleModal = ref(false);
                     type="button"
                     @click=""
                     :disabled="loading"
-                    class="w-32 cursor-pointer inline-block items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 disabled:cursor-not-allowed disabled:opacity-60"
-                    title="Ganti email"
+                    class="max-[650px]:w-fit w-38 cursor-pointer inline-block items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 disabled:cursor-not-allowed disabled:opacity-60"
+                    title="{{userObject.email? 'Ganti email' : 'Set email'}}"
                   >
-                    Ganti Email
+                    {{userObject.email? 'Ganti Email' : 'Set Email'}}
                   </button>
                 </div>
-
                 <p class="mt-1 text-xs text-slate-400">
                   <span v-if="!userObject.email">
                     Email Anda belum diset, Set Sekarang!
