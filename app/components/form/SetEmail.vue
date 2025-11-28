@@ -31,6 +31,7 @@ const saveChangeEmail = async () => {
       { withCredentials: true }
     );
     useSwal().showSuccess("Email berhasil diset.");
+    useAuth().fetchUser();
     closeAndReset();
   } catch (e) {
     if (e?.response?.status === 422 && e?.response?.data?.errors) {
