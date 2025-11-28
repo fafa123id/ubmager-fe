@@ -11,7 +11,7 @@ export default defineNuxtConfig({
   vite: {
     plugins: [tailwindcss()],
     server: {
-      allowedHosts: [".bornhub.cloud"],
+      allowedHosts: [".ubmager.shop", ".bornhub.cloud"],
     },
   },
   build: {
