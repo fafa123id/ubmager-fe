@@ -572,14 +572,9 @@ const showUnlinkGoogleModal = ref(false);
 
               <div class="sm:col-span-2">
                 <label class="mb-1 block text-xs text-slate-300">Email</label>
-                <input
-                  v-model="userForm.email"
-                  type="email"
-                  class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-indigo-400 disabled:opacity-60"
-                  :disabled="loading"
-                  placeholder="nama@kampus.ac.id"
-                  autocomplete="email"
-                />
+                <h2 class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-indigo-400">
+                  {{ userObject.email || "—" }}
+                </h2>
                 <p class="mt-1 text-xs text-slate-400">
                   <span v-if="!userObject.email">
                     Email Anda belum diset, Set Sekarang!
