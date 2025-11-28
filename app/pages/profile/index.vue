@@ -236,10 +236,38 @@ const processUnlinkGoogle = async () => {
     );
   }
 };
+const beginChangeEmail = async () => {
+  const confirmed = await useSwal().confirmAction(
+    "Konfirmasi Ubah Email",
+    "Untuk mengubah email, Anda akan menerima OTP di email lama Anda sebagai konfirmasi."
+  );
+  if (!confirmed.isConfirmed) return;
+  try {
+    useSwal().showLoading();
+    await useAuth().sendChangeEmailOtp();
+    useSwal().showSuccess("OTP untuk mengubah email telah dikirim.");
+    showChangeEmailModal.value = true;
+  } catch (e) {
+    useSwal().close();
+    useSwal().showError(
+      e?.response?.data?.message || "Gagal mengirim email konfirmasi."
+    );
+  }
+};
 const showUnlinkGoogleModal = ref(false);
+const showSetEmailModal = ref(false);
+const showChangeEmailModal = ref(false);
 </script>
 <template>
   <div class="relative min-h-dvh text-slate-100 overflow-hidden">
+    <FormSetEmail
+      :show="showSetEmailModal"
+      @close="showSetEmailModal = false"
+    />
+    <FormChangeEmail
+      :show="showChangeEmailModal"
+      @close="showChangeEmailModal = false"
+    />
     <OtpUnlinkGoogle
       :show="showUnlinkGoogleModal"
       @close="showUnlinkGoogleModal = false"
@@ -580,7 +608,7 @@ const showUnlinkGoogleModal = ref(false);
                   </h2>
                   <button
                     type="button"
-                    @click=""
+                    @click="userObject.email? beginChangeEmail() : showSetEmailModal = true"
                     :disabled="loading"
                     class="max-[650px]:w-fit w-38 cursor-pointer inline-block items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 disabled:cursor-not-allowed disabled:opacity-60"
                     title="{{userObject.email? 'Ganti email' : 'Set email'}}"
