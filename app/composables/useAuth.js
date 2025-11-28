@@ -46,7 +46,24 @@ export const useAuth = () => {
       }
     }
   };
-
+  const changeEmail = async ({ otp, email }) => {
+    try {
+      if (nuxtApp.$api) {
+        return await nuxtApp.$api.post("/api/change-email", { otp, email });
+      }
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  };
+  const sendChangeEmailOtp = async () => {
+    try {
+      if (nuxtApp.$api) {
+        return await nuxtApp.$api.post("/api/change-email/send");
+      }
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  };
   const login = async ({ emailor_username, password }) => {
     try {
       const response = await nuxtApp.$api.post("/api/login", {
@@ -156,7 +173,9 @@ export const useAuth = () => {
       }
       useSwal().showLoading("Memproses...", "Mohon tunggu sebentar.");
       if (nuxtApp.$api) {
-        const response = await nuxtApp.$api.post("/api/auth/google/send-unlink-email");
+        const response = await nuxtApp.$api.post(
+          "/api/auth/google/send-unlink-email"
+        );
         useSwal().close();
         useSwal().showSuccess("OTP telah dikirim ke email Anda.");
         return response;
@@ -215,5 +234,7 @@ export const useAuth = () => {
     // loginWithToken,
     isLoggedIn,
     setIsLoggedIn,
+    changeEmail,
+    sendChangeEmailOtp,
   };
 };
