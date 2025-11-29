@@ -67,7 +67,7 @@ const closeAndReset = () => {
       <form @submit.prevent="saveChangePassword">
         <h2 class="text-lg font-medium text-white">Masukkan Password Baru</h2>
 
-        <div class="mt-6">
+        <div class="mt-6 space-y-4">
           <label class="mb-1 block text-xs text-slate-300">Password Lama</label>
           <input
             v-model="oldPasswordInput"
