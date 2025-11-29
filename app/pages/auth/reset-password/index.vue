@@ -71,8 +71,9 @@ const submit = async () => {
       errorMsg.value = e.response.data.errors;
     } else {
       useSwal().showError(
-        e?.response?.data?.message || "Gagal mereset kata sandi."
+        "Gagal mereset kata sandi."
       );
+      navigateTo("/auth/forgot-password");
     }
   } finally {
     loading.value = false;
