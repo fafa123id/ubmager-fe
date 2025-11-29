@@ -210,11 +210,11 @@ const closeAndReset = () => {
 };
 const savePassword = async () => {
   if (
-    passwordInput.value.length < 6 ||
+    passwordInput.value.length < 8 ||
     passwordInput.value !== passwordConfirmationInput.value
   ) {
     useSwal().showError(
-      "Password harus minimal 6 karakter dan sesuai dengan konfirmasi."
+      "Password harus minimal 8 karakter dan sesuai dengan konfirmasi."
     );
     return;
   }
