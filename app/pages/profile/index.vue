@@ -196,6 +196,8 @@ const closeAndReset = () => {
   showCreatePasswordModal.value = false;
   passwordInput.value = "";
   passwordConfirmationInput.value = "";
+  showSetPassword.value = false;
+  showSetPasswordConfirmation.value = false;
 };
 const savePassword = async () => {
   if (
