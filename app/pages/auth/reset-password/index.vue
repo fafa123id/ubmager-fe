@@ -71,7 +71,7 @@ const submit = async () => {
       errorMsg.value = e.response.data.errors;
     } else {
       useSwal().showError(
-        "Gagal mereset kata sandi."
+        "Token tidak valid atau tautan telah kedaluwarsa. Silakan minta tautan baru."
       );
       navigateTo("/auth/forgot-password");
     }
