@@ -47,7 +47,7 @@ export default defineNuxtPlugin((nuxtApp) => {
             refreshError
           );
           _clearAuth();
-          navigateTo("/auth/login?error=Session expired. Please log in again.");
+          navigateTo("/");
           return Promise.reject(refreshError);
         }
       }
