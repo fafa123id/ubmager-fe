@@ -188,7 +188,16 @@ const saveProfile = async () => {
   }
 };
 
-const changePassword = () => (showChangePasswordModal.value = true);
+const changePassword = () => {
+  if (userObject.value.passwordIsSet === false) {
+    useSwal().showError(
+      "Anda belum mengatur kata sandi. Silakan atur kata sandi terlebih dahulu."
+    );
+    showCreatePasswordModal.value = true;
+    return;
+  }
+  showChangePasswordModal.value = true;
+};
 const passwordInput = ref("");
 const passwordConfirmationInput = ref("");
 const showCreatePasswordModal = ref(false);
