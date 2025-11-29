@@ -68,56 +68,66 @@ const closeAndReset = () => {
         <h2 class="text-lg font-medium text-white">Masukkan Password Baru</h2>
 
         <div class="mt-6 space-y-4">
-          <label class="mb-1 block text-xs text-slate-300">Password Lama</label>
-          <input
-            v-model="oldPasswordInput"
-            type="password"
-            class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
-            :disabled="loading"
-            placeholder="Password Lama"
-            @focus="clearError('old_password')"
-            autocomplete="current-old-password"
-          />
-          <p
-            v-if="errorMsg?.old_password"
-            class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200 mt-2"
-          >
-            {{ errorMsg.old_password[0] }}
-          </p>
-          <label class="mb-1 block text-xs text-slate-300">Password</label>
-          <input
-            v-model="passwordInput"
-            type="password"
-            class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
-            :disabled="loading"
-            placeholder="Password"
-            @focus="clearError('password')"
-            autocomplete="current-password"
-          />
-          <p
-            v-if="errorMsg?.password"
-            class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200 mt-2"
-          >
-            {{ errorMsg.password[0] }}
-          </p>
-          <label class="mb-1 block text-xs text-slate-300"
-            >Password Confirmation</label
-          >
-          <input
-            v-model="passwordConfirmationInput"
-            type="password"
-            class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
-            :disabled="loading"
-            placeholder="Password Confirmation"
-            @focus="clearError('password_confirmation')"
-            autocomplete="current-password_confirmation"
-          />
-          <p
-            v-if="errorMsg?.password_confirmation"
-            class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200 mt-2"
-          >
-            {{ errorMsg.password_confirmation[0] }}
-          </p>
+          <div>
+            <label class="mb-1 block text-xs text-slate-300"
+              >Password Lama</label
+            >
+            <input
+              v-model="oldPasswordInput"
+              type="password"
+              class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
+              :disabled="loading"
+              placeholder="Password Lama"
+              @focus="clearError('old_password')"
+              autocomplete="current-old-password"
+            />
+            <p
+              v-if="errorMsg?.old_password"
+              class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200 mt-2"
+            >
+              {{ errorMsg.old_password[0] }}
+            </p>
+          </div>
+
+          <div>
+            <label class="mb-1 block text-xs text-slate-300">Password</label>
+            <input
+              v-model="passwordInput"
+              type="password"
+              class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
+              :disabled="loading"
+              placeholder="Password"
+              @focus="clearError('password')"
+              autocomplete="current-password"
+            />
+            <p
+              v-if="errorMsg?.password"
+              class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200 mt-2"
+            >
+              {{ errorMsg.password[0] }}
+            </p>
+          </div>
+
+          <div>
+            <label class="mb-1 block text-xs text-slate-300"
+              >Password Confirmation</label
+            >
+            <input
+              v-model="passwordConfirmationInput"
+              type="password"
+              class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
+              :disabled="loading"
+              placeholder="Password Confirmation"
+              @focus="clearError('password_confirmation')"
+              autocomplete="current-password_confirmation"
+            />
+            <p
+              v-if="errorMsg?.password_confirmation"
+              class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200 mt-2"
+            >
+              {{ errorMsg.password_confirmation[0] }}
+            </p>
+          </div>
         </div>
         <div class="mt-6 flex justify-end gap-3 rounded-xl">
           <SecondaryButton @click="closeAndReset"> Cancel </SecondaryButton>
