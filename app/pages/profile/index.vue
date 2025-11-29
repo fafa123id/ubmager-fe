@@ -257,6 +257,14 @@ const beginChangeEmail = async () => {
 const showUnlinkGoogleModal = ref(false);
 const showSetEmailModal = ref(false);
 const showChangeEmailModal = ref(false);
+const showSetPassword = ref(false);
+const toogleSetPassword = () => {
+  showSetPassword.value = !showSetPassword.value;
+};
+const showSetPasswordConfirmation = ref(false);
+const toogleSetPasswordConfirmation = () => {
+  showSetPasswordConfirmation.value = !showSetPasswordConfirmation.value;
+};
 </script>
 <template>
   <div class="relative min-h-dvh text-slate-100 overflow-hidden">
@@ -285,27 +293,43 @@ const showChangeEmailModal = ref(false);
       <div class="p-6">
         <form @submit.prevent="savePassword">
           <h2 class="text-lg font-medium text-white">Masukkan Password Baru</h2>
-          <div class="mt-6">
+          <div class="mt-6 space-y-4">
             <label class="mb-1 block text-xs text-slate-300">Password</label>
-            <input
-              v-model="passwordInput"
-              type="password"
-              class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
-              :disabled="loading"
-              placeholder="Password"
-              autocomplete="current-password"
-            />
+            <div class="relative">
+              <input
+                v-model="passwordInput"
+                :type="showSetPassword ? 'text' : 'password'"
+                class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
+                :disabled="loading"
+                placeholder="Password"
+                autocomplete="new-password"
+              />
+              <ShowPassButton
+                :id="'create-password-show-btn'"
+                :showPass="showSetPassword"
+                @toggleShow="toogleSetPassword"
+                id="create-password-show-btn"
+              />
+            </div>
+
             <label class="mb-1 block text-xs text-slate-300"
               >Password Confirmation</label
             >
-            <input
-              v-model="passwordConfirmationInput"
-              type="password"
-              class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
-              :disabled="loading"
-              placeholder="Password Confirmation"
-              autocomplete="current-password_confirmation"
-            />
+            <div class="relative">
+              <input
+                v-model="passwordConfirmationInput"
+                :type="showSetPasswordConfirmation ? 'text' : 'password'"
+                class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-400 outline-none ring-1 ring-transparent focus:ring-sky-400 disabled:opacity-60"
+                :disabled="loading"
+                placeholder="Password Confirmation"
+                autocomplete="current-password_confirmation"
+              />
+              <ShowPassButton
+                :id="'create-password-confirmation-show-btn'"
+                :showPass="showSetPasswordConfirmation"
+                @toggleShow="toogleSetPasswordConfirmation"
+              />
+            </div>
           </div>
           <div class="mt-6 flex justify-end">
             <SecondaryButton @click="closeAndReset"> Cancel </SecondaryButton>
@@ -608,12 +632,16 @@ const showChangeEmailModal = ref(false);
                   </h2>
                   <button
                     type="button"
-                    @click="userObject.email? beginChangeEmail() : showSetEmailModal = true"
+                    @click="
+                      userObject.email
+                        ? beginChangeEmail()
+                        : (showSetEmailModal = true)
+                    "
                     :disabled="loading"
                     class="max-[650px]:w-fit w-38 cursor-pointer inline-block items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-100 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 disabled:cursor-not-allowed disabled:opacity-60"
                     title="{{userObject.email? 'Ganti email' : 'Set email'}}"
                   >
-                    {{userObject.email? 'Ganti Email' : 'Set Email'}}
+                    {{ userObject.email ? "Ganti Email" : "Set Email" }}
                   </button>
                 </div>
                 <p class="mt-1 text-xs text-slate-400">
