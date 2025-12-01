@@ -47,7 +47,7 @@ export default defineNuxtPlugin((nuxtApp) => {
             refreshError
           );
           _clearAuth();
-          if (useRoute().path !== "/auth/*") {
+          if (useRoute().path !== "/auth/*" || useRoute().path !== "/auth/login") {
             navigateTo("/");
           }
           return Promise.reject(refreshError);
