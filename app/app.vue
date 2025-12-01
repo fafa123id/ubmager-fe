@@ -12,7 +12,7 @@ const router = useRouter();
 const route = useRoute();
 
 onMounted(() => {
-  const { error, success, need_refresh } = route.query;
+  const { error, success, need_refresh, info } = route.query;
 
   if (error) {
     useSwal().showError(error);
@@ -25,8 +25,11 @@ onMounted(() => {
   if (need_refresh) {
     useAuth().fetchUser();
   }
+  if (info) {
+    useSwal().showInfo("Attention", info);
+  }
 
-  if (error || success || need_refresh) {
+  if (error || success || need_refresh || info) {
     router.replace({ query: {} });
   }
 });
