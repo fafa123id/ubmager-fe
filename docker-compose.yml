@@ -8,12 +8,12 @@ services:
     env_file:
       - ./.env
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - NITRO_PORT=3000
       - NITRO_HOST=0.0.0.0
-      - VIRTUAL_HOST=ubmager.shop
+      - VIRTUAL_HOST=dev.ubmager.shop
       - VIRTUAL_PORT=3000
-      - LETSENCRYPT_HOST=ubmager.shop
+      - LETSENCRYPT_HOST=dev.ubmager.shop
       - LETSENCRYPT_EMAIL=ahmadfauzanroziqin@gmail.com
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/"]
