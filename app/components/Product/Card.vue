@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 
 const props = defineProps({
   product: {
@@ -13,8 +13,25 @@ const props = defineProps({
 
 const emit = defineEmits(['click', 'add-to-cart', 'view-details'])
 
-// Computed properties for formatting and display
-const primaryImage = computed(() => props.product.image1)
+// State for image rotation
+const currentImageIndex = ref(0)
+let rotationInterval = null
+
+// Get all available images
+const productImages = computed(() => {
+  const images = []
+  if (props.product.image1) images.push(props.product.image1)
+  if (props.product.image2) images.push(props.product.image2)
+  if (props.product.image3) images.push(props.product.image3)
+  return images
+})
+
+// Current image to display
+const currentImage = computed(() => {
+  return productImages.value[currentImageIndex.value] || props.product.image1
+})
+
+// Formatted price
 const formattedPrice = computed(() => {
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
@@ -23,21 +40,50 @@ const formattedPrice = computed(() => {
   }).format(props.product.price)
 })
 
+// Rating percentage
 const ratingPercentage = computed(() => {
   return props.product.rating ? (props.product.rating / 5) * 100 : 0
 })
 
+// Check availability
 const isAvailable = computed(() => props.product.quantity > 0)
 
+// Start auto-rotation if there are multiple images
+const startImageRotation = () => {
+  if (productImages.value.length > 1) {
+    rotationInterval = setInterval(() => {
+      currentImageIndex.value = (currentImageIndex.value + 1) % productImages.value.length
+    }, 3000) // Change every 3 seconds
+  }
+}
+
+// Stop auto-rotation
+const stopImageRotation = () => {
+  if (rotationInterval) {
+    clearInterval(rotationInterval)
+    rotationInterval = null
+  }
+}
+
+// Handle view details
 const handleViewDetails = () => {
   emit('view-details', props.product.id)
 }
 
+// Lifecycle hooks
+onMounted(() => {
+  startImageRotation()
+})
+
+onBeforeUnmount(() => {
+  stopImageRotation()
+})
 </script>
 
 <template>
   <div
     class="reveal group relative rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/60 to-slate-800/40 p-4 backdrop-blur-xl transition-all duration-300 hover:border-white/20 hover:shadow-xl hover:shadow-sky-500/10"
+    :class="isAvailable ? '' : 'opacity-75'"
     @click="handleViewDetails"
   >
     <!-- Status Badge -->
@@ -56,15 +102,20 @@ const handleViewDetails = () => {
       </span>
     </div>
 
-    <!-- Image Container -->
+    <!-- Image Container with Smooth Animation & Auto Rotation -->
     <div class="relative mb-4 overflow-hidden rounded-xl bg-slate-800">
-      <img
-        v-if="primaryImage"
-        :src="primaryImage"
-        :alt="product.name"
-        class="h-48 w-full object-cover transition-transform duration-300 group-hover:scale-105"
-      />
-      <div v-else class="h-48 w-full bg-gradient-to-br from-slate-700 to-slate-800"></div>
+      <!-- Image with fade transition -->
+      <Transition name="image-fade" mode="out-in">
+        <img
+          :key="currentImageIndex"
+          :src="currentImage"
+          :alt="product.name"
+          class="h-48 w-full object-cover transition-all duration-500 ease-out group-hover:scale-110 group-hover:brightness-110"
+        />
+      </Transition>
+
+      <!-- Fallback gradient if no image -->
+      <div v-if="!currentImage" class="h-48 w-full bg-gradient-to-br from-slate-700 to-slate-800"></div>
 
       <!-- Category Tag -->
       <div
@@ -72,6 +123,22 @@ const handleViewDetails = () => {
         class="absolute bottom-2 left-2 rounded-lg bg-black/40 px-2 py-1 text-[11px] font-semibold text-sky-300 backdrop-blur-sm ring-1 ring-sky-400/20"
       >
         {{ product.type }}
+      </div>
+
+      <!-- Image Indicators (dots) - only show if multiple images -->
+      <div v-if="productImages.length > 1" class="bg-black p-2 rounded-3xl absolute bottom-2 right-2 flex gap-1">
+        <button
+          v-for="(_, idx) in productImages"
+          :key="idx"
+          @click.stop="currentImageIndex = idx"
+          class="h-2 w-2 rounded-full transition-all duration-300"
+          :class="
+            idx === currentImageIndex
+              ? 'bg-white/80 w-4'
+              : 'bg-white/40 hover:bg-white/60'
+          "
+          :aria-label="`Show image ${idx + 1}`"
+        />
       </div>
     </div>
 
@@ -129,7 +196,7 @@ const handleViewDetails = () => {
           </span>
         </div>
 
-        <!-- Action Button -->
+        <!-- Status Badge -->
         <div
           v-if="isAvailable"
           class="rounded-lg bg-gradient-to-r from-sky-500/90 to-indigo-600/90 px-3 py-2 text-xs font-semibold text-white ring-1 ring-white/20"
@@ -152,3 +219,15 @@ const handleViewDetails = () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.image-fade-enter-active,
+.image-fade-leave-active {
+  transition: opacity 0.4s ease;
+}
+
+.image-fade-enter-from,
+.image-fade-leave-to {
+  opacity: 0;
+}
+</style>
