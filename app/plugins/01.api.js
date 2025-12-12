@@ -52,7 +52,9 @@ export default defineNuxtPlugin((nuxtApp) => {
           const isAuthRoute = route.path.startsWith("/auth");
 
           if (!isAuthRoute) {
-            navigateTo("/", { replace: true });
+            if (route.meta.middleware === "auth") {
+              navigateTo("/", { replace: true });
+            }
           }
 
           return Promise.reject(refreshError);
