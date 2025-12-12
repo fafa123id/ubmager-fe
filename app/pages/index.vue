@@ -50,7 +50,7 @@ const beMitra = async () => {
 
           <div class="mt-8 flex flex-wrap gap-3">
             <NuxtLink
-              to="/jelajah"
+              to="/produk"
               class="cursor-pointer inline-flex items-center gap-2 rounded-xl bg-white/10 px-5 py-3 text-sm font-semibold text-white ring-1 ring-white/15 transition-colors hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
             >
               <svg viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor"><path d="M3 4h18v2H3V4Zm0 6h18v2H3v-2Zm0 6h18v2H3v-2Z"/></svg>
@@ -148,7 +148,7 @@ const beMitra = async () => {
           <h2 class="text-2xl font-bold tracking-tight">Kategori Populer</h2>
           <p class="mt-1 text-slate-300">Eksplor produk & jasa favorit di UBMager.</p>
         </div>
-        <NuxtLink to="/jelajah" class="cursor-pointer rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400">
+        <NuxtLink to="/produk" class="cursor-pointer rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400">
           Lihat Semua
         </NuxtLink>
       </div>
