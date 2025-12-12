@@ -80,6 +80,19 @@ export const useProductFilter = () => {
   }
   
   /**
+   * Validasi selected categories dengan available categories
+   * Hapus kategori yang tidak tersedia dalam type yang dipilih
+   */
+  const validateSelectedCategories = () => {
+    const availableCats = new Set(categories.value)
+    
+    // Filter selectedCategories, hanya keep yang ada di availableCats
+    selectedCategories.value = selectedCategories.value.filter((cat) =>
+      availableCats.has(cat)
+    )
+  }
+  
+  /**
    * Toggle type selection
    * @param {string} type - Type to toggle
    */
@@ -96,6 +109,9 @@ export const useProductFilter = () => {
     
     // Fetch categories berdasarkan selected types
     await fetchCategories()
+    
+    // Validasi: hapus selected categories yang tidak ada di type baru
+    validateSelectedCategories()
   }
   
   /**
@@ -104,6 +120,7 @@ export const useProductFilter = () => {
   const clearSelectedTypes = async () => {
     selectedTypes.value = []
     await fetchCategories()
+    validateSelectedCategories()
   }
   
   /**
@@ -148,7 +165,7 @@ export const useProductFilter = () => {
    * Get query params untuk API
    * Default: type=all, category=all
    * Jika ada selected: type=type1,type2 atau category=cat1,cat2
-   * Jika ada search: search=query
+   * Jika ada search: query=search_term
    * @returns {Object} Filter params
    */
   const getFilterParams = () => {
@@ -167,7 +184,7 @@ export const useProductFilter = () => {
       params.category = selectedCategories.value.join(',')
     }
     
-    // Set search param jika ada
+    // Set query param jika ada search
     if (searchQuery.value.length > 0) {
       params.query = searchQuery.value
     }
@@ -224,5 +241,6 @@ export const useProductFilter = () => {
     getFilterParams,
     resetFilters,
     initialize,
+    validateSelectedCategories,
   }
 }

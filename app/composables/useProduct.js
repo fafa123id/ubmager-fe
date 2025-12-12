@@ -1,3 +1,4 @@
+
 export const useProduct = () => {
   const nuxtApp = useNuxtApp()
   
@@ -118,6 +119,21 @@ export const useProduct = () => {
       return Promise.reject(err)
     }
   }
+
+  /**
+   * Get rating count for a product
+   * @param {number|string} id - Product ID
+   * @returns {Promise<number>} Rating count
+   */
+  const getRatingCountByProductId = async (id) => {
+    try {
+      const response = await nuxtApp.$api.get(`/api/rating/count/${id}`)
+      return response.data.data?.count || 0
+    } catch (err) {
+      console.error('Error fetching rating count:', err)
+      return 0
+    }
+  }
   
   /**
    * Fetch detail product by ID
@@ -171,6 +187,7 @@ export const useProduct = () => {
     perPage,
     
     // Methods
+    getRatingCountByProductId,
     fetchMaxPage,
     fetchProducts,
     initialize,
