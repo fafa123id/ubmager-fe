@@ -31,8 +31,8 @@ const refetchWithFilters = async () => {
     
     // Fetch ulang max page dan products secara parallel
     await Promise.all([
-      fetchMaxPage(6, filterParams),
-      fetchProducts(1, 6, filterParams),
+      fetchMaxPage(12, filterParams),
+      fetchProducts(1, 12, filterParams),
     ])
     
 
@@ -45,7 +45,7 @@ const refetchWithFilters = async () => {
 const handlePageChange = async (newPage) => {
   try {
     const filterParams = getFilterParams()
-    await fetchProducts(newPage, 6, filterParams)
+    await fetchProducts(newPage, 12, filterParams)
     
 
   } catch (err) {
@@ -83,7 +83,7 @@ const handleAddToCart = (productId) => {
 
 onMounted(async () => {
   try {
-    await initialize(1, 6)
+    await initialize(1, 12)
   } catch (err) {
     console.error('Failed to initialize products:', err)
   }
@@ -187,7 +187,7 @@ onMounted(async () => {
           <!-- Pagination -->
           <div v-if="products.length > 0" class="flex justify-center pt-4">
             <ProductPagination
-              :perPage="6"
+              :perPage="12"
               :maxPage="maxPage"
               :initialPage="currentPage"
               @page-changed="handlePageChange"
