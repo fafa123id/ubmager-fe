@@ -39,11 +39,13 @@ const ratingPercentage = computed(() => {
 
 const isAvailable = computed(() => props.product.quantity > 0);
 
-
 const changeImage = (idx) => {
-  currentImageIndex.value = idx;
+  let index = parseInt(idx);
+  if (index < 0 ) index = 0;
+  if (index >= productImages.value.length) index = productImages.value.length -1;
+  currentImageIndex.value = index;
 };
-
+const { onTouchStart, onTouchMove, onTouchEnd, onClickGuard } = useSwipe();
 </script>
 
 <template>
@@ -71,6 +73,10 @@ const changeImage = (idx) => {
       class="reveal group/card relative rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/60 to-slate-800/40 p-4 backdrop-blur-xl transition-all duration-300 hover:border-white/20 hover:shadow-xl hover:shadow-sky-500/10 block"
       :class="isAvailable ? '' : 'opacity-75'"
       :to="`/produk/${product.id}`"
+      @touchstart.passive="onTouchStart"
+      @touchmove.passive="onTouchMove"
+      @touchend="onTouchEnd(() => changeImage(currentImageIndex - 1), () => changeImage(currentImageIndex + 1))"
+      @click="onClickGuard"
     >
       <!-- Status Badge -->
       <div class="absolute top-3 right-3 z-10 flex gap-2">
