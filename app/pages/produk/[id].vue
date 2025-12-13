@@ -9,6 +9,7 @@ const {
   getRatingCountByProductId,
   getIsFavoriteByProductId,
 } = useProduct();
+const isHoverFavorite = ref(false);
 const { postFavorite, deleteFavorite } = useFavorites();
 const product = ref(null);
 const selectedImage = ref(0);
@@ -67,6 +68,7 @@ const proccessDeleteFavorite = async (productId) => {
     await deleteFavorite(productId);
     useSwal().showSuccess("Produk berhasil dihapus dari favorit.");
     is_favorited.value = false;
+    isHoverFavorite.value = false;
   } catch (err) {
     console.error("Failed to remove product from favorites:", err);
     useSwal().showError("Gagal menghapus produk dari favorit.");
@@ -580,11 +582,22 @@ const addToFavorite = async (productId) => {
             <button
               v-else-if="useAuth().user.value && is_favorited"
               @click="proccessDeleteFavorite(product.id)"
+              @mouseenter="isHoverFavorite = true"
+              @mouseleave="isHoverFavorite = false"
               :disabled="loadingProcess"
-              :class="loadingProcess ? 'opacity-50 cursor-not-allowed' : ''"
-              class="rounded-lg border border-sky-400/50 bg-sky-500/20 px-6 py-3 text-sm font-semibold text-sky-300"
+              :class="[
+                loadingProcess ? 'opacity-50 cursor-not-allowed' : '',
+                isHoverFavorite
+                  ? 'border-red-400 bg-red-500/20 text-red-300'
+                  : 'border-sky-400/50 bg-sky-500/20 text-sky-300',
+              ]"
+              class="rounded-lg px-6 py-3 text-sm font-semibold transition-all duration-200"
             >
-              Produk telah ada di Favorit
+              {{
+                isHoverFavorite
+                  ? "Hapus produk dari Favorit"
+                  : "Produk telah ada di Favorit"
+              }}
             </button>
             <NuxtLink
               v-else
