@@ -146,7 +146,7 @@ const handleAddToCart = (productId) => {
 
 onMounted(async () => {
   try {
-    if (useAuth().user.value === null) {
+    if (useAuth().isLoggedIn.value === false) {
       return;
     }
     await initializeFavorites(props.perPage, "");
