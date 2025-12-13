@@ -1,7 +1,7 @@
 <!-- File: g:\FIle Coding\ubmager-fe\app\components\Product\Favorites.vue -->
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, watch } from "vue";
 import { useFavorites } from "@/composables/useFavorites";
 
 const props = defineProps({
@@ -143,7 +143,16 @@ const handleViewProduct = (productId) => {
 const handleAddToCart = (productId) => {
   emit("add-to-cart", productId);
 };
-
+watch (
+  () => useAuth().isLoggedIn.value,
+  async () => {
+    if (useAuth().isLoggedIn.value === false) {
+      favorites.value = [];
+      return;
+    }
+  },
+  { immediate: true }
+);
 onMounted(async () => {
   try {
     if (useAuth().isLoggedIn.value === false) {
