@@ -86,9 +86,10 @@ onMounted(async () => {
       goBack();
       return;
     }
-    const fav = await getIsFavoriteByProductId(productId);
-    console.log("Is Favorited:", fav);
-    is_favorited.value = fav;
+    if (!useAuth().isLoggedIn.value === false) {
+      const fav = await getIsFavoriteByProductId(productId);
+      is_favorited.value = fav;
+    }
     loadingProcess.value = false;
     ratingCount.value = await getRatingCountByProductId(product.value.id);
     sellerRating.value = await useProductRating().getSellerRating(
