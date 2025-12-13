@@ -2,7 +2,8 @@
 import { ref, onMounted, computed } from "vue";
 
 const route = useRoute();
-const { getProductById, loading, error, getRatingCountByProductId } = useProduct();
+const { getProductById, loading, error, getRatingCountByProductId } =
+  useProduct();
 const product = ref(null);
 const selectedImage = ref(0);
 const prevImage = ref(0);
@@ -43,7 +44,7 @@ const selectImage = (idx) => {
   prevImage.value = selectedImage.value;
   selectedImage.value = idx;
 };
-
+const sellerRating = ref(null);
 const handleAddToCart = () => {
   if (!isAvailable.value) {
     useSwal().showInfo("Maaf, produk ini sedang habis.");
@@ -55,7 +56,7 @@ const handleAddToCart = () => {
 const goBack = () => {
   navigateTo("/produk");
 };
-const ratingCount = ref(0);
+const ratingCount = ref(null);
 onMounted(async () => {
   try {
     const productId = route.params.id;
@@ -68,9 +69,11 @@ onMounted(async () => {
       goBack();
       return;
     }
-    ratingCount.value = await getRatingCountByProductId(
-      product.value.id
+    ratingCount.value = await getRatingCountByProductId(product.value.id);
+    sellerRating.value = await useProductRating().getSellerRating(
+      product.value.owner.id
     );
+    console.log("Seller Rating:", sellerRating.value);
   } catch (err) {
     console.error("Failed to fetch product detail:", err);
     useSwal().showError("Gagal memuat detail produk.");
@@ -138,9 +141,7 @@ onMounted(async () => {
 
         <!-- Content Skeleton -->
         <div class="space-y-6">
-          <div
-            class="h-8 w-3/4 rounded-lg bg-slate-700/50 animate-pulse"
-          ></div>
+          <div class="h-8 w-3/4 rounded-lg bg-slate-700/50 animate-pulse"></div>
           <div class="space-y-2">
             <div
               class="h-4 w-full rounded-lg bg-slate-700/50 animate-pulse"
@@ -333,7 +334,8 @@ onMounted(async () => {
                   </svg>
                 </div>
                 <span class="text-sm text-slate-400"
-                  >({{ product.rating.toFixed(1) }}) dari {{ ratingCount }} ulasan</span
+                  >({{ product.rating.toFixed(1) }}) dari
+                  {{ ratingCount }} ulasan</span
                 >
                 <button
                   @click="showRatingModal = true"
@@ -342,12 +344,114 @@ onMounted(async () => {
                   Lihat Ulasan
                 </button>
               </div>
+              <!-- Seller Information - Elegant 1-line Box -->
+              <div
+                v-if="product.owner !== null"
+                class="rounded-xl border border-white/10 bg-gradient-to-r from-white/5 to-white/5 p-3 sm:p-4 backdrop-blur-xl hover:border-white/20 hover:bg-gradient-to-r hover:from-white/8 hover:to-white/8 transition-all duration-300"
+              >
+                <div class="flex items-center justify-between gap-3 sm:gap-4">
+                  <!-- Left: Avatar & Name -->
+                  <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                    <!-- Avatar -->
+                    <div class="flex-shrink-0">
+                      <img
+                        v-if="product.owner.image"
+                        :src="product.owner.image"
+                        :alt="product.owner.name"
+                        class="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover ring-2 ring-sky-400/30 hover:ring-sky-400/50 transition-all"
+                      />
+                      <div
+                        v-else
+                        class="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-gradient-to-br from-sky-500 to-indigo-600 ring-2 ring-sky-400/30 flex items-center justify-center flex-shrink-0"
+                      >
+                        <svg
+                          class="h-6 w-6 text-white"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                          />
+                        </svg>
+                      </div>
+                    </div>
 
-              <div v-if="product.owner" class="text-sm text-slate-400">
-                Penjual:
-                <span class="font-semibold text-slate-300">{{
-                  product.owner
-                }}</span>
+                    <!-- Name & Rating -->
+                    <div class="min-w-0 flex-1">
+                      <p
+                        class="text-sm sm:text-base font-semibold text-slate-100 truncate"
+                      >
+                        {{ product.owner.name }}
+                      </p>
+                      <div
+                        v-if="sellerRating !== null"
+                        class="flex items-center gap-1 mt-0.5"
+                      >
+                        <div class="flex gap-0.5">
+                          <svg
+                            v-for="i in 5"
+                            :key="i"
+                            class="h-3 w-3 sm:h-3.5 sm:w-3.5"
+                            :class="
+                              i <= Math.round(sellerRating)
+                                ? 'text-amber-400'
+                                : 'text-slate-600'
+                            "
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                            />
+                          </svg>
+                        </div>
+                        <span class="text-xs sm:text-sm text-slate-400">
+                          {{ sellerRating.toFixed(1) }}
+                        </span>
+                      </div>
+                      <div v-else class="text-sm text-slate-500">
+                        <div class="flex items-center gap-2">
+                          <svg
+                            class="h-4 w-4 animate-spin text-slate-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              class="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              stroke-width="4"
+                            ></circle>
+                            <path
+                              class="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                          <span>Memuat rating...</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Right: Label & CTA -->
+                  <div class="flex flex-col items-end gap-1 flex-shrink-0">
+                    <span
+                      class="text-xs text-slate-500 font-medium uppercase tracking-wide"
+                    >
+                      Penjual
+                    </span>
+                    <button
+                      class="text-xs sm:text-sm font-semibold px-3 py-1 rounded-lg bg-gradient-to-r from-sky-500/20 to-indigo-600/20 text-sky-300 border border-sky-400/30 hover:from-sky-500/30 hover:to-indigo-600/30 hover:border-sky-400/50 transition-all duration-200"
+                      @click="useSwal().showInfo('Fitur kunjungi penjual sedang dikembangkan')"                    
+                      >
+                      Kunjungi
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -379,9 +483,7 @@ onMounted(async () => {
             </div>
             <div v-else class="flex items-center gap-2">
               <span class="h-3 w-3 rounded-full bg-red-400"></span>
-              <span class="font-semibold text-slate-200"
-                >Sedang habis</span
-              >
+              <span class="font-semibold text-slate-200">Sedang habis</span>
             </div>
           </div>
 
