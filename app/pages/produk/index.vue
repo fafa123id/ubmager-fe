@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 definePageMeta({
   layout: 'default',
@@ -31,8 +31,8 @@ const refetchWithFilters = async () => {
     
     // Fetch ulang max page dan products secara parallel
     await Promise.all([
-      fetchMaxPage(12, filterParams),
-      fetchProducts(1, 12, filterParams),
+      fetchMaxPage(10, filterParams),
+      fetchProducts(1, 10, filterParams),
     ])
     
 
@@ -45,7 +45,7 @@ const refetchWithFilters = async () => {
 const handlePageChange = async (newPage) => {
   try {
     const filterParams = getFilterParams()
-    await fetchProducts(newPage, 12, filterParams)
+    await fetchProducts(newPage, 10, filterParams)
     
 
   } catch (err) {
@@ -83,10 +83,14 @@ const handleAddToCart = (productId) => {
 
 onMounted(async () => {
   try {
-    await initialize(1, 12)
+    await initialize(1, 10)
   } catch (err) {
     console.error('Failed to initialize products:', err)
   }
+})
+onUnmounted(() => {
+  // Reset filters saat meninggalkan halaman produk
+  resetFilters()
 })
 </script>
 
@@ -186,8 +190,8 @@ onMounted(async () => {
 
           <!-- Pagination -->
           <div v-if="products.length > 0" class="flex justify-center pt-4">
-            <ProductPagination
-              :perPage="12"
+            <Pagination
+              :perPage="10"
               :maxPage="maxPage"
               :initialPage="currentPage"
               @page-changed="handlePageChange"
