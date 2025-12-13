@@ -274,50 +274,14 @@ watch(
           Jadilah yang pertama memberi ulasan!
         </p>
       </div>
-
-      <!-- Pagination -->
-      <div
+      <Pagination
+      class="mt-4"
         v-if="ratings.length > 0"
-        class="mt-6 pt-4 border-t border-white/10 flex justify-center"
-      >
-        <div class="flex items-center gap-2">
-          <button
-            :disabled="currentPage <= 1"
-            @click="handlePageChange(currentPage - 1)"
-            class="rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm font-medium text-slate-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/10 hover:border-white/25"
-          >
-            Prev
-          </button>
-
-          <div class="flex items-center gap-1">
-            <button
-              v-for="page in Math.min(3, maxPage)"
-              :key="page"
-              @click="handlePageChange(page)"
-              :class="{
-                'rounded-lg border border-sky-400/50 bg-gradient-to-r from-sky-500/20 to-indigo-600/20 px-3 py-2 text-sm font-semibold text-white ring-1 ring-sky-400/30':
-                  page === currentPage,
-                'rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm font-medium text-slate-200 transition-all duration-200 hover:bg-white/10 hover:border-white/25':
-                  page !== currentPage,
-              }"
-            >
-              {{ page }}
-            </button>
-          </div>
-
-          <button
-            :disabled="currentPage >= maxPage"
-            @click="handlePageChange(currentPage + 1)"
-            class="rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm font-medium text-slate-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/10 hover:border-white/25"
-          >
-            Next
-          </button>
-
-          <span class="text-xs text-slate-400 ml-2"
-            >{{ currentPage }} / {{ maxPage }}</span
-          >
-        </div>
-      </div>
+        :perPage="3"
+        :maxPage="maxPage"
+        :initialPage="currentPage"
+        @page-changed="handlePageChange"
+      />
 
       <!-- Close Button -->
       <div class="mt-6 pt-4 border-t border-white/10 flex justify-end">
