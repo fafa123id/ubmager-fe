@@ -157,7 +157,7 @@ export const useProduct = () => {
     }
   };
   const getIsFavoriteByProductId = async (id) => {
-    if (useAuth().user.value === null) {
+    if (useAuth().isLoggedIn.value === null) {
       return false;
     } 
     try {

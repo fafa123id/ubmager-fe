@@ -114,8 +114,7 @@ const addToFavorite = async (productId) => {
   } catch (err) {
     console.error("Failed to add product to favorites:", err);
     useSwal().showError("Gagal menambahkan produk ke favorit.");
-  }
-  finally {
+  } finally {
     loadingProcess.value = false;
   }
 };
