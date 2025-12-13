@@ -39,35 +39,11 @@ const ratingPercentage = computed(() => {
 
 const isAvailable = computed(() => props.product.quantity > 0);
 
-const startImageRotation = () => {
-  if (productImages.value.length > 1) {
-    rotationInterval = setInterval(() => {
-      currentImageIndex.value =
-        (currentImageIndex.value + 1) % productImages.value.length;
-    }, 3000);
-  }
-};
-
-const stopImageRotation = () => {
-  if (rotationInterval) {
-    clearInterval(rotationInterval);
-    rotationInterval = null;
-  }
-};
 
 const changeImage = (idx) => {
   currentImageIndex.value = idx;
-  stopImageRotation();
-  startImageRotation();
 };
 
-onMounted(() => {
-  startImageRotation();
-});
-
-onBeforeUnmount(() => {
-  stopImageRotation();
-});
 </script>
 
 <template>
