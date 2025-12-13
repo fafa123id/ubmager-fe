@@ -140,6 +140,20 @@ export const useProductRating = () => {
     selectedRating.value = null
     perPage.value = 3
   }
+  const getSellerRating  = async (sellerId) => {
+    try {
+      loading.value = true
+      error.value = null
+      const response = await nuxtApp.$api.get(`/api/seller-rating/${sellerId}`)
+      return response.data || 0.0
+    } catch (err) {
+      console.error('Error fetching seller rating:', err)
+      error.value = err?.response?.data?.message || 'Gagal memuat rating penjual'
+      return Promise.reject(err)
+    } finally {
+      loading.value = false
+    }
+  }
   
   return {
     // State
@@ -157,5 +171,6 @@ export const useProductRating = () => {
     initialize,
     setRatingFilter,
     reset,
+    getSellerRating,
   }
 }
