@@ -195,7 +195,7 @@ onBeforeUnmount(() => {
           <div v-if="product.owner" class="text-[10px] text-slate-400">
             by
             <span class="font-semibold text-slate-300">{{
-              product.owner
+              product.owner.name
             }}</span>
           </div>
         </div>
