@@ -14,7 +14,9 @@ const { user } = useAuth()
 
 const logout = async () => {
   await useAuth().logout()
-  await navigateTo("/")
+  if (useRoute().meta.middleware?.includes('auth')) {
+    navigateTo('/')
+  }
 }
 
 const isActive = (to) => route.path === to
