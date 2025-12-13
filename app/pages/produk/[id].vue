@@ -2,13 +2,19 @@
 import { ref, onMounted, computed } from "vue";
 
 const route = useRoute();
-const { getProductById, loading, error, getRatingCountByProductId } =
-  useProduct();
+const {
+  getProductById,
+  loading,
+  error,
+  getRatingCountByProductId,
+  getIsFavoriteByProductId,
+} = useProduct();
+const { postFavorite, deleteFavorite } = useFavorites();
 const product = ref(null);
 const selectedImage = ref(0);
 const prevImage = ref(0);
 const showRatingModal = ref(false);
-
+const loadingProcess = ref(false);
 const isAvailable = computed(() => {
   return product.value && product.value.quantity > 0;
 });
@@ -30,7 +36,7 @@ const productImages = computed(() => {
   if (product.value.image3) images.push(product.value.image3);
   return images;
 });
-
+const is_favorited = ref(false);
 const currentImage = computed(() => {
   return productImages.value[selectedImage.value] || productImages.value[0];
 });
@@ -56,9 +62,20 @@ const handleAddToCart = () => {
 const goBack = () => {
   navigateTo("/produk");
 };
+const proccessDeleteFavorite = async (productId) => {
+  try {
+    await deleteFavorite(productId);
+    useSwal().showSuccess("Produk berhasil dihapus dari favorit.");
+    is_favorited.value = false;
+  } catch (err) {
+    console.error("Failed to remove product from favorites:", err);
+    useSwal().showError("Gagal menghapus produk dari favorit.");
+  }
+};
 const ratingCount = ref(null);
 onMounted(async () => {
   try {
+    loadingProcess.value = true;
     const productId = route.params.id;
     const data = await getProductById(productId);
     product.value = data.data || data;
@@ -69,17 +86,39 @@ onMounted(async () => {
       goBack();
       return;
     }
+    const fav = await getIsFavoriteByProductId(productId);
+    console.log("Is Favorited:", fav);
+    is_favorited.value = fav;
+    loadingProcess.value = false;
     ratingCount.value = await getRatingCountByProductId(product.value.id);
     sellerRating.value = await useProductRating().getSellerRating(
       product.value.owner.id
     );
-    console.log("Seller Rating:", sellerRating.value);
   } catch (err) {
     console.error("Failed to fetch product detail:", err);
     useSwal().showError("Gagal memuat detail produk.");
     goBack();
   }
 });
+const addToFavorite = async (productId) => {
+  try {
+    if (useAuth().user.value === null) {
+      useSwal().showInfo("Silakan masuk untuk menambahkan favorit.");
+      navigateTo("/auth/login?next=" + encodeURIComponent(route.fullPath));
+      return;
+    }
+    loadingProcess.value = true;
+    await postFavorite(productId);
+    useSwal().showSuccess("Produk berhasil ditambahkan ke favorit.");
+    is_favorited.value = true;
+  } catch (err) {
+    console.error("Failed to add product to favorites:", err);
+    useSwal().showError("Gagal menambahkan produk ke favorit.");
+  }
+  finally {
+    loadingProcess.value = false;
+  }
+};
 </script>
 
 <template>
@@ -446,8 +485,12 @@ onMounted(async () => {
                     </span>
                     <button
                       class="text-xs sm:text-sm font-semibold px-3 py-1 rounded-lg bg-gradient-to-r from-sky-500/20 to-indigo-600/20 text-sky-300 border border-sky-400/30 hover:from-sky-500/30 hover:to-indigo-600/30 hover:border-sky-400/50 transition-all duration-200"
-                      @click="useSwal().showInfo('Fitur kunjungi penjual sedang dikembangkan')"                    
-                      >
+                      @click="
+                        useSwal().showInfo(
+                          'Fitur kunjungi penjual sedang dikembangkan'
+                        )
+                      "
+                    >
                       Kunjungi
                     </button>
                   </div>
@@ -526,11 +569,29 @@ onMounted(async () => {
             </button>
 
             <button
-              @click="goBack"
+              v-if="useAuth().user.value && !is_favorited"
+              @click="addToFavorite(product.id)"
+              :disabled="loadingProcess"
+              :class="loadingProcess ? 'opacity-50 cursor-not-allowed' : ''"
               class="rounded-lg border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-slate-200 transition-all duration-200 hover:bg-white/10 hover:border-white/25"
             >
-              Kembali
+              Tambah ke Favorit
             </button>
+            <button
+              v-else-if="useAuth().user.value && is_favorited"
+              @click="proccessDeleteFavorite(product.id)"
+              :disabled="loadingProcess"
+              :class="loadingProcess ? 'opacity-50 cursor-not-allowed' : ''"
+              class="rounded-lg border border-sky-400/50 bg-sky-500/20 px-6 py-3 text-sm font-semibold text-sky-300"
+            >
+              Produk telah ada di Favorit
+            </button>
+            <NuxtLink
+              v-else
+              :to="`/auth/login/?next=${encodeURIComponent(route.fullPath)}`"
+              class="rounded-lg border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-slate-200 transition-all duration-200 hover:bg-white/10 hover:border-white/25"
+              >Masuk untuk menambahkan ke Favorit</NuxtLink
+            >
           </div>
         </div>
       </div>
