@@ -57,7 +57,32 @@ const paymentMethodConfig = {
 const currentStatus = computed(() => {
   return order.value?.status || "pending";
 });
+const cancelOrder = async () => {
+  try {
+    const confirmation = await useSwal().confirmAction(
+      "Apakah Anda yakin ingin membatalkan order ini?",
+      "Tindakan ini tidak dapat dibatalkan."
+    );
+    if(!confirmation.isConfirmed){ 
+      return;
+    }
 
+    loading.value = true;
+    error.value = null;
+
+    // Tunggu interceptor selesai refresh jika ada 401
+    await waitForRefreshIfNeeded();
+    await useOrder().cancelOrder(route.params.id);
+    useSwal().showSuccess("Order berhasil dibatalkan");
+    fetchOrderDetail();
+  } catch (err) {
+    console.error("Failed to cancel order:", err);
+    error.value = err.data?.message || "Gagal membatalkan order";
+    useSwal().showError(error.value);
+  } finally {
+    loading.value = false;
+  }
+}
 const statusInfo = computed(() => {
   return statusConfig[currentStatus.value] || statusConfig.pending;
 });
@@ -547,14 +572,15 @@ onMounted(() => {
               </button>
               <button
                 @click="fetchOrderDetail"
-                class="w-full rounded-lg bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-semibold py-3 transition-all duration-200 flex items-center justify-center gap-2"
+                class="w-full rounded-lg bg-gradient-to-r from-indigo-600 to-yellow-500 hover:from-indigo-700 hover:to-yellow-600 text-white font-semibold py-3 transition-all duration-200 flex items-center justify-center gap-2"
               >
-                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path
-                    d="M3 10h18V5H3v5zm0 8h18v-6H3v6zm1-5h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"
-                  />
-                </svg>
                 Check Status Pembayaran
+              </button>
+              <button
+                @click="cancelOrder"
+                class="w-full rounded-lg bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-semibold py-3 transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                Batalkan Order
               </button>
             </div>
 

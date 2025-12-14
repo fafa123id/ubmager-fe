@@ -38,12 +38,27 @@ export const useOrder = () => {
     order.value = null;
     error.value = null;
   };
-
+  const cancelOrder = async (orderId) => {
+    loading.value = true;
+    error.value = null;
+    try {
+      const response = await nuxtApp.$api.get(`/api/transaction/cancel/${orderId}`);
+      resetOrder();
+      return response.data;
+    } catch (err) {
+      console.error("Failed to cancel order:", err);
+      error.value = err.data?.message || "Failed to cancel order";
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
   return {
     order,
     loading,
     error,
     getOrderById,
     resetOrder,
+    cancelOrder,
   };
 };
