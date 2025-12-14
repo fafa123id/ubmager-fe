@@ -97,6 +97,14 @@ const formattedPrice = (price) => {
 // Methods
 const handleAmountChange = (value) => {
   const newAmount = parseInt(value);
+  if (isNaN(newAmount)) {
+    amount.value = 1;
+    return;
+  }
+  if( newAmount > props.product?.quantity) {
+    amount.value = props.product?.quantity;
+    return;
+  }
   if (newAmount > 0 && newAmount <= 999) {
     amount.value = newAmount;
     errorMessage.value = null;
@@ -153,12 +161,20 @@ const close = () => {
 
 // Increment/Decrement
 const increment = () => {
-  if (amount.value < 999) {
+  if (amount.value >= props.product?.quantity) {
+    amount.value = props.product?.quantity;
+    return;
+  }
+  if (amount.value < props.product?.quantity ?? 999) {
     amount.value++;
   }
 };
 
 const decrement = () => {
+  if (amount.value <= 1) {
+    amount.value = 1;
+    return;
+  }
   if (amount.value > 1) {
     amount.value--;
   }
@@ -227,7 +243,7 @@ const decrement = () => {
                 @input="handleAmountChange($event.target.value)"
                 type="number"
                 min="1"
-                max="999"
+                :max="product?.quantity || 999"
                 class="flex-1 rounded-lg border border-white/10 bg-slate-700/50 px-3 py-2 text-center text-slate-100 focus:border-sky-400/50 focus:outline-none focus:ring-2 focus:ring-sky-400/20"
               />
 
