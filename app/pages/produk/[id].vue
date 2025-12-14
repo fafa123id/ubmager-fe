@@ -57,7 +57,12 @@ const handleAddToCart = () => {
     useSwal().showInfo("Maaf, produk ini sedang habis.");
     return;
   }
-  useSwal().showInfo("Fitur cart sedang dikembangkan");
+  if (useAuth().user.value === null) {
+    useSwal().showInfo("Silakan masuk untuk melakukan pembelian.");
+    navigateTo("/auth/login?next=" + encodeURIComponent(route.fullPath), { replace: true });
+    return;
+  }
+  showCheckout.value = true;
 };
 
 const goBack = () => {
@@ -121,9 +126,26 @@ const addToFavorite = async (productId) => {
     loadingProcess.value = false;
   }
 };
+const showCheckout = ref(false);
+const handleCheckoutSuccess = (param) => {
+  showCheckout.value = false;
+  if (!param.data.payment_url) {
+    useSwal().showError("URL pembayaran tidak tersedia.");
+    return;
+  }
+  navigateTo('/order/' + param.data.order.id).then(() => {
+    window.location.reload();
+  });
+};
 </script>
 
 <template>
+  <ProductCheckout
+    :product="product"
+    :isOpen="showCheckout"
+    @close="showCheckout = false"
+    @checkout-success="handleCheckoutSuccess"
+  />
   <div class="relative min-h-dvh text-slate-100 overflow-hidden">
     <!-- BG -->
     <div
