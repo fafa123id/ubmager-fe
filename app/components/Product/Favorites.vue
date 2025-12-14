@@ -172,7 +172,6 @@ const handleTouchEnd = (e) => {
     }
   }
 };
-
 /**
  * Scroll handlers - hanya untuk tombol, tidak ada wheel scroll
  */
@@ -228,6 +227,9 @@ watch(
 
 onMounted(async () => {
   try {
+    while (useLoading().loadingState.value === true) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
     if (useAuth().isLoggedIn.value === false) {
       return;
     }
@@ -454,7 +456,7 @@ onUnmounted(() => {
 
         <!-- Not Logged In State -->
         <div
-          v-else-if="useAuth().user.value === null"
+          v-else-if="useAuth().isLoggedIn.value === false"
           class="rounded-2xl border border-white/10 bg-slate-900/60 p-12 text-center backdrop-blur-xl"
         >
           <svg

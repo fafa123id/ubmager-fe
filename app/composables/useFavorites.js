@@ -40,6 +40,10 @@ export const useFavorites = () => {
 
       return maxPage.value;
     } catch (err) {
+      if (err.status === 500) {
+        maxPage.value = 1;
+        return;
+      }
       console.error("Error fetching favorites max page:", err);
       error.value =
         err?.response?.data?.message || "Gagal memuat jumlah halaman";
@@ -92,6 +96,10 @@ export const useFavorites = () => {
         page: currentPage.value,
       };
     } catch (err) {
+      if (err.status === 500) {
+        favorites.value = [];
+        return;
+      }
       console.error("Error fetching favorites:", err);
       error.value = err?.response?.data?.message || "Gagal memuat favorit";
       if (page === 1) {
@@ -111,10 +119,8 @@ export const useFavorites = () => {
    */
   const initialize = async (perpage = 5, search = "") => {
     try {
-      await Promise.all([
-        fetchMaxPage(perpage, search),
-        fetchFavorites(1, perpage, search),
-      ]);
+      await fetchMaxPage(perpage, search);
+      await fetchFavorites(1, perpage, search);
 
       searchQuery.value = search;
 
@@ -123,6 +129,9 @@ export const useFavorites = () => {
         maxPage: maxPage.value,
       };
     } catch (err) {
+      if (err.status === 500) {
+        return;
+      }
       console.error("Error initializing favorites:", err);
       return Promise.reject(err);
     }
@@ -178,6 +187,9 @@ export const useFavorites = () => {
       });
       return response.data;
     } catch (err) {
+      if (err.status === 500) {
+        return;
+      }
       console.error("Error adding favorite:", err);
       error.value = err?.response?.data?.message || "Gagal menambahkan favorit";
       return Promise.reject(err);
@@ -192,6 +204,9 @@ export const useFavorites = () => {
       const response = await nuxtApp.$api.delete(`/api/favorites/${itemId}`);
       return response.data;
     } catch (err) {
+      if (err.status === 500) {
+        return;
+      } 
       console.error("Error deleting favorite:", err);
       error.value = err?.response?.data?.message || "Gagal menghapus favorit";
       return Promise.reject(err);
