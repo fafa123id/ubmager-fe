@@ -186,6 +186,20 @@ export const useProduct = () => {
   const clearError = () => {
     error.value = null;
   };
+  const checkoutProduct = async (productId, quantity, pay_method) => {
+    try {
+      const response = await nuxtApp.$api.post(`/api/checkout`, {
+        product_id: productId,
+        quantity,
+        pay_method,
+      });
+      return response.data;
+    }
+    catch (err) {
+      console.error("Error during checkout:", err);
+      return Promise.reject(err);
+    }
+  };
 
   return {
     // State
@@ -206,5 +220,6 @@ export const useProduct = () => {
     getProductById,
     reset,
     clearError,
+    checkoutProduct,
   };
 };
