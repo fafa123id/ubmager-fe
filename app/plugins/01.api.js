@@ -15,6 +15,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   // if (token().value) {
   //   api.defaults.headers.common["Authorization"] = `Bearer ${token().value}`;
   // }
+  useLoading().setLoading(true);
   api.interceptors.response.use(
     (response) => {
       return response;
@@ -40,6 +41,7 @@ export default defineNuxtPlugin((nuxtApp) => {
           //   "Authorization"
           // ] = `Bearer ${newAccessToken}`;
           // originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+          useLoading().setLoading(false);
           return api(originalRequest);
         } catch (refreshError) {
           console.error(
@@ -56,10 +58,11 @@ export default defineNuxtPlugin((nuxtApp) => {
               navigateTo("/", { replace: true });
             }
           }
-
+          useLoading().setLoading(false);
           return Promise.reject(refreshError);
         }
       }
+      useLoading().setLoading(false);
       return Promise.reject(error);
     }
   );

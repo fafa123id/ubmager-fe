@@ -76,11 +76,11 @@ const proccessDeleteFavorite = async (productId) => {
     useSwal().showError("Gagal menghapus produk dari favorit.");
   }
 };
-const fetchProduct = async () =>{
-    const productId = route.params.id;
-    const data = await getProductById(productId);
-    product.value = data.data || data;
-}
+const fetchProduct = async () => {
+  const productId = route.params.id;
+  const data = await getProductById(productId);
+  product.value = data.data || data;
+};
 const ratingCount = ref(null);
 onMounted(async () => {
   try {
@@ -93,11 +93,16 @@ onMounted(async () => {
       goBack();
       return;
     }
-    if (!useAuth().isLoggedIn.value === false) {
+    
+    while (useLoading().loadingState.value === true) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+    loadingProcess.value = false;
+    if (useAuth().isLoggedIn.value === true) {
       const fav = await getIsFavoriteByProductId(product.value.id);
       is_favorited.value = fav;
     }
-    loadingProcess.value = false;
+
     ratingCount.value = await getRatingCountByProductId(product.value.id);
     sellerRating.value = await useProductRating().getSellerRating(
       product.value.owner.id
