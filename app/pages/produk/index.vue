@@ -4,7 +4,7 @@ import { ref, onMounted, onUnmounted } from "vue";
 definePageMeta({
   layout: "default",
 });
-
+const filterinput = ref("");
 const {
   products,
   loading,
@@ -15,7 +15,7 @@ const {
   fetchProducts,
   fetchMaxPage,
 } = useProduct();
-
+const {categories} = useProductFilter();
 const { getFilterParams, resetFilters } = useProductFilter();
 
 const refetchWithFilters = async () => {
@@ -74,8 +74,15 @@ const handleFavoritesAddToCart = (productId) => {
 };
 
 onMounted(async () => {
+  const route = useRoute();
+  const router = useRouter();
+  let category = route.query.category ?? "all";
+  if (category) {
+    router.replace({ query: {} });
+  }
+  filterinput.value = category;
   try {
-    await initialize(1, 10);
+    await initialize(1, 10, {}, "all", category);
   } catch (err) {
     console.error("Failed to initialize products:", err);
   }
@@ -167,7 +174,7 @@ onUnmounted(() => {
             </div>
 
             <!-- Filter Component -->
-            <ProductFilterButton @filter-changed="handleFilterChange" />
+            <ProductFilterButton :input="filterinput" @filter-changed="handleFilterChange" />
           </div>
         </div>
 

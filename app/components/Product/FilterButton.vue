@@ -1,41 +1,53 @@
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted } from "vue";
 
-const emit = defineEmits(['filter-changed'])
-
-const { 
-  types, 
-  selectedTypes, 
-  categories, 
+const emit = defineEmits(["filter-changed"]);
+const props = defineProps({
+  input: {
+    type: String,
+    default: "",
+  },
+});
+const {
+  types,
+  selectedTypes,
+  categories,
   selectedCategories,
   loadingTypes,
   loadingCategories,
   toggleType,
   toggleCategory,
   initialize,
-} = useProductFilter()
+} = useProductFilter();
 
 const isTypeSelected = computed((type) => {
-  return (type) => selectedTypes.value.includes(type)
-})
+  return (type) => selectedTypes.value.includes(type);
+});
 
 const isCategorySelected = computed((category) => {
-  return (category) => selectedCategories.value.includes(category)
-})
+  return (category) => selectedCategories.value.includes(category);
+});
 
 const handleToggleType = async (type) => {
-  await toggleType(type)
-  emit('filter-changed')
-}
+  await toggleType(type);
+  emit("filter-changed");
+};
 
 const handleToggleCategory = (category) => {
-  toggleCategory(category)
-  emit('filter-changed')
-}
+  toggleCategory(category);
+  emit("filter-changed");
+};
 
 onMounted(async () => {
-  await initialize()
-})
+  await initialize();
+  console.log(categories.value)
+
+  if (props.input) {
+    if (categories.value.includes(props.input)) {
+      toggleCategory(props.input);
+    }
+  }
+});
 </script>
 
 <template>
@@ -44,7 +56,11 @@ onMounted(async () => {
     <div>
       <h3 class="mb-3 text-sm font-semibold text-slate-200">Tipe Produk</h3>
       <div v-if="loadingTypes" class="flex flex-wrap gap-2">
-        <div v-for="i in 3" :key="i" class="h-8 w-20 rounded-lg bg-slate-700/50 animate-pulse"></div>
+        <div
+          v-for="i in 3"
+          :key="i"
+          class="h-8 w-20 rounded-lg bg-slate-700/50 animate-pulse"
+        ></div>
       </div>
       <div v-else class="flex flex-wrap gap-2">
         <button
@@ -67,7 +83,11 @@ onMounted(async () => {
     <div v-if="categories.length > 0">
       <h3 class="mb-3 text-sm font-semibold text-slate-200">Kategori</h3>
       <div v-if="loadingCategories" class="flex flex-wrap gap-2">
-        <div v-for="i in 3" :key="i" class="h-8 w-20 rounded-lg bg-slate-700/50 animate-pulse"></div>
+        <div
+          v-for="i in 3"
+          :key="i"
+          class="h-8 w-20 rounded-lg bg-slate-700/50 animate-pulse"
+        ></div>
       </div>
       <div v-else class="flex flex-wrap gap-2">
         <button

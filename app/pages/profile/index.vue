@@ -67,14 +67,9 @@ const loading = ref(true);
 const saving = ref(false);
 const errorMsg = ref("");
 const successMsg = ref("");
-const {
-  user,
-  fetchUser,
-  attachGoogle,
-  unlinkGoogle,
-  sendOtpForUnlinkGoogle,
-  fetchProfileAnalytics,
-} = useAuth();
+const { user, fetchUser, attachGoogle, unlinkGoogle, sendOtpForUnlinkGoogle } =
+  useAuth();
+const { fetchProfileAnalytics } = useAnalytics();
 const userForm = ref({
   name: "",
   username: "",
@@ -522,7 +517,7 @@ const toogleSetPasswordConfirmation = () => {
               <li>
                 <button
                   @click="changePassword"
-                  class=" w-full block rounded-lg px-3 py-2 text-slate-200 ring-1 ring-white/0 hover:bg-white/5 text-left"
+                  class="w-full block rounded-lg px-3 py-2 text-slate-200 ring-1 ring-white/0 hover:bg-white/5 text-left"
                 >
                   Ubah Kata Sandi
                 </button>

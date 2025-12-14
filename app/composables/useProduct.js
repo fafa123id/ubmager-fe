@@ -94,12 +94,12 @@ export const useProduct = () => {
    * @param {Object} filters - Filter params
    * @returns {Promise<Object>}
    */
-  const initialize = async (page = 1, perpage = 6, filters = {}) => {
+  const initialize = async (page = 1, perpage = 6, filters = {}, type = "all", categories = "all") => {
     try {
       // Ensure default filters
       const defaultFilters = {
-        type: "all",
-        category: "all",
+        type: type || "all",
+        category: categories || "all",
         ...filters,
       };
 

@@ -5,8 +5,7 @@ const isOpen = ref(false)
 const links = [
   { to: "/", label: "Beranda" },
   { to: "/produk", label: "Produk" },
-  { to: "/tentang", label: "Tentang" },
-  { to: "/kontak", label: "Kontak" },
+  { to: "/history", label: "Pesanan" },
 ]
 
 const route = useRoute()
