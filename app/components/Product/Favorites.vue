@@ -30,6 +30,12 @@ const debounceTimer = ref(null);
 const favoritesScroll = ref(null);
 let favoritesObserver = null;
 
+// Card focus state - untuk disable favorite scroll saat card di-focus
+const isCardFocused = ref(false);
+const touchStartX = ref(0);
+const touchStartTime = ref(0);
+const cardScrollTimeout = ref(null);
+
 /**
  * Setup intersection observer untuk infinite scroll horizontal
  */
@@ -110,9 +116,71 @@ const handleKeyDown = (e) => {
 };
 
 /**
- * Scroll handlers
+ * Card focus/blur handlers - untuk disable favorite scroll saat card di-focus
+ */
+const handleCardMouseEnter = () => {
+  isCardFocused.value = true;
+  if (favoritesScroll.value) {
+    favoritesScroll.value.style.scrollBehavior = "auto";
+  }
+};
+
+const handleCardMouseLeave = () => {
+  isCardFocused.value = false;
+  if (favoritesScroll.value) {
+    favoritesScroll.value.style.scrollBehavior = "smooth";
+  }
+};
+
+/**
+ * Touch handlers untuk mobile - smart detection antara card swipe vs favorite swipe
+ */
+const handleTouchStart = (e) => {
+  touchStartX.value = e.touches[0].clientX;
+  touchStartTime.value = Date.now();
+  const target = e.target.closest("[data-card-item]");
+  if (target) {
+    isCardFocused.value = true;
+  }
+};
+
+const handleTouchEnd = (e) => {
+  if (e.changedTouches.length === 0) return;
+
+  const touchEndX = e.changedTouches[0].clientX;
+  const touchDuration = Date.now() - touchStartTime.value;
+  const swipeDistance = Math.abs(touchEndX - touchStartX.value);
+
+  // Jika swipe distance > 30px dan duration < 500ms, anggap sebagai swipe
+  if (swipeDistance > 30 && touchDuration < 500) {
+    if (isCardFocused.value) {
+      // Saat card focused: biarkan card handle swipe (untuk ganti gambar)
+      e.stopPropagation();
+
+      // Lock favorite scroll untuk saat ini
+      if (cardScrollTimeout.value) {
+        clearTimeout(cardScrollTimeout.value);
+      }
+
+      // Unlock setelah swipe selesai
+      cardScrollTimeout.value = setTimeout(() => {
+        isCardFocused.value = false;
+      }, 300);
+    } else {
+      // Saat tidak focused: biarkan favorite scroll
+      // Natural scroll behavior pada container
+    }
+  }
+};
+
+/**
+ * Scroll handlers - hanya untuk tombol, tidak ada wheel scroll
  */
 const scrollLeft = () => {
+  // Di HP saat card focused, jangan scroll favorite
+  if (isCardFocused.value) {
+    return;
+  }
   if (favoritesScroll.value) {
     favoritesScroll.value.scrollBy({
       left: -300,
@@ -122,6 +190,10 @@ const scrollLeft = () => {
 };
 
 const scrollRight = () => {
+  // Di HP saat card focused, jangan scroll favorite
+  if (isCardFocused.value) {
+    return;
+  }
   if (favoritesScroll.value) {
     favoritesScroll.value.scrollBy({
       left: 300,
@@ -129,7 +201,6 @@ const scrollRight = () => {
     });
   }
 };
-
 /**
  * Handle view product
  */
@@ -143,7 +214,8 @@ const handleViewProduct = (productId) => {
 const handleAddToCart = (productId) => {
   emit("add-to-cart", productId);
 };
-watch (
+
+watch(
   () => useAuth().isLoggedIn.value,
   async () => {
     if (useAuth().isLoggedIn.value === false) {
@@ -153,6 +225,7 @@ watch (
   },
   { immediate: true }
 );
+
 onMounted(async () => {
   try {
     if (useAuth().isLoggedIn.value === false) {
@@ -171,6 +244,9 @@ onUnmounted(() => {
   }
   if (debounceTimer.value) {
     clearTimeout(debounceTimer.value);
+  }
+  if (cardScrollTimeout.value) {
+    clearTimeout(cardScrollTimeout.value);
   }
 });
 </script>
@@ -284,7 +360,7 @@ onUnmounted(() => {
           <button
             @click="scrollLeft"
             class="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 z-10 items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-sky-500/20 to-indigo-600/20 border border-sky-400/30 text-sky-300 hover:from-sky-500/30 hover:to-indigo-600/30 hover:border-sky-400/50 transition-all duration-300 group-hover:scale-110 active:scale-95"
-            :disabled="loading"
+            :disabled="loading || isCardFocused"
           >
             <svg
               class="w-5 h-5"
@@ -311,6 +387,10 @@ onUnmounted(() => {
               v-for="fav in favorites"
               :key="`${fav.user_id}-${fav.product_id}`"
               class="flex-shrink-0 w-52 snap-center h-full"
+              @mouseenter="handleCardMouseEnter"
+              @mouseleave="handleCardMouseLeave"
+              @touchstart="handleTouchStart"
+              @touchend="handleTouchEnd"
             >
               <div class="h-full flex flex-col">
                 <ProductCard
@@ -354,7 +434,7 @@ onUnmounted(() => {
           <button
             @click="scrollRight"
             class="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 z-10 items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-sky-500/20 to-indigo-600/20 border border-sky-400/30 text-sky-300 hover:from-sky-500/30 hover:to-indigo-600/30 hover:border-sky-400/50 transition-all duration-300 group-hover:scale-110 active:scale-95"
-            :disabled="loading"
+            :disabled="loading || isCardFocused"
           >
             <svg
               class="w-5 h-5"
@@ -371,8 +451,10 @@ onUnmounted(() => {
             </svg>
           </button>
         </div>
+
+        <!-- Not Logged In State -->
         <div
-          v-else-if ="useAuth().user.value === null"
+          v-else-if="useAuth().user.value === null"
           class="rounded-2xl border border-white/10 bg-slate-900/60 p-12 text-center backdrop-blur-xl"
         >
           <svg
@@ -392,9 +474,15 @@ onUnmounted(() => {
             Belum ada favorit
           </h3>
           <p class="text-slate-400">
-            Masuk untuk melihat favorit Anda. <NuxtLink :to="`/auth/login?next=${encodeURIComponent(route.fullPath)}`" class="text-sky-400 hover:underline">Masuk</NuxtLink>
+            Masuk untuk melihat favorit Anda.
+            <NuxtLink
+              :to="`/auth/login?next=${encodeURIComponent(route.fullPath)}`"
+              class="text-sky-400 hover:underline"
+              >Masuk</NuxtLink
+            >
           </p>
         </div>
+
         <!-- Empty State -->
         <div
           v-else
