@@ -1,7 +1,5 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
-
-const route = useRoute();
 const {
   getProductById,
   loading,
@@ -19,7 +17,7 @@ const loadingProcess = ref(false);
 const isAvailable = computed(() => {
   return product.value && product.value.quantity > 0;
 });
-
+const route = useRoute();
 const formattedPrice = computed(() => {
   if (!product.value) return "";
   return new Intl.NumberFormat("id-ID", {
@@ -52,15 +50,14 @@ const selectImage = (idx) => {
   selectedImage.value = idx;
 };
 const sellerRating = ref(null);
-const handleAddToCart = () => {
+const handleAddToCart = async () => {
   if (!isAvailable.value) {
     useSwal().showInfo("Maaf, produk ini sedang habis.");
     return;
   }
   if (useAuth().user.value === null) {
     useSwal().showInfo("Silakan masuk untuk melakukan pembelian.");
-    navigateTo("/auth/login?next=" + encodeURIComponent(route.fullPath), { replace: true });
-    return;
+    return navigateTo(`/auth/login?next=/produk/${product.value.id}`);
   }
   showCheckout.value = true;
 };
@@ -79,13 +76,16 @@ const proccessDeleteFavorite = async (productId) => {
     useSwal().showError("Gagal menghapus produk dari favorit.");
   }
 };
+const fetchProduct = async () =>{
+    const productId = route.params.id;
+    const data = await getProductById(productId);
+    product.value = data.data || data;
+}
 const ratingCount = ref(null);
 onMounted(async () => {
   try {
     loadingProcess.value = true;
-    const productId = route.params.id;
-    const data = await getProductById(productId);
-    product.value = data.data || data;
+    await fetchProduct();
 
     // Jika product tidak available/tidak ada, redirect
     if (!product.value || !product.value.id) {
@@ -94,7 +94,7 @@ onMounted(async () => {
       return;
     }
     if (!useAuth().isLoggedIn.value === false) {
-      const fav = await getIsFavoriteByProductId(productId);
+      const fav = await getIsFavoriteByProductId(product.value.id);
       is_favorited.value = fav;
     }
     loadingProcess.value = false;
@@ -112,7 +112,7 @@ const addToFavorite = async (productId) => {
   try {
     if (useAuth().user.value === null) {
       useSwal().showInfo("Silakan masuk untuk menambahkan favorit.");
-      navigateTo("/auth/login?next=" + encodeURIComponent(route.fullPath));
+      navigateTo(`/auth/login?next=/produk/${productId}`);
       return;
     }
     loadingProcess.value = true;
@@ -133,20 +133,19 @@ const handleCheckoutSuccess = (param) => {
     useSwal().showError("URL pembayaran tidak tersedia.");
     return;
   }
-  navigateTo('/order/' + param.data.order.id).then(() => {
-    window.location.reload();
-  });
+  fetchProduct();
+  navigateTo("/order/" + param.data.order.id);
 };
 </script>
 
 <template>
-  <ProductCheckout
-    :product="product"
-    :isOpen="showCheckout"
-    @close="showCheckout = false"
-    @checkout-success="handleCheckoutSuccess"
-  />
   <div class="relative min-h-dvh text-slate-100 overflow-hidden">
+    <ProductCheckout
+      :product="product"
+      :isOpen="showCheckout"
+      @close="showCheckout = false"
+      @checkout-success="handleCheckoutSuccess"
+    />
     <!-- BG -->
     <div
       class="absolute inset-0 -z-20 bg-[radial-gradient(60%_60%_at_50%_10%,#0f172a_0%,#0b1220_50%,#0a0f1a_100%)]"
@@ -623,7 +622,7 @@ const handleCheckoutSuccess = (param) => {
             </button>
             <NuxtLink
               v-else
-              :to="`/auth/login/?next=${encodeURIComponent(route.fullPath)}`"
+              :to="`/auth/login?next=/produk/${product.id}`"
               class="rounded-lg border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-slate-200 transition-all duration-200 hover:bg-white/10 hover:border-white/25"
               >Masuk untuk menambahkan ke Favorit</NuxtLink
             >

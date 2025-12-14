@@ -472,7 +472,7 @@ onMounted(() => {
                   'rounded-lg px-3 py-2 font-semibold text-center',
                   order.transaction?.status === 'pending'
                     ? 'bg-amber-500/20 text-amber-300'
-                    : order.transaction?.status === 'paid'
+                    : order.transaction?.status === 'success'
                     ? 'bg-emerald-500/20 text-emerald-300'
                     : 'bg-red-500/20 text-red-300',
                 ]"
@@ -480,7 +480,7 @@ onMounted(() => {
                 {{
                   order.transaction?.status === "pending"
                     ? "Menunggu Pembayaran"
-                    : order.transaction?.status === "paid"
+                    : order.transaction?.status === "success"
                     ? "Dibayar"
                     : "Gagal"
                 }}
@@ -504,29 +504,62 @@ onMounted(() => {
                 }}
               </p>
             </div>
-
+            <!-- Payment Date -->
+            <div v-if="order.transaction?.status === 'success'">
+              <p class="text-xs text-slate-400 mb-2">Tanggal Pembayaran</p>
+              <p class="text-sm text-slate-300">
+                {{
+                  order.transaction?.updated_at
+                    ? new Date(
+                        order.transaction?.updated_at
+                      ).toLocaleDateString("id-ID", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : "N/A"
+                }}
+              </p>
+            </div>
             <!-- Divider -->
             <div class="border-t border-white/10"></div>
 
             <!-- Action Button -->
-            <button
+            <div
               v-if="
                 order.transaction?.status === 'pending' &&
                 order.transaction?.link_payment
               "
-              @click="handlePaymentClick"
-              class="w-full rounded-lg bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-semibold py-3 transition-all duration-200 flex items-center justify-center gap-2"
+              class="space-y-4"
             >
-              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                <path
-                  d="M3 10h18V5H3v5zm0 8h18v-6H3v6zm1-5h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"
-                />
-              </svg>
-              Lanjutkan Pembayaran
-            </button>
+              <button
+                @click="handlePaymentClick"
+                class="w-full rounded-lg bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-semibold py-3 transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M3 10h18V5H3v5zm0 8h18v-6H3v6zm1-5h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"
+                  />
+                </svg>
+                Lanjutkan Pembayaran
+              </button>
+              <button
+                @click="fetchOrderDetail"
+                class="w-full rounded-lg bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-semibold py-3 transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M3 10h18V5H3v5zm0 8h18v-6H3v6zm1-5h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"
+                  />
+                </svg>
+                Check Status Pembayaran
+              </button>
+            </div>
 
             <button
-              v-else-if="order.transaction?.status === 'paid'"
+              v-else-if="order.transaction?.status === 'success'"
               disabled
               class="w-full rounded-lg bg-emerald-500/20 text-emerald-300 font-semibold py-3 border border-emerald-400/30 cursor-not-allowed flex items-center justify-center gap-2"
             >
