@@ -29,6 +29,15 @@ export const useAuth = () => {
   //     ] = `Bearer ${accessToken}`;
   //   }
   // };
+  const fetchProfileAnalytics = async () => {
+    try {
+      const response = await nuxtApp.$api.get("/api/analytics/profile");
+      return response.data;
+    } catch (error) {
+      console.error("Gagal fetch analytics:", error);
+      return null;
+    }
+  };
   const fetchUser = async () => {
     try {
       // if (token().value) {
@@ -37,6 +46,7 @@ export const useAuth = () => {
       const response = await nuxtApp.$api.get("/api/user");
       setIsLoggedIn(true);
       user.value = response.data;
+      console.log("Fetched user:", user.value);
       return user.value;
     } catch (error) {
       if (error.response?.status !== 401) {
@@ -229,6 +239,7 @@ export const useAuth = () => {
     checkAuth,
     fetchUser,
     _clearAuth,
+    fetchProfileAnalytics,
     // _setAuthHeader,
     register,
     // loginWithToken,

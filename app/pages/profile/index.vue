@@ -5,12 +5,26 @@ import OtpUnlinkGoogle from "~/components/form/OtpUnlinkGoogle.vue";
 definePageMeta({
   middleware: "auth",
 });
+const totalFavorite = ref(0);
+const totalTransactions = ref(0);
+const totalReviews = ref(0);
+
 import { ref, computed, onMounted, watch } from "vue";
 const ENDPOINTS = {
   me: "/api/user",
   updateProfile: "/api/user",
   uploadAvatar: "/api/user",
 };
+const FetchAnalytics = async () => {
+  await fetchProfileAnalytics().then((data) => {
+    totalFavorite.value = data?.favorite_count ?? 0;
+    totalTransactions.value = data?.transaction_count ?? 0;
+    totalReviews.value = data?.review_count ?? 0;
+  });
+};
+onMounted(() => {
+  FetchAnalytics();
+});
 const verificationEmail = async () => {
   try {
     useSwal().showLoading();
@@ -42,8 +56,9 @@ const { $api } = useNuxtApp();
 const fetching = () => {
   loading.value = true;
   useSwal().showLoading();
-  fetchUser().finally(() => {
+  fetchUser().finally(async () => {
     loading.value = false;
+    await FetchAnalytics();
     useSwal().close();
   });
 };
@@ -52,8 +67,14 @@ const loading = ref(true);
 const saving = ref(false);
 const errorMsg = ref("");
 const successMsg = ref("");
-const { user, fetchUser, attachGoogle, unlinkGoogle, sendOtpForUnlinkGoogle } =
-  useAuth();
+const {
+  user,
+  fetchUser,
+  attachGoogle,
+  unlinkGoogle,
+  sendOtpForUnlinkGoogle,
+  fetchProfileAnalytics,
+} = useAuth();
 const userForm = ref({
   name: "",
   username: "",
@@ -459,20 +480,6 @@ const toogleSetPasswordConfirmation = () => {
             </div>
           </ClientOnly>
           <!-- Aksi cepat -->
-          <div class="flex flex-wrap items-center gap-2">
-            <NuxtLink
-              to="/orders"
-              class="cursor-pointer rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-200 hover:bg-white/10"
-            >
-              Lihat Pesanan
-            </NuxtLink>
-            <button
-              @click="changePassword"
-              class="cursor-pointer rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-200 hover:bg-white/10"
-            >
-              Ubah Kata Sandi
-            </button>
-          </div>
         </div>
 
         <!-- Alert -->
@@ -507,17 +514,18 @@ const toogleSetPasswordConfirmation = () => {
             <ul class="mt-3 space-y-1 text-sm">
               <li>
                 <NuxtLink
-                  to="/orders"
+                  to="/history"
                   class="block rounded-lg px-3 py-2 text-slate-200 ring-1 ring-white/0 hover:bg-white/5"
                   >Pesanan</NuxtLink
                 >
               </li>
               <li>
-                <NuxtLink
-                  to="/settings"
-                  class="block rounded-lg px-3 py-2 text-slate-200 ring-1 ring-white/0 hover:bg-white/5"
-                  >Pengaturan</NuxtLink
+                <button
+                  @click="changePassword"
+                  class=" w-full block rounded-lg px-3 py-2 text-slate-200 ring-1 ring-white/0 hover:bg-white/5 text-left"
                 >
+                  Ubah Kata Sandi
+                </button>
               </li>
             </ul>
           </div>
@@ -530,19 +538,21 @@ const toogleSetPasswordConfirmation = () => {
               <div
                 class="rounded-xl border border-white/10 bg-white/5 px-3 py-2"
               >
-                <div class="text-lg font-extrabold">0</div>
+                <div class="text-lg font-extrabold">
+                  {{ totalTransactions }}
+                </div>
                 <div class="text-slate-300">Transaksi</div>
               </div>
               <div
                 class="rounded-xl border border-white/10 bg-white/5 px-3 py-2"
               >
-                <div class="text-lg font-extrabold">0</div>
+                <div class="text-lg font-extrabold">{{ totalFavorite }}</div>
                 <div class="text-slate-300">Favorit</div>
               </div>
               <div
                 class="rounded-xl border border-white/10 bg-white/5 px-3 py-2"
               >
-                <div class="text-lg font-extrabold">0</div>
+                <div class="text-lg font-extrabold">{{ totalReviews }}</div>
                 <div class="text-slate-300">Ulasan</div>
               </div>
             </div>
