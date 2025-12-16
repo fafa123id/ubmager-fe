@@ -7,7 +7,7 @@ definePageMeta({
 
 const { $api } = useNuxtApp();
 const { orders, loading, pagination, getOrderHistory } = useOrderHistory();
-
+const { finishOrder } = useOrder();
 // Filter dan pagination
 const statusFilter = ref(null);
 const currentPage = ref(1);
@@ -17,7 +17,7 @@ const perPage = 5;
 const statusMap = {
   pending: { label: "Belum Dibayar", color: "amber", icon: "clock" },
   processing: { label: "Diproses", color: "blue", icon: "hourglass" },
-  processed: { label: "Telah Diproses", color: "sky", icon: "check" },
+  processed: { label: "Dikirim", color: "sky", icon: "check" },
   finished: { label: "Selesai", color: "emerald", icon: "check-circle" },
   cancelled: { label: "Dibatalkan", color: "red", icon: "x-circle" },
 };
@@ -26,7 +26,7 @@ const statusOptions = [
   { value: null, label: "Semua Status" },
   { value: "pending", label: "Belum Dibayar" },
   { value: "processing", label: "Diproses" },
-  { value: "processed", label: "Telah Diproses" },
+  { value: "processed", label: "Dikirim" },
   { value: "finished", label: "Selesai" },
   { value: "cancelled", label: "Dibatalkan" },
 ];
@@ -94,8 +94,21 @@ const getActionButton = (order) => {
       return {
         text: "Selesaikan Pesanan",
         color: "emerald",
-        handler: () => {
-          useSwal().showInfo("Fitur selesaikan pesanan sedang dikembangkan");
+        handler: async () => {
+          try {
+            const confirmation = await useSwal().confirmAction(
+              "Apakah Anda yakin ingin menyelesaikan pesanan ini?",
+              "Pesanan yang telah diselesaikan tidak dapat diubah kembali."
+            );
+            if (!confirmation.isConfirmed) return;
+            await finishOrder(order.id);
+            fetchOrders();
+            useSwal().showSuccess("Pesanan berhasil diselesaikan");
+          } catch (err) {
+            useSwal().showError(
+              err?.response?.data?.message || "Gagal menyelesaikan pesanan"
+            );
+          }
         },
       };
     case "finished":
@@ -135,7 +148,19 @@ const onFilterChange = () => {
   currentPage.value = 1;
   fetchOrders();
 };
+const showRatingModal = ref(false);
+const productId = ref(123);
+const productName = ref("Nama Produk");
 
+const handleRatingSuccess = (response) => {
+  fetchOrders();
+  showRatingModal.value = false;
+};
+const OpenRatingModal = (id, name) => {
+  productId.value = id;
+  productName.value = name;
+  showRatingModal.value = true;
+};
 // Computed untuk jumlah halaman
 const pageNumbers = computed(() => {
   const pages = [];
@@ -157,6 +182,13 @@ const pageNumbers = computed(() => {
 
 <template>
   <div class="relative min-h-dvh text-slate-100 overflow-hidden">
+    <UserRatingModal
+      :show="showRatingModal"
+      :productId="productId"
+      :productName="productName"
+      @close="showRatingModal = false"
+      @success="handleRatingSuccess"
+    />
     <!-- BG -->
     <div
       class="absolute inset-0 -z-20 bg-[radial-gradient(60%_60%_at_50%_10%,#0f172a_0%,#0b1220_50%,#0a0f1a_100%)]"
@@ -412,35 +444,43 @@ const pageNumbers = computed(() => {
                 {{ getPaymentMethodName(order.transaction.payment_method) }}
               </span>
             </div>
-
-            <!-- Action Button -->
-            <button
-              v-if="getActionButton(order).text"
-              @click="getActionButton(order).handler()"
-              :class="[
-                'px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2',
-                getActionButton(order).color === 'sky'
-                  ? 'bg-sky-500/90 text-white hover:bg-sky-500 ring-1 ring-sky-400/50'
-                  : getActionButton(order).color === 'emerald'
-                  ? 'bg-emerald-500/90 text-white hover:bg-emerald-500 ring-1 ring-emerald-400/50'
-                  : 'bg-indigo-500/90 text-white hover:bg-indigo-500 ring-1 ring-indigo-400/50',
-              ]"
-            >
-              {{ getActionButton(order).text }}
-              <svg
-                class="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            <div class="flex gap-4">
+              <button
+                v-if="getActionButton(order).text"
+                @click="getActionButton(order).handler()"
+                :class="[
+                  'px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2',
+                  getActionButton(order).color === 'sky'
+                    ? 'bg-sky-500/90 text-white hover:bg-sky-500 ring-1 ring-sky-400/50'
+                    : getActionButton(order).color === 'emerald'
+                    ? 'bg-emerald-500/90 text-white hover:bg-emerald-500 ring-1 ring-emerald-400/50'
+                    : 'bg-indigo-500/90 text-white hover:bg-indigo-500 ring-1 ring-indigo-400/50',
+                ]"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </button>
+                {{ getActionButton(order).text }}
+                <svg
+                  class="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
+              <button
+                v-if="order.status === 'finished' && order.is_rated == false"
+                @click="OpenRatingModal(order.id, order.product.name)"
+                class="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 ring-1 ring-yellow-300/50 hover:ring-yellow-300 shadow-lg hover:shadow-xl"
+              >
+                ⭐ Rate
+              </button>
+            </div>
+            <!-- Action Button -->
           </div>
         </div>
       </div>
