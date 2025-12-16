@@ -53,7 +53,13 @@ const paymentMethodConfig = {
   midtrans: "Midtrans",
 };
 const finishOrder = async (orderId) =>{
-  useSwal().showInfo("Fitur ini sedang dalam pengembangan");
+  useOrder().finishOrder(orderId).then(()=>{
+    useSwal().showSuccess("Order berhasil diselesaikan");
+    fetchOrderDetail();
+  }).catch((err)=>{
+    console.error("Failed to finish order:", err);
+    useSwal().showError(err.data?.message || "Gagal menyelesaikan order");
+  });
 }
 // Computed properties
 const currentStatus = computed(() => {
