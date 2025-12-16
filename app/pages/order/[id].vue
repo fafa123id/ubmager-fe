@@ -24,12 +24,12 @@ const statusConfig = {
     color: "blue",
     icon: "⚙️",
   },
-  shipped: {
+  processed: {
     label: "Dikirim",
     color: "sky",
     icon: "🚚",
   },
-  completed: {
+  finished: {
     label: "Selesai",
     color: "emerald",
     icon: "✓",
@@ -52,7 +52,9 @@ const paymentMethodConfig = {
   indomaret: "Indomaret",
   midtrans: "Midtrans",
 };
-
+const finishOrder = async (orderId) =>{
+  useSwal().showInfo("Fitur ini sedang dalam pengembangan");
+}
 // Computed properties
 const currentStatus = computed(() => {
   return order.value?.status || "pending";
@@ -63,7 +65,7 @@ const cancelOrder = async () => {
       "Apakah Anda yakin ingin membatalkan order ini?",
       "Tindakan ini tidak dapat dibatalkan."
     );
-    if(!confirmation.isConfirmed){ 
+    if (!confirmation.isConfirmed) {
       return;
     }
 
@@ -82,7 +84,7 @@ const cancelOrder = async () => {
   } finally {
     loading.value = false;
   }
-}
+};
 const statusInfo = computed(() => {
   return statusConfig[currentStatus.value] || statusConfig.pending;
 });
@@ -381,6 +383,20 @@ onMounted(() => {
                     {{ order.product?.description || "N/A" }}
                   </p>
                 </div>
+                <div>
+                  <p class="text-xs text-slate-400 mb-1">Penjual</p>
+                  <p class="text-sm text-slate-300 line-clamp-3">
+                    {{ order.product?.user.name || "N/A" }}
+                  </p>
+                </div>
+                <div>
+                  <NuxtLink
+                    :to="`/produk/${order.product?.id}`"
+                    class="inline-flex rounded-lg bg-gradient-to-r from-sky-500/90 to-indigo-600/90 px-3 py-2 text-xs font-semibold text-white ring-1 ring-white/20 hover:from-sky-600/90 hover:to-indigo-700/90 transition-all duration-200"
+                  >
+                    Lihat Detail Produk
+                  </NuxtLink>
+                </div>
               </div>
             </div>
           </div>
@@ -441,6 +457,13 @@ onMounted(() => {
                 </span>
               </div>
             </div>
+            <button
+              v-if="order.status === 'processed'"
+              class="mt-4 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 bg-emerald-500/90 text-white hover:bg-emerald-500 ring-1 ring-emerald-400/50"
+              @click="finishOrder(order.id)"
+            >
+              Selesaikan Pesanan
+            </button>
           </div>
 
           <!-- Address (if available) -->
@@ -585,7 +608,7 @@ onMounted(() => {
             </div>
 
             <button
-              v-else-if="order.transaction?.status === 'success'"
+              v-else-if="order.transaction?.status === 's '"
               disabled
               class="w-full rounded-lg bg-emerald-500/20 text-emerald-300 font-semibold py-3 border border-emerald-400/30 cursor-not-allowed flex items-center justify-center gap-2"
             >
