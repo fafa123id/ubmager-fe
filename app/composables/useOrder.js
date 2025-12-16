@@ -38,6 +38,21 @@ export const useOrder = () => {
     order.value = null;
     error.value = null;
   };
+  const finishOrder = async (orderId) => {
+    loading.value = true;
+    error.value = null;
+    try {
+      const response = await nuxtApp.$api.get(`/api/orders/${orderId}/finish`);
+      resetOrder();
+      return response.data;
+    } catch (err) {
+      console.error("Failed to finish order:", err);
+      error.value = err.data?.message || "Failed to finish order";
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
   const cancelOrder = async (orderId) => {
     loading.value = true;
     error.value = null;
@@ -53,12 +68,28 @@ export const useOrder = () => {
       loading.value = false;
     }
   };
+  const rateOrder = async (orderId, ratingData) => {
+    loading.value = true;
+    error.value = null;
+    try {
+      const response = await nuxtApp.$api.post(`/api/rating/${orderId}`, ratingData);
+      return response.data;
+    } catch (err) {
+      console.error("Failed to rate order:", err);
+      error.value = err.data?.message || "Failed to rate order";
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
   return {
     order,
     loading,
     error,
     getOrderById,
     resetOrder,
+    rateOrder,
     cancelOrder,
+    finishOrder,
   };
 };
