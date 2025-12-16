@@ -63,7 +63,7 @@ const handleAddToCart = async () => {
 };
 
 const goBack = () => {
-  navigateTo("/produk");
+  useRouter().back();
 };
 const proccessDeleteFavorite = async (productId) => {
   try {
