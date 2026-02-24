@@ -5,40 +5,9 @@ export default defineNuxtConfig({
 
   pwa: {
     registerType: "autoUpdate",
-    strategies: "injectManifest",
-    srcDir: "public",
-    filename: "sw.js",
-    manifest: {
-      name: "UBMager",
-      short_name: "UBMager",
-      description: "UBMager Progressive Web App",
-      theme_color: "#0f172a",
-      background_color: "#0f172a",
-      display: "standalone",
-      orientation: "portrait",
-      lang: "id",
-      start_url: "/",
-      icons: [
-        {
-          src: "/icons/icon-192.png",
-          sizes: "192x192",
-          type: "image/png",
-          purpose: "any maskable",
-        },
-        {
-          src: "/icons/icon-512.png",
-          sizes: "512x512",
-          type: "image/png",
-          purpose: "any maskable",
-        },
-      ],
-    },
 
     workbox: {
       navigateFallback: "/",
-      globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
-      navigateFallbackAllowlist: [/^\/$/],
-
       cleanupOutdatedCaches: true,
       clientsClaim: true,
       skipWaiting: true,
@@ -59,28 +28,21 @@ export default defineNuxtConfig({
             },
           },
         },
-        {
-          urlPattern: /\.(?:png|jpg|jpeg|svg|webp|gif)$/i,
-          handler: "CacheFirst",
-          options: {
-            cacheName: "image-cache",
-            expiration: {
-              maxEntries: 100,
-              maxAgeSeconds: 60 * 60 * 24 * 30,
-            },
-          },
-        },
-        {
-          urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-          handler: "StaleWhileRevalidate",
-          options: {
-            cacheName: "google-fonts",
-          },
-        },
       ],
     },
-    devOptions: {
-      enabled: true,
+
+    manifest: {
+      name: "UBMager",
+      short_name: "UBMager",
+      description: "UBMager Progressive Web App",
+      theme_color: "#0f172a",
+      background_color: "#0f172a",
+      display: "standalone",
+      start_url: "/",
+      icons: [
+        { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+        { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+      ],
     },
   },
   routeRules: {
