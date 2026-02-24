@@ -5,6 +5,7 @@ export default defineNuxtConfig({
 
   pwa: {
     registerType: "autoUpdate",
+    strategies: "injectManifest",
     manifest: {
       name: "UBMager",
       short_name: "UBMager",
@@ -75,6 +76,9 @@ export default defineNuxtConfig({
           },
         },
       ],
+    },
+    devOptions: {
+      enabled: true,
     },
   },
   routeRules: {
