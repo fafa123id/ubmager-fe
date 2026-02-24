@@ -6,30 +6,7 @@ export default defineNuxtConfig({
   pwa: {
     registerType: "autoUpdate",
 
-    workbox: {
-      navigateFallback: undefined, 
-      cleanupOutdatedCaches: true,
-      clientsClaim: true,
-      skipWaiting: true,
-
-      runtimeCaching: [
-        {
-          urlPattern: /^https:\/\/dev-api\.ubmager\.shop\/api\/.*/i,
-          handler: "NetworkFirst",
-          options: {
-            cacheName: "api-cache",
-            networkTimeoutSeconds: 5,
-            expiration: {
-              maxEntries: 50,
-              maxAgeSeconds: 60 * 5,
-            },
-            cacheableResponse: {
-              statuses: [0, 200],
-            },
-          },
-        },
-      ],
-    },
+    workbox: false, // Disable Workbox to prevent caching issues during development
 
     manifest: {
       name: "UBMager",
