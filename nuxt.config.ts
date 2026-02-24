@@ -6,7 +6,31 @@ export default defineNuxtConfig({
   pwa: {
     registerType: "autoUpdate",
 
-    workbox: false, // Disable Workbox to prevent caching issues during development
+    workbox: {
+    navigateFallback: undefined,   
+    globPatterns: ['**/*.{js,css,css,html,png,svg,ico}'],
+
+    runtimeCaching: [
+
+      {
+        urlPattern: /^https:\/\/dev\.ubmager\.shop\/$/,
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: 'html-cache',
+          networkTimeoutSeconds: 3
+        }
+      },
+
+      {
+        urlPattern: /^https:\/\/dev-api\.ubmager\.shop\/api\/.*/i,
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: 'api-cache',
+          networkTimeoutSeconds: 5
+        }
+      }
+    ]
+  }
 
     manifest: {
       name: "UBMager",
