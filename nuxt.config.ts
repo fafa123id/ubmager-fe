@@ -6,6 +6,12 @@ export default defineNuxtConfig({
   pwa: {
     registerType: "autoUpdate",
     strategies: "injectManifest",
+    injectManifest: {
+      globDirectory: "public",
+      globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
+    },
+    srcDir: "public",
+    filename: "sw.js",
     manifest: {
       name: "UBMager",
       short_name: "UBMager",
