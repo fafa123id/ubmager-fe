@@ -30,7 +30,7 @@ export default defineNuxtConfig({
         }
       }
     ]
-  }
+  },
 
     manifest: {
       name: "UBMager",
