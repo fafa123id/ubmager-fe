@@ -7,7 +7,8 @@ export default defineNuxtConfig({
     registerType: "autoUpdate",
 
     workbox: {
-      navigateFallback: "/",
+      globPatterns: [],
+      navigateFallback: null,
       cleanupOutdatedCaches: true,
       clientsClaim: true,
       skipWaiting: true,
