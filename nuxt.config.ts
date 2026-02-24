@@ -1,26 +1,6 @@
 import tailwindcss from "@tailwindcss/vite";
 import axios from "axios";
 export default defineNuxtConfig({
-  modules: ["@vite-pwa/nuxt"],
-
-  pwa: {
-    registerType: "autoUpdate",
-
-    workbox: false, // Disable Workbox to prevent caching issues during development
-    manifest: {
-      name: "UBMager",
-      short_name: "UBMager",
-      description: "UBMager Progressive Web App",
-      theme_color: "#0f172a",
-      background_color: "#0f172a",
-      display: "standalone",
-      start_url: "/",
-      icons: [
-        { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
-        { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
-      ],
-    },
-  },
   routeRules: {
     // Homepage pre-rendered at build time
     "/": { prerender: true },
@@ -49,8 +29,17 @@ export default defineNuxtConfig({
     },
     layoutTransition: { name: "layout", mode: "out-in" },
     head: {
+      link: [
+        { rel: "manifest", href: "/manifest.webmanifest" },
+        { rel: "apple-touch-icon", href: "/icons/icon-192.png" },
+      ],
       title: "UBMager Frontend",
-      meta: [{ name: "description", content: "Frontend SSR untuk UBMager" }],
+      meta: [
+        { name: "description", content: "Frontend SSR untuk UBMager" },
+        { name: "theme-color", content: "#0f172a" },
+        { name: "apple-mobile-web-app-capable", content: "yes" },
+        { name: "apple-mobile-web-app-status-bar-style", content: "black" },
+      ],
     },
   },
   runtimeConfig: {
