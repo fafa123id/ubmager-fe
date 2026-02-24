@@ -3,6 +3,12 @@ pipeline {
     agent any
     
     stages {
+        stage('Clean Workspace') {
+            steps {
+                deleteDir()
+            }
+        }
+
         stage('Checkout Code from GitHub') {
             steps {
                 echo 'Mengambil kode terbaru...'
@@ -32,12 +38,7 @@ pipeline {
                 echo '--- MEMBERSIHKAN IMAGE DOCKER LAMA ---'
                 sh 'docker image prune -f'
             }
-        }
-        stage('Cleanup Docker') {
-            steps {
-                sh 'docker system prune -af'
-            }
-        }       
+        }   
     }
 
     post {
