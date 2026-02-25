@@ -38,6 +38,7 @@ onMounted(() => {
         open(props.id);
         document.body.style.overflow = 'hidden';
     }
+    window.addEventListener("popstate", onBack);
     document.addEventListener("keydown", onEsc);
 });
 
@@ -45,6 +46,7 @@ onUnmounted(() => {
     closeStack(props.id);
     document.body.style.overflow = '';
     document.removeEventListener("keydown", onEsc);
+    window.removeEventListener("popstate", onBack);
 });
 
 const close = () => {
@@ -56,6 +58,13 @@ const close = () => {
 const onEsc = (e) => {
     const currentMaxZ = Math.max(0, ...Object.values(zMap));
     if (e.key === "Escape" && props.show && modalZ.value === currentMaxZ) {
+        close();
+    }
+};
+const onBack = (e) => {
+    const currentMaxZ = Math.max(0, ...Object.values(zMap));
+    if (e.props.show && modalZ.value === currentMaxZ) {
+        window.history.pushState(null, "", window.location.href);
         close();
     }
 };
