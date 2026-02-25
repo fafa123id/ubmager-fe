@@ -51,11 +51,14 @@ onUnmounted(() => {
 });
 
 const close = () => {
-  if (props.closeable) {
-    emit("close");
+  if (!props.closeable) return;
+  emit("close");
+  if (!isFromPopState && history.state?.modal === props.id) {
+    history.back();
   }
+  isFromPopState = false;
 };
-
+let isFromPopState = false;
 const onEsc = (e) => {
   const currentMaxZ = Math.max(0, ...Object.values(zMap));
   if (e.key === "Escape" && props.show && modalZ.value === currentMaxZ) {
@@ -66,6 +69,7 @@ const onBack = (e) => {
   const currentMaxZ = Math.max(0, ...Object.values(zMap));
   if (props.show && modalZ.value === currentMaxZ) {
     close();
+    isFromPopState = true;
   }
 };
 
