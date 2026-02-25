@@ -65,7 +65,6 @@ const onEsc = (e) => {
 const onBack = (e) => {
   const currentMaxZ = Math.max(0, ...Object.values(zMap));
   if (props.show && modalZ.value === currentMaxZ) {
-    window.history.pushState(null, "", window.location.href);
     close();
   }
 };
