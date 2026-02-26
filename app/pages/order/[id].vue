@@ -374,18 +374,17 @@ const OpenRatingModal = (id, name) => {
         <button
           v-if="order.status === 'finished' && order.is_rated == false"
           @click="OpenRatingModal(order.id, order.product.name)"
-          class="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 ring-1 ring-yellow-300/50 hover:ring-yellow-300 shadow-lg hover:shadow-xl"
+          class="px-4 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 ring-1 ring-yellow-300/50 hover:ring-yellow-300 shadow-lg hover:shadow-xl"
         >
-          ⭐ Rate
+          <span class="text-xl"> ⭐ </span>
+          <span class="font-semibold"> Beri Rating Produk</span>
         </button>
         <div
           v-else-if="order.status === 'finished' && order.is_rated == true"
-          class="flex items-center gap-2 px-4 py-2 rounded-lg ring-1 text-md font-semibold bg-emerald-500/20 text-emerald-300 ring-emerald-400/30"
+          class="flex items-center gap-2 px-4 py-2 rounded-lg ring-1 bg-emerald-500/20 text-emerald-300 ring-emerald-400/30"
         >
-          <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-          </svg>
-          Sudah Dinilai
+          <span class="text-xl"> ✓ </span>
+          <span class="font-semibold"> Produk Sudah Dinilai</span>
         </div>
       </div>
 
@@ -702,19 +701,6 @@ const OpenRatingModal = (id, name) => {
             >
               Tidak Ada Aksi
             </button>
-          </div>
-
-          <!-- Rating Card (if available) -->
-          <div
-            v-if="order.is_rated"
-            class="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-6"
-          >
-            <div class="flex items-center gap-2 text-emerald-300 font-semibold">
-              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-              </svg>
-              Produk sudah dinilai
-            </div>
           </div>
         </div>
       </div>
