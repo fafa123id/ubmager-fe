@@ -52,15 +52,18 @@ const paymentMethodConfig = {
   indomaret: "Indomaret",
   midtrans: "Midtrans",
 };
-const finishOrder = async (orderId) =>{
-  useOrder().finishOrder(orderId).then(()=>{
-    useSwal().showSuccess("Order berhasil diselesaikan");
-    fetchOrderDetail();
-  }).catch((err)=>{
-    console.error("Failed to finish order:", err);
-    useSwal().showError(err.data?.message || "Gagal menyelesaikan order");
-  });
-}
+const finishOrder = async (orderId) => {
+  useOrder()
+    .finishOrder(orderId)
+    .then(() => {
+      useSwal().showSuccess("Order berhasil diselesaikan");
+      fetchOrderDetail();
+    })
+    .catch((err) => {
+      console.error("Failed to finish order:", err);
+      useSwal().showError(err.data?.message || "Gagal menyelesaikan order");
+    });
+};
 // Computed properties
 const currentStatus = computed(() => {
   return order.value?.status || "pending";
@@ -69,7 +72,7 @@ const cancelOrder = async () => {
   try {
     const confirmation = await useSwal().confirmAction(
       "Apakah Anda yakin ingin membatalkan order ini?",
-      "Tindakan ini tidak dapat dibatalkan."
+      "Tindakan ini tidak dapat dibatalkan.",
     );
     if (!confirmation.isConfirmed) {
       return;
@@ -164,7 +167,6 @@ const copyReceipt = () => {
     useSwal().showSuccess("Receipt berhasil disalin");
   }
 };
-
 onMounted(() => {
   fetchOrderDetail();
 });
@@ -294,6 +296,17 @@ onMounted(() => {
               </svg>
             </button>
           </div>
+          <button
+            @click="useOrder().downloadReceipt(order.transaction?.receipt)"
+            class="ml-auto inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-indigo-600 to-yellow-500 hover:from-indigo-700 hover:to-yellow-600 text-white font-semibold px-3 py-2 transition-all duration-200"
+          >
+            Download Receipt
+            <svg class="h-4 w-4 ml-2" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M5 20h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-5l-2-2H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2zm7-11l5 5h-3v4h-4v-4H7l5-5z"
+              />
+            </svg>
+          </button>
         </div>
       </div>
 
@@ -305,12 +318,12 @@ onMounted(() => {
             statusInfo.color === 'amber'
               ? 'bg-amber-500/20 text-amber-300 ring-amber-400/30'
               : statusInfo.color === 'blue'
-              ? 'bg-blue-500/20 text-blue-300 ring-blue-400/30'
-              : statusInfo.color === 'sky'
-              ? 'bg-sky-500/20 text-sky-300 ring-sky-400/30'
-              : statusInfo.color === 'emerald'
-              ? 'bg-emerald-500/20 text-emerald-300 ring-emerald-400/30'
-              : 'bg-red-500/20 text-red-300 ring-red-400/30',
+                ? 'bg-blue-500/20 text-blue-300 ring-blue-400/30'
+                : statusInfo.color === 'sky'
+                  ? 'bg-sky-500/20 text-sky-300 ring-sky-400/30'
+                  : statusInfo.color === 'emerald'
+                    ? 'bg-emerald-500/20 text-emerald-300 ring-emerald-400/30'
+                    : 'bg-red-500/20 text-red-300 ring-red-400/30',
           ]"
         >
           <span class="text-xl">{{ statusInfo.icon }}</span>
@@ -527,16 +540,16 @@ onMounted(() => {
                   order.transaction?.status === 'pending'
                     ? 'bg-amber-500/20 text-amber-300'
                     : order.transaction?.status === 'success'
-                    ? 'bg-emerald-500/20 text-emerald-300'
-                    : 'bg-red-500/20 text-red-300',
+                      ? 'bg-emerald-500/20 text-emerald-300'
+                      : 'bg-red-500/20 text-red-300',
                 ]"
               >
                 {{
                   order.transaction?.status === "pending"
                     ? "Menunggu Pembayaran"
                     : order.transaction?.status === "success"
-                    ? "Dibayar"
-                    : "Gagal"
+                      ? "Dibayar"
+                      : "Gagal"
                 }}
               </div>
             </div>
@@ -565,7 +578,7 @@ onMounted(() => {
                 {{
                   order.transaction?.updated_at
                     ? new Date(
-                        order.transaction?.updated_at
+                        order.transaction?.updated_at,
                       ).toLocaleDateString("id-ID", {
                         year: "numeric",
                         month: "long",
