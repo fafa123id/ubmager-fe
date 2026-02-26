@@ -304,7 +304,7 @@ onMounted(() => {
               </svg>
             </button>
           </div>
-          <button
+          <button v-if="order.transaction?.status === 'success' && order.transaction?.receipt"
             @click="downloadReceipt(order.transaction?.receipt)"
             class="ml-auto inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-indigo-600 to-yellow-500 hover:from-indigo-700 hover:to-yellow-600 text-white font-semibold px-3 py-2 transition-all duration-200"
           >
