@@ -139,7 +139,7 @@ const handleCheckoutSuccess = (param) => {
     return;
   }
   fetchProduct();
-  navigateTo("/order/" + param.data.order.id);
+  window.location.href = param.data.payment_url;
 };
 </script>
 
