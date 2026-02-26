@@ -57,7 +57,7 @@ const paymentMethods = [
   {
     id: "qris",
     label: "QRIS",
-    value: "qris",
+    value: "other_qris",
     icon: "📱",
     description: "Scan QRIS dengan ponsel Anda",
   },
