@@ -40,7 +40,15 @@ const statusConfig = {
     icon: "✕",
   },
 };
-
+const downloadReceipt = async (receipt) => {
+  try {
+    const url = await useOrder().downloadReceipt(receipt);
+    window.open(url, "_blank");
+  } catch (err) {
+    console.error("Failed to download receipt:", err);
+    useSwal().showError(err.data?.message || "Gagal mengunduh receipt");
+  }
+};
 // Payment method mapping
 const paymentMethodConfig = {
   credit_card: "Kartu Kredit",
@@ -297,7 +305,7 @@ onMounted(() => {
             </button>
           </div>
           <button
-            @click="useOrder().downloadReceipt(order.transaction?.receipt)"
+            @click="downloadReceipt(order.transaction?.receipt)"
             class="ml-auto inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-indigo-600 to-yellow-500 hover:from-indigo-700 hover:to-yellow-600 text-white font-semibold px-3 py-2 transition-all duration-200"
           >
             Download Receipt

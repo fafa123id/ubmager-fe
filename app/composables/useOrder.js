@@ -84,14 +84,7 @@ export const useOrder = () => {
   };
 
   const downloadReceipt = async (orderId) => {
-    try {
-      const response = await nuxtApp.$api.get(`/api/orders/${orderId}/receipt`);
-    }
-    catch (err) {
-      console.error("Failed to download receipt:", err);
-      error.value = err.data?.message || "Failed to download receipt";
-      throw err;
-    }
+    return `${nuxtApp.$config.public.apiBase}/api/orders/${orderId}/receipt`;
   }
   return {
     order,
