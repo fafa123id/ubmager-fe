@@ -61,6 +61,13 @@ const paymentMethodConfig = {
   midtrans: "Midtrans",
 };
 const finishOrder = async (orderId) => {
+  const confirmation = await useSwal().confirmAction(
+    "Apakah Anda yakin ingin menyelesaikan order ini?",
+    "Tindakan ini tidak dapat dibatalkan.",
+  );
+  if (!confirmation.isConfirmed) {
+    return;
+  }
   useOrder()
     .finishOrder(orderId)
     .then(() => {
@@ -178,10 +185,29 @@ const copyReceipt = () => {
 onMounted(() => {
   fetchOrderDetail();
 });
+const showRatingModal = ref(false);
+const productId = ref(123);
+const productName = ref("Nama Produk");
+const handleRatingSuccess = (response) => {
+  fetchOrderDetail();
+  showRatingModal.value = false;
+};
+const OpenRatingModal = (id, name) => {
+  productId.value = id;
+  productName.value = name;
+  showRatingModal.value = true;
+};
 </script>
 
 <template>
   <div class="relative min-h-dvh text-slate-100 overflow-hidden">
+    <UserRatingModal
+      :show="showRatingModal"
+      :productId="productId"
+      :productName="productName"
+      @close="showRatingModal = false"
+      @success="handleRatingSuccess"
+    />
     <!-- BG -->
     <div
       class="absolute inset-0 -z-20 bg-[radial-gradient(60%_60%_at_50%_10%,#0f172a_0%,#0b1220_50%,#0a0f1a_100%)]"
@@ -283,7 +309,9 @@ onMounted(() => {
       <!-- Header with Title and Status -->
       <div class="mb-8">
         <h1 class="text-3xl font-bold text-slate-100 mb-3">Detail Order</h1>
-        <div class="flex items-center gap-3 flex-wrap">
+        <div
+          class="flex items-center gap-3 max-[500px]:flex-wrap max-[500px]:flex-col"
+        >
           <span class="text-sm text-slate-400">Receipt:</span>
           <div
             class="flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2"
@@ -304,9 +332,13 @@ onMounted(() => {
               </svg>
             </button>
           </div>
-          <button v-if="order.transaction?.status === 'success' && order.transaction?.receipt"
+          <button
+            v-if="
+              order.transaction?.status === 'success' &&
+              order.transaction?.receipt
+            "
             @click="downloadReceipt(order.transaction?.receipt)"
-            class="ml-auto inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-indigo-600 to-yellow-500 hover:from-indigo-700 hover:to-yellow-600 text-white font-semibold px-3 py-2 transition-all duration-200"
+            class="min-[500px]:ml-auto flex items-center gap-2 rounded-lg bg-gradient-to-r from-indigo-600 to-yellow-500 hover:from-indigo-700 hover:to-yellow-600 text-white font-semibold px-3 py-2 transition-all duration-200"
           >
             Download Receipt
             <svg class="h-4 w-4 ml-2" fill="currentColor" viewBox="0 0 24 24">
@@ -319,10 +351,12 @@ onMounted(() => {
       </div>
 
       <!-- Status Badge -->
-      <div class="mb-8">
+      <div
+        class="mb-8 min-[500px]:inline-flex max-[500px]:flex justify-center items-center gap-4 max-[500px]:flex-wrap"
+      >
         <div
           :class="[
-            'inline-flex items-center gap-2 rounded-lg px-4 py-2 ring-1',
+            'flex items-center gap-2 rounded-lg px-4 py-2 ring-1',
             statusInfo.color === 'amber'
               ? 'bg-amber-500/20 text-amber-300 ring-amber-400/30'
               : statusInfo.color === 'blue'
@@ -336,6 +370,22 @@ onMounted(() => {
         >
           <span class="text-xl">{{ statusInfo.icon }}</span>
           <span class="font-semibold">{{ statusInfo.label }}</span>
+        </div>
+        <button
+          v-if="order.status === 'finished' && order.is_rated == false"
+          @click="OpenRatingModal(order.id, order.product.name)"
+          class="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:from-yellow-500 hover:to-orange-600 ring-1 ring-yellow-300/50 hover:ring-yellow-300 shadow-lg hover:shadow-xl"
+        >
+          ⭐ Rate
+        </button>
+        <div
+          v-else-if="order.status === 'finished' && order.is_rated == true"
+          class="flex items-center gap-2 px-4 py-2 rounded-lg ring-1 text-md font-semibold bg-emerald-500/20 text-emerald-300 ring-emerald-400/30"
+        >
+          <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+          </svg>
+          Sudah Dinilai
         </div>
       </div>
 

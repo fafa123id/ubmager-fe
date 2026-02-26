@@ -95,10 +95,10 @@ const processFile = (file) => {
     return;
   }
 
-  // Validate file size (max 2MB)
-  const maxSize = 2 * 1024 * 1024; // 2MB
+  // Validate file size (max 10MB)
+  const maxSize = 10 * 1024 * 1024; // 10MB
   if (file.size > maxSize) {
-    errors.value.image = "Ukuran gambar maksimal 2MB";
+    errors.value.image = "Ukuran gambar maksimal 10MB";
     imageFile.value = null;
     imagePreview.value = null;
     return;
