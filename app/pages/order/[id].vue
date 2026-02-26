@@ -47,7 +47,7 @@ const paymentMethodConfig = {
   bank_transfer: "Transfer Bank",
   gopay: "GoPay",
   shopeepay: "ShopeePay",
-  qris: "QRIS",
+  other_qris: "QRIS",
   alfamart: "Alfamart",
   indomaret: "Indomaret",
   midtrans: "Midtrans",
