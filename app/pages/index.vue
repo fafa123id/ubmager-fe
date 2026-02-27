@@ -35,7 +35,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <main class="relative overflow-hidden text-slate-100">
+  <main class="relative overflow-hidden text-slate-100  bg-slate-950">
     <!-- BG gelap elegan -->
     <div
       class="absolute inset-0 -z-20 bg-[radial-gradient(60%_60%_at_50%_10%,#0f172a_0%,#0b1220_50%,#0a0f1a_100%)]"
@@ -397,7 +397,7 @@ onMounted(async () => {
     <!-- JADI MITRA -->
     <section
       id="mitra"
-      class="reveal relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8"
+      class="reveal relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 scroll-mt-24"
     >
       <div
         class="rounded-3xl border border-white/10 bg-slate-900/60 p-8 backdrop-blur-xl"
