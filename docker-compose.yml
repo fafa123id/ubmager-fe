@@ -13,9 +13,9 @@ services:
       - NODE_ENV=production
       - NITRO_PORT=3000
       - NITRO_HOST=0.0.0.0
-      - VIRTUAL_HOST=dev.ubmager.shop
+      - VIRTUAL_HOST=ubmager.s1gro.online
       - VIRTUAL_PORT=3000
-      - LETSENCRYPT_HOST=dev.ubmager.shop
+      - LETSENCRYPT_HOST=ubmager.s1gro.online
       - LETSENCRYPT_EMAIL=ahmadfauzanroziqin@gmail.com
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/"]

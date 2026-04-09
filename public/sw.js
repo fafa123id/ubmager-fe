@@ -29,7 +29,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   // cache API runtime
-  if (url.hostname === "dev-api.ubmager.shop") {
+  if (url.hostname === "dev-api.ubmager.shop" || url.hostname === "api-ubmager.s1gro.online") {
     event.respondWith(
       fetch(event.request)
         .then((res) => {
